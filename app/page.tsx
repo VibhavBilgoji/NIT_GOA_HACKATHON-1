@@ -83,7 +83,7 @@ export default function Home() {
 
             <div className="relative mt-12 overflow-visible px-2 sm:px-4">
               <NeonGradientCard className="relative mx-auto max-w-6xl shadow-2xl">
-                <div className="relative min-h-[500px] overflow-hidden rounded-xl bg-black">
+                <div className="relative min-h-[500px] overflow-hidden rounded-xl bg-white dark:bg-black">
                   {/* Empty clean screen */}
                 </div>
               </NeonGradientCard>
@@ -111,10 +111,10 @@ export default function Home() {
                   <div className="flex size-12 items-center justify-center rounded-lg bg-white/90 text-black">
                     <AlertCircle className="size-6" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-xl font-semibold text-black dark:text-white">
                     Easy Reporting
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Report civic issues with description, photo, and live GPS
                     location in seconds
                   </p>
@@ -126,10 +126,10 @@ export default function Home() {
                   <div className="flex size-12 items-center justify-center rounded-lg bg-white/90 text-black">
                     <MapPin className="size-6" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-xl font-semibold text-black dark:text-white">
                     Interactive Map
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     View all reported issues on an interactive city map with
                     color-coded status markers
                   </p>
@@ -141,10 +141,10 @@ export default function Home() {
                   <div className="flex size-12 items-center justify-center rounded-lg bg-white/90 text-black">
                     <TrendingUp className="size-6" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-xl font-semibold text-black dark:text-white">
                     Real-Time Tracking
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Track issue progress from Open to In Progress to Resolved
                     with automated updates
                   </p>
@@ -156,10 +156,10 @@ export default function Home() {
                   <div className="flex size-12 items-center justify-center rounded-lg bg-white/90 text-black">
                     <Shield className="size-6" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-xl font-semibold text-black dark:text-white">
                     Transparency
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Access impact reports and analytics for complete
                     accountability and transparency
                   </p>

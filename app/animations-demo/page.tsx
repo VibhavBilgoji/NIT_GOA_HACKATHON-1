@@ -21,7 +21,7 @@ export default function AnimationsDemo() {
               <p className="text-gray-600 dark:text-gray-400">
                 Watch the animated gradient beam travel along the borders
               </p>
-              <BorderBeam size={250} duration={8} />
+              <BorderBeam duration={8} />
             </div>
 
             <div className="relative overflow-hidden rounded-lg border-2 border-gray-300 dark:border-gray-700 p-8 bg-white dark:bg-gray-900">
@@ -29,12 +29,7 @@ export default function AnimationsDemo() {
               <p className="text-gray-600 dark:text-gray-400">
                 Custom color gradient from cyan to blue
               </p>
-              <BorderBeam
-                size={250}
-                duration={6}
-                colorFrom="#00d4ff"
-                colorTo="#0066ff"
-              />
+              <BorderBeam duration={6} />
             </div>
 
             <div className="relative overflow-hidden rounded-lg border-2 border-gray-300 dark:border-gray-700 p-8 bg-white dark:bg-gray-900">
@@ -42,12 +37,7 @@ export default function AnimationsDemo() {
               <p className="text-gray-600 dark:text-gray-400">
                 Fresh green gradient animation
               </p>
-              <BorderBeam
-                size={250}
-                duration={10}
-                colorFrom="#10b981"
-                colorTo="#34d399"
-              />
+              <BorderBeam duration={10} />
             </div>
 
             <div className="relative overflow-hidden rounded-lg border-2 border-gray-300 dark:border-gray-700 p-8 bg-white dark:bg-gray-900">
@@ -55,12 +45,7 @@ export default function AnimationsDemo() {
               <p className="text-gray-600 dark:text-gray-400">
                 Vibrant red to pink gradient
               </p>
-              <BorderBeam
-                size={250}
-                duration={12}
-                colorFrom="#ef4444"
-                colorTo="#ec4899"
-              />
+              <BorderBeam duration={12} />
             </div>
           </div>
         </section>
@@ -88,12 +73,7 @@ export default function AnimationsDemo() {
                 BorderBeam + RetroGrid Together
               </p>
             </div>
-            <BorderBeam
-              size={300}
-              duration={8}
-              colorFrom="#ffaa40"
-              colorTo="#9c40ff"
-            />
+            <BorderBeam duration={8} />
             <RetroGrid />
           </div>
         </section>
