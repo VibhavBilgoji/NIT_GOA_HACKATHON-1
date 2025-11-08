@@ -472,11 +472,16 @@ export default function TransparencyPage() {
           </p>
           <Link href="/signup">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             <Button
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-purple-600"
             >
               Join CityPulse Today
+=======
+            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
+              Join OurStreet Today
+>>>>>>> Stashed changes
 =======
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
               Join OurStreet Today

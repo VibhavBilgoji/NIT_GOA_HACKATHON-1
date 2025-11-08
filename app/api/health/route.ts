@@ -77,9 +77,13 @@ export async function GET(_request: NextRequest) {
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     if (
       process.env.JWT_SECRET === "citypulse-secret-key-change-in-production"
     ) {
+=======
+    if (process.env.JWT_SECRET === "ourstreet-secret-key-change-in-production") {
+>>>>>>> Stashed changes
 =======
     if (process.env.JWT_SECRET === "ourstreet-secret-key-change-in-production") {
 >>>>>>> Stashed changes

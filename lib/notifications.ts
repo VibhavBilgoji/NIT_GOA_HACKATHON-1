@@ -36,8 +36,12 @@ export async function sendEmailNotification(
       },
       body: JSON.stringify({
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         from:
           process.env.EMAIL_FROM || "OurStreet <notifications@ourstreet.app>",
+=======
+        from: process.env.EMAIL_FROM || "OurStreet <notifications@ourstreet.app>",
+>>>>>>> Stashed changes
 =======
         from: process.env.EMAIL_FROM || "OurStreet <notifications@ourstreet.app>",
 >>>>>>> Stashed changes

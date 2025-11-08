@@ -701,8 +701,13 @@ export default function ReportIssuePage() {
 
         {/* Info Cards */}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <div className="grid md:grid-cols-4 gap-4 mt-8">
           <Card className="border-gray-200 dark:border-gray-800">
+=======
+        <div className="grid md:grid-cols-3 gap-4 mt-8">
+          <Card className="border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
+>>>>>>> Stashed changes
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-1">
                 <Sparkles className="h-4 w-4 text-purple-500" />
