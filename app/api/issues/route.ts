@@ -7,6 +7,7 @@ import {
   ApiResponse,
   IssueFilters,
 } from "@/lib/types";
+import { categorizeIssue, isAIServiceAvailable } from "@/lib/ai/service";
 
 // Validation helpers
 function isValidCoordinate(lat: number, lng: number): boolean {
@@ -154,8 +155,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body: CreateIssueRequest = await request.json();
-    const { title, description, category, location, coordinates, photoUrl } =
-      body;
+    const {
+      title,
+      description,
+      category,
+      location,
+      coordinates,
+      photoUrl,
+      useAI,
+      aiSuggestion,
+    } = body;
 
     // Validation - Check required fields
     if (!title || !description || !category || !location) {
@@ -295,21 +304,91 @@ export async function POST(request: NextRequest) {
       validPhotoUrl = sanitized;
     }
 
-    // Determine priority based on category
+    // Determine priority and category using AI if requested
+    let finalCategory = category;
     let priority: "low" | "medium" | "high" | "critical" = "medium";
-    if (["water_leak", "electricity", "traffic"].includes(category)) {
-      priority = "high";
-    } else if (["pothole", "streetlight"].includes(category)) {
-      priority = "medium";
+    let aiMetadata: Issue["aiMetadata"] | undefined;
+
+    // Check if AI categorization should be used
+    if (useAI && isAIServiceAvailable()) {
+      try {
+        console.log("Using AI for categorization and priority scoring...");
+        const aiResult = await categorizeIssue({
+          title: sanitizedTitle,
+          description: sanitizedDescription,
+          location: sanitizedLocation,
+        });
+
+        // Store AI metadata
+        aiMetadata = {
+          usedAI: true,
+          aiCategory: aiResult.category,
+          aiPriority: aiResult.priority,
+          confidence: aiResult.confidence,
+          reasoning: aiResult.reasoning,
+          tags: aiResult.tags,
+          manualOverride: false,
+        };
+
+        // Use AI suggestions
+        finalCategory = aiResult.category;
+        priority = aiResult.priority;
+
+        console.log(
+          `AI categorization: ${finalCategory}, priority: ${priority}, confidence: ${aiResult.confidence}`,
+        );
+      } catch (error) {
+        console.error(
+          "AI categorization failed, falling back to manual:",
+          error,
+        );
+        // Fall through to manual categorization
+      }
+    } else if (aiSuggestion) {
+      // User applied AI suggestion manually
+      aiMetadata = {
+        usedAI: true,
+        aiCategory: aiSuggestion.category,
+        aiPriority: aiSuggestion.priority,
+        confidence: aiSuggestion.confidence,
+        reasoning: aiSuggestion.reasoning,
+        tags: [],
+        manualOverride: aiSuggestion.manualOverride || false,
+      };
+
+      // Use the category and priority from AI suggestion if user chose it
+      if (category === aiSuggestion.category) {
+        finalCategory = aiSuggestion.category;
+        priority = aiSuggestion.priority;
+      } else {
+        // User overrode AI suggestion
+        aiMetadata.manualOverride = true;
+        finalCategory = category;
+        // Manual priority determination
+        if (["water_leak", "electricity", "traffic"].includes(category)) {
+          priority = "high";
+        } else if (["pothole", "streetlight"].includes(category)) {
+          priority = "medium";
+        } else {
+          priority = "low";
+        }
+      }
     } else {
-      priority = "low";
+      // Manual categorization - determine priority based on category
+      if (["water_leak", "electricity", "traffic"].includes(category)) {
+        priority = "high";
+      } else if (["pothole", "streetlight"].includes(category)) {
+        priority = "medium";
+      } else {
+        priority = "low";
+      }
     }
 
     // Create new issue with sanitized data
     const newIssue = await issueDb.create({
       title: sanitizedTitle,
       description: sanitizedDescription,
-      category,
+      category: finalCategory,
       location: sanitizedLocation,
       coordinates: {
         lat: coordinates.lat,
@@ -319,6 +398,7 @@ export async function POST(request: NextRequest) {
       status: "open",
       priority,
       userId: user.userId,
+      aiMetadata,
     });
 
     return NextResponse.json(

@@ -48,6 +48,7 @@ export default function ReportIssuePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isAICategorizing, setIsAICategorizing] = useState(false);
+  const [useAI, setUseAI] = useState(false); // Toggle for AI categorization
   const [aiSuggestion, setAiSuggestion] = useState<{
     category: IssueCategory;
     priority: string;
@@ -327,6 +328,20 @@ export default function ReportIssuePage() {
         },
         beforePhotoUrls: photoUrls,
         ward: formData.ward || undefined,
+        useAI: useAI, // Pass AI toggle to backend
+        aiSuggestion: aiSuggestion
+          ? {
+              category: mapCategoryToAPI(aiSuggestion.category),
+              priority: aiSuggestion.priority as
+                | "low"
+                | "medium"
+                | "high"
+                | "critical",
+              confidence: aiSuggestion.confidence,
+              reasoning: aiSuggestion.reasoning,
+              manualOverride: formData.category !== aiSuggestion.category,
+            }
+          : undefined,
       };
 
       const response = await fetch("/api/issues", {
@@ -409,6 +424,42 @@ export default function ReportIssuePage() {
                 />
               </div>
 
+              {/* AI Mode Toggle */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950 rounded-lg border-2 border-purple-200 dark:border-purple-800">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    <div>
+                      <Label className="text-base font-semibold">
+                        AI-Powered Categorization
+                      </Label>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                        Let AI automatically analyze and categorize your issue
+                      </p>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={useAI}
+                      onChange={(e) => {
+                        setUseAI(e.target.checked);
+                        if (
+                          e.target.checked &&
+                          formData.title &&
+                          formData.description
+                        ) {
+                          // Auto-trigger AI when toggled on if fields are filled
+                          handleAICategorization();
+                        }
+                      }}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
+                  </label>
+                </div>
+              </div>
+
               {/* AI Toggle and Categorization */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -421,32 +472,34 @@ export default function ReportIssuePage() {
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleAICategorization}
-                      disabled={
-                        isAICategorizing ||
-                        !formData.title ||
-                        !formData.description
-                      }
-                      className="text-xs"
-                    >
-                      {isAICategorizing ? (
-                        <>
-                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                          Analyzing...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="mr-1 h-3 w-3" />
-                          AI Suggest
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                  {!useAI && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAICategorization}
+                        disabled={
+                          isAICategorizing ||
+                          !formData.title ||
+                          !formData.description
+                        }
+                        className="text-xs"
+                      >
+                        {isAICategorizing ? (
+                          <>
+                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                            Analyzing...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="mr-1 h-3 w-3" />
+                            Get AI Suggestion
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {/* AI Suggestion Card */}

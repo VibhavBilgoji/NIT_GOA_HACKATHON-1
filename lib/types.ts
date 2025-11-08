@@ -35,6 +35,16 @@ export interface Issue {
   updatedAt: string;
   resolvedAt?: string;
   assignedTo?: string; // Authority user ID
+  aiMetadata?: {
+    // AI-powered categorization metadata
+    usedAI: boolean; // Whether AI was used for categorization
+    aiCategory?: IssueCategory; // AI-suggested category
+    aiPriority?: IssuePriority; // AI-suggested priority
+    confidence?: number; // AI confidence score (0-1)
+    reasoning?: string; // AI reasoning for categorization
+    tags?: string[]; // AI-generated tags
+    manualOverride?: boolean; // Whether user overrode AI suggestion
+  };
 }
 
 export type IssueCategory =
@@ -132,6 +142,15 @@ export interface CreateIssueRequest {
   photoUrl?: string;
   beforePhotoUrls?: string[];
   ward?: string;
+  useAI?: boolean; // Whether to use AI for categorization/priority
+  aiSuggestion?: {
+    // AI suggestion that user may have applied
+    category: IssueCategory;
+    priority: IssuePriority;
+    confidence: number;
+    reasoning: string;
+    manualOverride?: boolean;
+  };
 }
 
 export interface UpdateIssueRequest {
