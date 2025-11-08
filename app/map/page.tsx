@@ -61,6 +61,9 @@ const statusIcons = {
   resolved: CheckCircle,
 };
 
+// Default location (Goa, India)
+const DEFAULT_LOCATION = { lat: 15.2993, lng: 74.124 };
+
 export default function MapPage() {
   const [issues, setIssues] = useState<MapIssue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,13 +72,11 @@ export default function MapPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
     null,
   );
-  // Default location (Goa, India)
-  const defaultLocation = { lat: 15.2993, lng: 74.124 };
 
   const [userLocation, setUserLocation] = useState<{
     lat: number;
     lng: number;
-  } | null>(defaultLocation);
+  } | null>(DEFAULT_LOCATION);
 
   // Get user location on mount
   useEffect(() => {
@@ -90,7 +91,7 @@ export default function MapPage() {
         },
         (error) => {
           // Use default location on error
-          setUserLocation(defaultLocation);
+          setUserLocation(DEFAULT_LOCATION);
           let errorMessage = "Using default location (Goa, India). ";
           switch (error.code) {
             case error.PERMISSION_DENIED:
@@ -106,7 +107,7 @@ export default function MapPage() {
             default:
               errorMessage += "Unable to determine your location.";
           }
-          toast.warning(errorMessage, { duration: 5000 });
+          toast.error(errorMessage, { duration: 5000 });
         },
         {
           enableHighAccuracy: true,
@@ -115,8 +116,8 @@ export default function MapPage() {
         },
       );
     } else {
-      setUserLocation(defaultLocation);
-      toast.warning(
+      setUserLocation(DEFAULT_LOCATION);
+      toast.error(
         "Geolocation not supported. Using default location (Goa, India).",
       );
     }
@@ -198,7 +199,7 @@ export default function MapPage() {
         (error) => {
           toast.dismiss("location-loading");
           // Use default location on error
-          setLocation(defaultLocation);
+          setLocation(DEFAULT_LOCATION);
           let errorMessage = "Using default location. ";
           switch (error.code) {
             case error.PERMISSION_DENIED:
@@ -214,7 +215,7 @@ export default function MapPage() {
             default:
               errorMessage += "Unable to determine your location.";
           }
-          toast.warning(errorMessage, { duration: 5000 });
+          toast.error(errorMessage, { duration: 5000 });
         },
         {
           enableHighAccuracy: true,
@@ -223,8 +224,8 @@ export default function MapPage() {
         },
       );
     } else {
-      setLocation(defaultLocation);
-      toast.warning("Geolocation not supported. Using default location.");
+      setLocation(DEFAULT_LOCATION);
+      toast.error("Geolocation not supported. Using default location.");
     }
   };
 
