@@ -2,6 +2,7 @@
 // This can be replaced with a real database (e.g., Vercel Postgres, MongoDB Atlas, Supabase)
 
 import { User, Issue, Comment, Vote } from "./types";
+import { hashPassword } from "./auth";
 
 // In-memory storage
 const db = {
@@ -61,7 +62,9 @@ export const userDb = {
 
 // Issue operations
 export const issueDb = {
-  create(issue: Omit<Issue, "id" | "createdAt" | "updatedAt" | "votes" | "comments">): Issue {
+  create(
+    issue: Omit<Issue, "id" | "createdAt" | "updatedAt" | "votes" | "comments">,
+  ): Issue {
     const newIssue: Issue = {
       ...issue,
       id: generateId(),
@@ -106,19 +109,19 @@ export const issueDb = {
 
   findByUserId(userId: string): Issue[] {
     return Array.from(db.issues.values()).filter(
-      (issue) => issue.userId === userId
+      (issue) => issue.userId === userId,
     );
   },
 
   findByStatus(status: string): Issue[] {
     return Array.from(db.issues.values()).filter(
-      (issue) => issue.status === status
+      (issue) => issue.status === status,
     );
   },
 
   findByCategory(category: string): Issue[] {
     return Array.from(db.issues.values()).filter(
-      (issue) => issue.category === category
+      (issue) => issue.category === category,
     );
   },
 
@@ -171,7 +174,7 @@ export const commentDb = {
 
   findByIssueId(issueId: string): Comment[] {
     return Array.from(db.comments.values()).filter(
-      (comment) => comment.issueId === issueId
+      (comment) => comment.issueId === issueId,
     );
   },
 
@@ -204,7 +207,7 @@ export const voteDb = {
 
   findByUserAndIssue(userId: string, issueId: string): Vote | undefined {
     return Array.from(db.votes.values()).find(
-      (vote) => vote.userId === userId && vote.issueId === issueId
+      (vote) => vote.userId === userId && vote.issueId === issueId,
     );
   },
 
@@ -214,32 +217,32 @@ export const voteDb = {
 
   findByIssueId(issueId: string): Vote[] {
     return Array.from(db.votes.values()).filter(
-      (vote) => vote.issueId === issueId
+      (vote) => vote.issueId === issueId,
     );
   },
 };
 
 // Seed data for demo purposes
-export function seedDatabase() {
-  // Create sample users
+export async function seedDatabase() {
+  // Create sample users with properly hashed passwords
   const user1 = userDb.create({
     name: "John Doe",
     email: "john@example.com",
-    password: "$2a$10$dummyHashForDemo", // In production, use proper bcrypt
+    password: await hashPassword("Demo1234"), // Password: Demo1234
     role: "citizen",
   });
 
   const user2 = userDb.create({
     name: "Jane Smith",
     email: "jane@example.com",
-    password: "$2a$10$dummyHashForDemo",
+    password: await hashPassword("Demo1234"), // Password: Demo1234
     role: "citizen",
   });
 
   const admin = userDb.create({
     name: "Admin User",
     email: "admin@citypulse.com",
-    password: "$2a$10$dummyHashForDemo",
+    password: await hashPassword("Admin1234"), // Password: Admin1234
     role: "admin",
   });
 
@@ -257,7 +260,8 @@ export function seedDatabase() {
 
   const issue2 = issueDb.create({
     title: "Broken Streetlight",
-    description: "Streetlight not working since last week, making the area unsafe at night",
+    description:
+      "Streetlight not working since last week, making the area unsafe at night",
     category: "streetlight",
     location: "Church Square, Panjim, Goa",
     coordinates: { lat: 15.4989, lng: 73.8345 },

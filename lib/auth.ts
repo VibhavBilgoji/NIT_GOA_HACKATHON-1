@@ -1,39 +1,51 @@
-// Authentication utilities for CityPulse
+// Authentication utilities for CityPulse with proper security
 import { NextRequest } from "next/server";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { User } from "./types";
 
-// Simple JWT-like token generation (for demo - use proper JWT library in production)
-export function generateToken(userId: string, email: string): string {
+// JWT secret (in production, use environment variable)
+const JWT_SECRET =
+  process.env.JWT_SECRET || "citypulse-secret-key-change-in-production";
+const JWT_EXPIRES_IN = "7d";
+
+// Generate JWT token
+export function generateToken(
+  userId: string,
+  email: string,
+  role: string,
+): string {
   const payload = {
     userId,
     email,
-    iat: Date.now(),
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+    role,
+    iat: Math.floor(Date.now() / 1000),
   };
 
-  // In production, use jsonwebtoken library
-  return Buffer.from(JSON.stringify(payload)).toString("base64");
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
-export function verifyToken(token: string): { userId: string; email: string } | null {
+// Verify JWT token
+export function verifyToken(
+  token: string,
+): { userId: string; email: string; role: string } | null {
   try {
-    const payload = JSON.parse(Buffer.from(token, "base64").toString());
-
-    // Check if token is expired
-    if (payload.exp < Date.now()) {
-      return null;
-    }
-
-    return {
-      userId: payload.userId,
-      email: payload.email,
+    const decoded = jwt.verify(token, JWT_SECRET) as {
+      userId: string;
+      email: string;
+      role: string;
     };
+    return decoded;
   } catch (error) {
+    console.error("Token verification failed:", error);
     return null;
   }
 }
 
-export function getUserFromRequest(request: NextRequest): { userId: string; email: string } | null {
+// Get user from request
+export function getUserFromRequest(
+  request: NextRequest,
+): { userId: string; email: string; role: string } | null {
   const authHeader = request.headers.get("authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -44,34 +56,27 @@ export function getUserFromRequest(request: NextRequest): { userId: string; emai
   return verifyToken(token);
 }
 
-// Simple password hashing (for demo - use bcrypt in production)
+// Hash password with bcrypt
 export async function hashPassword(password: string): Promise<string> {
-  // In production, use bcrypt:
-  // const bcrypt = require('bcrypt');
-  // return await bcrypt.hash(password, 10);
-
-  // Simple hash for demo (NOT SECURE - replace with bcrypt)
-  return `hashed_${password}_${Date.now()}`;
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
 }
 
+// Compare password with hash
 export async function comparePasswords(
   password: string,
-  hashedPassword: string
+  hashedPassword: string,
 ): Promise<boolean> {
-  // In production, use bcrypt:
-  // const bcrypt = require('bcrypt');
-  // return await bcrypt.compare(password, hashedPassword);
-
-  // For demo purposes, we'll do a simple check
-  // In a real app, ALWAYS use bcrypt or similar
-  return hashedPassword.includes(password);
+  return bcrypt.compare(password, hashedPassword);
 }
 
+// Validate email format
 export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
+// Validate password strength
 export function validatePassword(password: string): {
   valid: boolean;
   errors: string[];
@@ -100,6 +105,7 @@ export function validatePassword(password: string): {
   };
 }
 
+// Sanitize user (remove password)
 export function sanitizeUser(user: User): Omit<User, "password"> {
   const { password, ...sanitizedUser } = user;
   return sanitizedUser;
@@ -108,7 +114,7 @@ export function sanitizeUser(user: User): Omit<User, "password"> {
 // Middleware helper for protected routes
 export async function requireAuth(request: NextRequest): Promise<{
   authorized: boolean;
-  user: { userId: string; email: string } | null;
+  user: { userId: string; email: string; role: string } | null;
   error?: string;
 }> {
   const user = getUserFromRequest(request);
@@ -125,4 +131,18 @@ export async function requireAuth(request: NextRequest): Promise<{
     authorized: true,
     user,
   };
+}
+
+// Check if user is admin
+export function isAdmin(role: string): boolean {
+  return role === "admin" || role === "authority";
+}
+
+// Generate secure random token for password reset, etc.
+export function generateSecureToken(): string {
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15) +
+    Date.now().toString(36)
+  );
 }

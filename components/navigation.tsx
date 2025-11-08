@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MapPin, Map, Users, LayoutDashboard } from "lucide-react";
+import {
+  MapPin,
+  Map,
+  Users,
+  LayoutDashboard,
+  LogOut,
+  User,
+} from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -11,9 +18,12 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
 
 export function Navigation() {
   const pathname = usePathname();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const centerNavItems = [
     { href: "/map", label: "Map", icon: Map },
@@ -69,30 +79,48 @@ export function Navigation() {
 
         {/* Right Side - Auth & Theme Toggle */}
         <div className="flex items-center gap-2">
-          <NavigationMenu>
-            <NavigationMenuList>
-              {authItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <NavigationMenuItem key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        buttonVariants({ variant: "ghost", size: "sm" }),
-                        "font-medium",
-                        isActive &&
-                          "bg-gray-100 dark:bg-gray-900 text-black dark:text-white",
-                        item.label === "Sign Up" &&
-                          "bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200",
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  </NavigationMenuItem>
-                );
-              })}
-            </NavigationMenuList>
-          </NavigationMenu>
+          {isAuthenticated && user ? (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-100 dark:bg-gray-900">
+                <User className="size-4" />
+                <span className="text-sm font-medium">{user.name}</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={logout}
+                className="font-medium"
+              >
+                <LogOut className="mr-1.5 size-4" />
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <NavigationMenu>
+              <NavigationMenuList>
+                {authItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <NavigationMenuItem key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          buttonVariants({ variant: "ghost", size: "sm" }),
+                          "font-medium",
+                          isActive &&
+                            "bg-gray-100 dark:bg-gray-900 text-black dark:text-white",
+                          item.label === "Sign Up" &&
+                            "bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200",
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    </NavigationMenuItem>
+                  );
+                })}
+              </NavigationMenuList>
+            </NavigationMenu>
+          )}
           <ThemeToggle />
         </div>
       </div>

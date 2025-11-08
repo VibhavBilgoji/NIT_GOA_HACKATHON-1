@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { userDb } from "@/lib/db";
-import { hashPassword, validateEmail, generateToken } from "@/lib/auth";
+import {
+  hashPassword,
+  validateEmail,
+  generateToken,
+  sanitizeUser,
+} from "@/lib/auth";
 import { SignupRequest, AuthResponse } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -87,19 +92,14 @@ export async function POST(request: NextRequest) {
     });
 
     // Generate token
-    const token = generateToken(newUser.id, newUser.email);
+    const token = generateToken(newUser.id, newUser.email, newUser.role);
 
     // Return success response
     return NextResponse.json(
       {
         success: true,
         message: "Account created successfully",
-        user: {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-          role: newUser.role,
-        },
+        user: sanitizeUser(newUser),
         token,
       } as AuthResponse,
       { status: 201 },
