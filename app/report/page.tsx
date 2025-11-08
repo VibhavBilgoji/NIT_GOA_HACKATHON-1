@@ -21,10 +21,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { WARDS } from "@/lib/types";
+import { WARDS, IssueCategory } from "@/lib/types";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
 
 interface FilePreview {
@@ -119,14 +126,14 @@ export default function ReportIssuePage() {
 
     setIsUploading(true);
     try {
-      const formData = new FormData();
+      const uploadFormData = new FormData();
       selectedFiles.forEach(({ file }) => {
-        formData.append("files", file);
+        uploadFormData.append("files", file);
       });
 
       const response = await fetch("/api/upload", {
         method: "POST",
-        body: formData,
+        body: uploadFormData,
       });
 
       if (!response.ok) {
@@ -146,6 +153,23 @@ export default function ReportIssuePage() {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  // Map UI categories to API categories
+  const mapCategoryToAPI = (uiCategory: string): IssueCategory => {
+    const categoryMap: Record<string, IssueCategory> = {
+      pothole: "pothole",
+      streetlight: "streetlight",
+      garbage: "garbage",
+      water_leak: "water_leak",
+      road: "road",
+      sanitation: "sanitation",
+      drainage: "drainage",
+      electricity: "electricity",
+      traffic: "traffic",
+      other: "other",
+    };
+    return categoryMap[uiCategory] || "other";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,10 +210,13 @@ export default function ReportIssuePage() {
         return;
       }
 
+      // Map category to API format
+      const mappedCategory = mapCategoryToAPI(formData.category);
+
       // Submit issue
       const issueData = {
         title: formData.title,
-        category: formData.category,
+        category: mappedCategory,
         description: formData.description,
         location: `${location.lat}, ${location.lng}`,
         coordinates: {
@@ -257,16 +284,14 @@ export default function ReportIssuePage() {
         </div>
 
         {/* Form Card */}
-        <NeonGradientCard>
-          <div className="flex flex-col gap-6">
-            <div>
-              <h2 className="text-2xl font-semibold text-white mb-2">
-                Issue Details
-              </h2>
-              <p className="text-sm text-gray-400">
-                Fill in the details below. Fields marked with * are required.
-              </p>
-            </div>
+        <Card className="border-gray-200 dark:border-gray-800">
+          <CardHeader>
+            <CardTitle>Issue Details</CardTitle>
+            <CardDescription>
+              Fill in the details below. Fields marked with * are required.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Issue Title */}
               <div className="space-y-2">
@@ -498,41 +523,41 @@ export default function ReportIssuePage() {
                 authorities.
               </p>
             </form>
-          </div>
-        </NeonGradientCard>
+          </CardContent>
+        </Card>
 
         {/* Info Cards */}
         <div className="grid md:grid-cols-3 gap-4 mt-8">
-          <NeonGradientCard>
-            <div className="flex flex-col gap-2">
-              <h4 className="text-sm font-semibold text-white">
-                Quick Response
-              </h4>
-              <p className="text-xs text-gray-400">
+          <Card className="border-gray-200 dark:border-gray-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">Quick Response</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 Your report will be reviewed by authorities within 24-48 hours.
               </p>
-            </div>
-          </NeonGradientCard>
-          <NeonGradientCard>
-            <div className="flex flex-col gap-2">
-              <h4 className="text-sm font-semibold text-white">
-                Track Progress
-              </h4>
-              <p className="text-xs text-gray-400">
+            </CardContent>
+          </Card>
+          <Card className="border-gray-200 dark:border-gray-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">Track Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 Monitor your issue status in real-time on the map and dashboard.
               </p>
-            </div>
-          </NeonGradientCard>
-          <NeonGradientCard>
-            <div className="flex flex-col gap-2">
-              <h4 className="text-sm font-semibold text-white">
-                Community Impact
-              </h4>
-              <p className="text-xs text-gray-400">
+            </CardContent>
+          </Card>
+          <Card className="border-gray-200 dark:border-gray-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">Community Impact</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 Help improve your neighborhood and make a difference together.
               </p>
-            </div>
-          </NeonGradientCard>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

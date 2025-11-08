@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
-  IconAlertTriangle,
-  IconBell,
   IconChartBar,
   IconDashboard,
   IconHelp,
@@ -13,7 +12,6 @@ import {
   IconSettings,
   IconUsers,
   IconHistory,
-  IconFileText,
   IconTrendingUp,
   IconHome,
 } from "@tabler/icons-react";
@@ -58,6 +56,16 @@ const navData = {
       title: "My Reports",
       url: "/dashboard",
       icon: IconHistory,
+    },
+    {
+      title: "Analytics",
+      url: "/admin/analytics",
+      icon: IconTrendingUp,
+    },
+    {
+      title: "Transparency",
+      url: "/transparency",
+      icon: IconChartBar,
     },
   ],
   secondary: [
@@ -104,7 +112,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               size="lg"
               className="data-[slot=sidebar-menu-button]:!p-2"
             >
-              <a href="/" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <IconMapPin className="!size-5" />
                 </div>
@@ -114,7 +122,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     Civic Reporting
                   </span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

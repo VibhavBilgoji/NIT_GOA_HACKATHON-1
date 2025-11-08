@@ -141,16 +141,16 @@ export async function GET(request: NextRequest) {
 // POST /api/issues - Create a new issue
 export async function POST(request: NextRequest) {
   try {
-    // Get user from auth token
-    const user = getUserFromRequest(request);
+    // Get user from auth token (allow guest users for demo)
+    let user = getUserFromRequest(request);
+
+    // If no user, create a guest user object
     if (!user) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Unauthorized - Please login to report issues",
-        } as ApiResponse,
-        { status: 401 },
-      );
+      user = {
+        userId: "guest-" + Date.now(),
+        email: "guest@citypulse.com",
+        role: "citizen",
+      };
     }
 
     const body: CreateIssueRequest = await request.json();

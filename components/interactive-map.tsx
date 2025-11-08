@@ -7,12 +7,12 @@ interface MapProps {
   center?: [number, number];
   zoom?: number;
   markers?: Array<{
-    id: number;
+    id: string | number;
     position: [number, number];
     title: string;
-    status: "open" | "in-progress" | "resolved";
+    status: "open" | "in-progress" | "resolved" | "closed";
   }>;
-  onMarkerClick?: (id: number) => void;
+  onMarkerClick?: (id: string | number) => void;
 }
 
 export function InteractiveMap({
@@ -138,8 +138,13 @@ export function InteractiveMap({
             el.style.backgroundColor = "#ef4444"; // red
           } else if (marker.status === "in-progress") {
             el.style.backgroundColor = "#f59e0b"; // amber
-          } else {
+          } else if (
+            marker.status === "resolved" ||
+            marker.status === "closed"
+          ) {
             el.style.backgroundColor = "#10b981"; // green
+          } else {
+            el.style.backgroundColor = "#6b7280"; // gray for unknown
           }
 
           // Add click event

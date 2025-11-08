@@ -183,3 +183,127 @@ export interface UploadResponse {
   urls?: string[];
   error?: string;
 }
+
+// Analytics and reporting types
+export interface WardAnalytics {
+  ward: string;
+  totalIssues: number;
+  openIssues: number;
+  inProgressIssues: number;
+  resolvedIssues: number;
+  averageResolutionTime: number; // in days
+  categoryBreakdown: {
+    category: IssueCategory;
+    count: number;
+  }[];
+  resolutionRate: number; // percentage
+  priorityBreakdown: {
+    priority: IssuePriority;
+    count: number;
+  }[];
+}
+
+export interface IssueHotspot {
+  location: string;
+  ward?: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  issueCount: number;
+  categories: IssueCategory[];
+  severity: "low" | "medium" | "high" | "critical";
+}
+
+export interface TrendData {
+  date: string;
+  openIssues: number;
+  resolvedIssues: number;
+  newIssues: number;
+}
+
+export interface ImpactReport {
+  dateRange: {
+    start: string;
+    end: string;
+  };
+  summary: {
+    totalIssues: number;
+    resolvedIssues: number;
+    averageResolutionTime: number;
+    resolutionRate: number;
+  };
+  wardAnalytics: WardAnalytics[];
+  hotspots: IssueHotspot[];
+  trends: TrendData[];
+  categoryPerformance: {
+    category: IssueCategory;
+    totalIssues: number;
+    resolvedIssues: number;
+    averageResolutionTime: number;
+  }[];
+}
+
+export interface PublicStats {
+  totalIssuesReported: number;
+  issuesResolved: number;
+  resolutionRate: number;
+  averageResolutionTime: number;
+  activeUsers: number;
+  wardPerformance: {
+    ward: string;
+    issuesReported: number;
+    issuesResolved: number;
+    resolutionRate: number;
+  }[];
+  recentResolutions: {
+    id: string;
+    title: string;
+    category: IssueCategory;
+    ward?: string;
+    resolvedAt: string;
+    resolutionTime: number; // in days
+  }[];
+  categoryStats: {
+    category: IssueCategory;
+    count: number;
+    resolvedCount: number;
+  }[];
+}
+
+// Notification types
+export interface NotificationConfig {
+  userId: string;
+  email?: string;
+  phone?: string;
+  preferences: {
+    emailNotifications: boolean;
+    smsNotifications: boolean;
+    statusUpdates: boolean;
+    resolutionNotifications: boolean;
+    commentNotifications: boolean;
+  };
+}
+
+export interface NotificationPayload {
+  type: "status_change" | "resolution" | "comment" | "assignment";
+  issueId: string;
+  issueTitle: string;
+  recipient: {
+    userId: string;
+    email?: string;
+    phone?: string;
+  };
+  data: {
+    oldStatus?: IssueStatus;
+    newStatus?: IssueStatus;
+    message?: string;
+    url?: string;
+  };
+}
+
+export interface NotificationResponse {
+  success: boolean;
+  messageId?: string;
+  error?: string;
+}

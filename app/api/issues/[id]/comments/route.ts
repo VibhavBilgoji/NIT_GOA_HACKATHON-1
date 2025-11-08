@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { commentDb, issueDb, userDb } from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
 import { ApiResponse, CreateCommentRequest, Comment } from "@/lib/types";
+import { notifyOnComment } from "@/lib/notification-triggers";
 
 // GET /api/issues/[id]/comments - Get all comments for an issue
 export async function GET(
@@ -131,6 +132,13 @@ export async function POST(
       userName: userData.name,
       content: content.trim(),
     });
+
+    // Send notification to issue reporter (async, don't block response)
+    if (issue.userId !== user.userId) {
+      notifyOnComment(issue, content.trim(), userData.name).catch((err) =>
+        console.error("Comment notification error:", err),
+      );
+    }
 
     return NextResponse.json(
       {

@@ -278,7 +278,7 @@ export async function seedDatabase() {
     userId: user2.id,
   });
 
-  const _issue3 = await issueDb.create({
+  void (await issueDb.create({
     title: "Overflowing Garbage Bin",
     description: "Garbage bin overflowing for 3 days, creating health hazards",
     category: "garbage",
@@ -288,7 +288,7 @@ export async function seedDatabase() {
     priority: "high",
     userId: user1.id,
     resolvedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  });
+  }));
 
   const issue4 = await issueDb.create({
     title: "Water Leak",
@@ -301,7 +301,7 @@ export async function seedDatabase() {
     userId: user2.id,
   });
 
-  const _issue5 = await issueDb.create({
+  void (await issueDb.create({
     title: "Damaged Road",
     description: "Road surface damaged after recent rains",
     category: "road",
@@ -310,7 +310,7 @@ export async function seedDatabase() {
     status: "open",
     priority: "medium",
     userId: user1.id,
-  });
+  }));
 
   // Add some votes
   await issueDb.incrementVotes(issue1.id);

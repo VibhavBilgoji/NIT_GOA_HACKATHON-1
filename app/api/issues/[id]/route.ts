@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { issueDb, userDb } from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
 import { ApiResponse, UpdateIssueRequest, Issue } from "@/lib/types";
+import {
+  notifyOnStatusChange,
+  notifyOnResolution,
+  notifyOnAssignment,
+  shouldNotifyOnStatusChange,
+  getStatusChangeMessage,
+} from "@/lib/notification-triggers";
 
 // GET /api/issues/[id] - Get a single issue by ID
 export async function GET(
@@ -140,8 +147,43 @@ export async function PUT(
     if (status) updates.status = status;
     if (priority) updates.priority = priority;
     if (assignedTo) updates.assignedTo = assignedTo;
+    if (body.afterPhotoUrls) updates.afterPhotoUrls = body.afterPhotoUrls;
+
+    // Handle resolution timestamp
+    if (status === "resolved" && issue.status !== "resolved") {
+      updates.resolvedAt = new Date().toISOString();
+    }
 
     const updatedIssue = await issueDb.update(id, updates);
+
+    // Send notifications asynchronously (don't await to avoid blocking response)
+    if (updatedIssue && status && status !== issue.status) {
+      if (shouldNotifyOnStatusChange(issue.status, status)) {
+        const message = getStatusChangeMessage(issue.status, status);
+        notifyOnStatusChange(updatedIssue, issue.status, status, message).catch(
+          (err) => console.error("Notification error:", err),
+        );
+
+        // Special notification for resolution
+        if (status === "resolved") {
+          notifyOnResolution(
+            updatedIssue,
+            "Your issue has been resolved. Check out the before/after photos!",
+          ).catch((err) =>
+            console.error("Resolution notification error:", err),
+          );
+        }
+      }
+    }
+
+    // Send assignment notification
+    if (updatedIssue && assignedTo && assignedTo !== issue.assignedTo) {
+      notifyOnAssignment(
+        updatedIssue,
+        assignedTo,
+        `Issue "${updatedIssue.title}" has been assigned to you. Priority: ${updatedIssue.priority}`,
+      ).catch((err) => console.error("Assignment notification error:", err));
+    }
 
     return NextResponse.json(
       {
