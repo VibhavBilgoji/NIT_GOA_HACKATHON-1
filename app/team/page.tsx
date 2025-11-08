@@ -77,37 +77,41 @@ export default function TeamPage() {
               >
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="size-24 mb-4 border-2 border-gray-200 dark:border-gray-800">
-                    <AvatarFallback className="bg-white dark:bg-white text-black dark:text-black text-2xl font-bold">
+                    <AvatarFallback className="bg-gray-200 dark:bg-gray-800 text-black dark:text-white text-2xl font-bold">
                       {member.initials}
                     </AvatarFallback>
                   </Avatar>
-                  <h3 className="text-xl font-bold text-white mb-1">
+                  <h3 className="text-xl font-bold text-black dark:text-white mb-1">
                     {member.name}
                   </h3>
-                  <p className="text-sm text-gray-400 mb-3">{member.role}</p>
-                  <p className="text-sm text-gray-500 mb-4">{member.bio}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {member.role}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-500 mb-4">
+                    {member.bio}
+                  </p>
                   <div className="flex gap-2">
                     <a
                       href={member.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-lg border border-gray-800 hover:bg-gray-900 transition-colors"
+                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
                     >
-                      <Github className="size-4 text-white" />
+                      <Github className="size-4 text-black dark:text-white" />
                     </a>
                     <a
                       href={member.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-lg border border-gray-800 hover:bg-gray-900 transition-colors"
+                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
                     >
-                      <Linkedin className="size-4 text-white" />
+                      <Linkedin className="size-4 text-black dark:text-white" />
                     </a>
                     <a
                       href={`mailto:${member.email}`}
-                      className="p-2 rounded-lg border border-gray-800 hover:bg-gray-900 transition-colors"
+                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
                     >
-                      <Mail className="size-4 text-white" />
+                      <Mail className="size-4 text-black dark:text-white" />
                     </a>
                   </div>
                 </div>
@@ -118,10 +122,10 @@ export default function TeamPage() {
           {/* Project Info */}
           <NeonGradientCard className="overflow-hidden">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl font-bold text-white mb-4">
+              <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
                 About OurStreet
               </h2>
-              <p className="text-lg text-gray-400 mb-6">
+              <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
                 OurStreet is our submission for the NIT Goa Hackathon, focusing
                 on CivicTech and Social Good. Our mission is to create a
                 transparent, accountable, and participatory civic ecosystem
@@ -131,7 +135,7 @@ export default function TeamPage() {
                 <Button
                   asChild
                   size="lg"
-                  className="bg-white text-black hover:bg-gray-200"
+                  className="bg-gray-900 dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
                 >
                   <Link href="/map">View Map</Link>
                 </Button>
