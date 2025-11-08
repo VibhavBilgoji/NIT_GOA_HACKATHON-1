@@ -129,3 +129,64 @@
         padding: 0;
     }
 }
+
+@layer utilities {
+    /* Navbar border animations */
+    @keyframes border-flow {
+        0%,
+        100% {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes gradient-x {
+        0%,
+        100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    @keyframes border-pulse {
+        0%,
+        100% {
+            opacity: 0.3;
+        }
+        50% {
+            opacity: 0.8;
+        }
+    }
+
+    .animate-border-flow {
+        animation: border-flow 3s ease-in-out infinite;
+    }
+
+    .animate-gradient-x {
+        animation: gradient-x 3s ease infinite;
+        background-size: 200% 100%;
+    }
+
+    .animate-shimmer {
+        animation: shimmer 4s linear infinite;
+        background-size: 200% 100%;
+    }
+
+    .animate-border-pulse {
+        animation: border-pulse 2s ease-in-out infinite;
+    }
+}

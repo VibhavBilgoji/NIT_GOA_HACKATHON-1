@@ -5,6 +5,8 @@ import { AlertCircle, TrendingUp, Shield, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ShuffleText } from "@/components/shuffle-text";
 import "@/components/shuffle-text/shuffle.css";
+import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
+import { RetroGrid } from "@/components/magicui/retro-grid";
 
 export default function Home() {
   return (
@@ -20,21 +22,24 @@ export default function Home() {
               </span>
             </div>
 
-            <ShuffleText
-              text="Empower Your Community with CityPulse"
-              tag="h1"
-              className="max-w-4xl text-4xl font-bold tracking-tight text-black dark:text-white sm:text-5xl md:text-6xl lg:text-7xl"
-              shuffleDirection="right"
-              duration={1.5}
-              shuffleTimes={3}
-              animationMode="evenodd"
-              ease="power3.out"
-              stagger={0.08}
-              threshold={0.1}
-              triggerOnce={true}
-              triggerOnHover={true}
-              respectReducedMotion={true}
-            />
+            <div className="relative flex h-auto w-full flex-col items-center justify-center overflow-hidden">
+              <ShuffleText
+                text="Empower Your Community with CityPulse"
+                tag="h1"
+                className="pointer-events-none z-10 max-w-4xl text-4xl font-bold tracking-tight text-black dark:text-white sm:text-5xl md:text-6xl lg:text-7xl"
+                shuffleDirection="right"
+                duration={1.5}
+                shuffleTimes={3}
+                animationMode="evenodd"
+                ease="power3.out"
+                stagger={0.08}
+                threshold={0.1}
+                triggerOnce={true}
+                triggerOnHover={true}
+                respectReducedMotion={true}
+              />
+              <RetroGrid />
+            </div>
 
             <p className="max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400 sm:text-xl">
               Report civic issues with description, photo, and live location.
@@ -77,11 +82,11 @@ export default function Home() {
             </div>
 
             <div className="relative mt-12 overflow-visible px-2 sm:px-4">
-              <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-gradient-to-b from-white to-gray-50 dark:from-black dark:to-gray-950 p-4 shadow-2xl shadow-gray-900/20 dark:shadow-gray-950/40 ring-1 ring-gray-200/50 dark:ring-gray-800/50">
-                <div className="relative min-h-[500px] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+              <NeonGradientCard className="relative mx-auto max-w-6xl shadow-2xl">
+                <div className="relative min-h-[500px] overflow-hidden rounded-xl bg-black">
                   {/* Empty clean screen */}
                 </div>
-              </div>
+              </NeonGradientCard>
               {/* Gradient fade effect */}
               <div className="absolute inset-x-0 -bottom-20 h-40 bg-gradient-to-t from-white dark:from-black to-transparent pointer-events-none" />
             </div>
@@ -101,57 +106,65 @@ export default function Home() {
             </div>
 
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/80 p-6 text-center transition-shadow hover:shadow-lg">
-                <div className="flex size-12 items-center justify-center rounded-lg bg-black/90 dark:bg-white/90 text-white dark:text-black">
-                  <AlertCircle className="size-6" />
+              <NeonGradientCard className="transition-shadow hover:shadow-lg">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-white/90 text-black">
+                    <AlertCircle className="size-6" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">
+                    Easy Reporting
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    Report civic issues with description, photo, and live GPS
+                    location in seconds
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold text-black dark:text-white">
-                  Easy Reporting
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Report civic issues with description, photo, and live GPS
-                  location in seconds
-                </p>
-              </div>
+              </NeonGradientCard>
 
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/80 p-6 text-center transition-shadow hover:shadow-lg">
-                <div className="flex size-12 items-center justify-center rounded-lg bg-black/90 dark:bg-white/90 text-white dark:text-black">
-                  <MapPin className="size-6" />
+              <NeonGradientCard className="transition-shadow hover:shadow-lg">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-white/90 text-black">
+                    <MapPin className="size-6" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">
+                    Interactive Map
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    View all reported issues on an interactive city map with
+                    color-coded status markers
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold text-black dark:text-white">
-                  Interactive Map
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  View all reported issues on an interactive city map with
-                  color-coded status markers
-                </p>
-              </div>
+              </NeonGradientCard>
 
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/80 p-6 text-center transition-shadow hover:shadow-lg">
-                <div className="flex size-12 items-center justify-center rounded-lg bg-black/90 dark:bg-white/90 text-white dark:text-black">
-                  <TrendingUp className="size-6" />
+              <NeonGradientCard className="transition-shadow hover:shadow-lg">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-white/90 text-black">
+                    <TrendingUp className="size-6" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">
+                    Real-Time Tracking
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    Track issue progress from Open to In Progress to Resolved
+                    with automated updates
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold text-black dark:text-white">
-                  Real-Time Tracking
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Track issue progress from Open to In Progress to Resolved with
-                  automated updates
-                </p>
-              </div>
+              </NeonGradientCard>
 
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/80 p-6 text-center transition-shadow hover:shadow-lg">
-                <div className="flex size-12 items-center justify-center rounded-lg bg-black/90 dark:bg-white/90 text-white dark:text-black">
-                  <Shield className="size-6" />
+              <NeonGradientCard className="transition-shadow hover:shadow-lg">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-white/90 text-black">
+                    <Shield className="size-6" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">
+                    Transparency
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    Access impact reports and analytics for complete
+                    accountability and transparency
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold text-black dark:text-white">
-                  Transparency
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Access impact reports and analytics for complete
-                  accountability and transparency
-                </p>
-              </div>
+              </NeonGradientCard>
             </div>
           </div>
         </section>

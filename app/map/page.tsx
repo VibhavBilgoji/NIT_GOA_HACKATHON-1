@@ -29,9 +29,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InteractiveMap } from "@/components/interactive-map";
+import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
 
 // Mock issues data
 const mockIssues = [
@@ -269,76 +269,71 @@ export default function MapPage() {
 
           {/* Stats */}
           <div className="grid gap-4 md:grid-cols-4 mb-8">
-            <Card className="border-gray-200 dark:border-gray-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            <NeonGradientCard>
+              <div className="flex flex-col gap-2">
+                <div className="text-sm font-medium text-gray-400">
                   Total Issues
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
+                </div>
+                <div className="text-3xl font-bold text-white">
                   {mockIssues.length}
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="border-gray-200 dark:border-gray-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              </div>
+            </NeonGradientCard>
+            <NeonGradientCard>
+              <div className="flex flex-col gap-2">
+                <div className="text-sm font-medium text-gray-400">
                   Open Issues
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
+                </div>
+                <div className="text-3xl font-bold text-white">
                   {mockIssues.filter((i) => i.status === "open").length}
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="border-gray-200 dark:border-gray-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              </div>
+            </NeonGradientCard>
+            <NeonGradientCard>
+              <div className="flex flex-col gap-2">
+                <div className="text-sm font-medium text-gray-400">
                   In Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
+                </div>
+                <div className="text-3xl font-bold text-white">
                   {mockIssues.filter((i) => i.status === "in-progress").length}
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="border-gray-200 dark:border-gray-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              </div>
+            </NeonGradientCard>
+            <NeonGradientCard>
+              <div className="flex flex-col gap-2">
+                <div className="text-sm font-medium text-gray-400">
                   Resolved
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
+                </div>
+                <div className="text-3xl font-bold text-white">
                   {mockIssues.filter((i) => i.status === "resolved").length}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </NeonGradientCard>
           </div>
 
           {/* Map and Issues */}
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Interactive Map */}
-            <Card className="border-gray-200 dark:border-gray-800">
-              <CardHeader>
-                <CardTitle className="text-black dark:text-white">
-                  Interactive City Map
-                </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Click on markers to view issue details. Color-coded by status:
-                </p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <Badge className="bg-red-500 text-white">● Open</Badge>
-                  <Badge className="bg-amber-500 text-white">
-                    ● In Progress
-                  </Badge>
-                  <Badge className="bg-green-500 text-white">● Resolved</Badge>
+            <NeonGradientCard>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Interactive City Map
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    Click on markers to view issue details. Color-coded by
+                    status:
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge className="bg-red-500 text-white">● Open</Badge>
+                    <Badge className="bg-amber-500 text-white">
+                      ● In Progress
+                    </Badge>
+                    <Badge className="bg-green-500 text-white">
+                      ● Resolved
+                    </Badge>
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
                 <InteractiveMap
                   center={[73.8278, 15.4909]}
                   zoom={12}
@@ -350,17 +345,15 @@ export default function MapPage() {
                   }))}
                   onMarkerClick={(id) => setSelectedIssue(id)}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </NeonGradientCard>
 
             {/* Issues List */}
-            <Card className="border-gray-200 dark:border-gray-800">
-              <CardHeader>
-                <CardTitle className="text-black dark:text-white">
+            <NeonGradientCard>
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xl font-semibold text-white">
                   Reported Issues
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </h3>
                 <div className="space-y-4 max-h-[600px] overflow-y-auto">
                   {mockIssues.map((issue) => {
                     const StatusIcon =
@@ -370,8 +363,8 @@ export default function MapPage() {
                         key={issue.id}
                         className={`p-4 rounded-lg border transition-all cursor-pointer ${
                           selectedIssue === issue.id
-                            ? "border-black dark:border-white bg-gray-50 dark:bg-gray-900"
-                            : "border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600"
+                            ? "border-white bg-gray-900"
+                            : "border-gray-800 hover:border-gray-600"
                         }`}
                         onClick={() => setSelectedIssue(issue.id)}
                       >
@@ -379,10 +372,10 @@ export default function MapPage() {
                           <div className="flex items-start gap-3">
                             <StatusIcon className="size-5 mt-0.5 text-black dark:text-white" />
                             <div>
-                              <h4 className="font-semibold text-black dark:text-white">
+                              <h4 className="font-semibold text-white">
                                 {issue.title}
                               </h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                              <p className="text-sm text-gray-400 mt-1">
                                 {issue.description}
                               </p>
                             </div>
@@ -397,7 +390,7 @@ export default function MapPage() {
                             {issue.status.replace("-", " ")}
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-500">
+                        <div className="flex items-center gap-4 mt-3 text-xs text-gray-400">
                           <span className="flex items-center gap-1">
                             <MapPin className="size-3" />
                             {issue.address}
@@ -411,64 +404,62 @@ export default function MapPage() {
                     );
                   })}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </NeonGradientCard>
           </div>
 
           {/* Legend */}
-          <Card className="mt-6 border-gray-200 dark:border-gray-800">
-            <CardHeader>
-              <CardTitle className="text-black dark:text-white">
+          <NeonGradientCard className="mt-6">
+            <div className="flex flex-col gap-6">
+              <h3 className="text-2xl font-semibold text-white">
                 How It Works
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="flex gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-white text-black font-bold">
                     1
                   </div>
                   <div>
-                    <h4 className="font-semibold text-black dark:text-white mb-1">
+                    <h4 className="font-semibold text-white mb-1">
                       Report Issue
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-400">
                       Submit civic issues with description, photo, and live GPS
                       location
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-white text-black font-bold">
                     2
                   </div>
                   <div>
-                    <h4 className="font-semibold text-black dark:text-white mb-1">
+                    <h4 className="font-semibold text-white mb-1">
                       Track Progress
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-400">
                       Monitor your reported issues as they move through stages:
                       Open → In Progress → Resolved
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-white text-black font-bold">
                     3
                   </div>
                   <div>
-                    <h4 className="font-semibold text-black dark:text-white mb-1">
+                    <h4 className="font-semibold text-white mb-1">
                       Get Updates
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-400">
                       Receive real-time notifications and updates on issue
                       resolution
                     </p>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </NeonGradientCard>
         </div>
       </main>
     </div>

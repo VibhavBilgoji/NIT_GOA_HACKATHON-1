@@ -47,7 +47,13 @@ export function Navigation() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200/20 dark:border-gray-800/20 bg-white/10 dark:bg-black/10 backdrop-blur-sm supports-backdrop-filter:bg-white/10 supports-backdrop-filter:dark:bg-black/10">
+    <header className="sticky top-0 z-50 w-full bg-white/10 dark:bg-black/10 backdrop-blur-sm supports-backdrop-filter:bg-white/10 supports-backdrop-filter:dark:bg-black/10 relative overflow-hidden">
+      {/* Animated gradient borders - Multiple layers for depth */}
+      <div className="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-transparent via-blue-500 to-transparent animate-border-flow" />
+      <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-gradient-x opacity-60" />
+      <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-cyan-400 via-blue-500 via-purple-500 via-pink-500 to-rose-500 animate-shimmer opacity-40" />
+      <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-blue-400/50 to-purple-400/50 animate-border-pulse" />
+
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
         {/* Logo - Left */}
         <Link href="/" className="flex items-center gap-2 group">

@@ -6,13 +6,6 @@ import { SLAAlertsTable } from "@/components/sla-alerts-table";
 import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Bell,
@@ -25,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
 
 export default function Page() {
   // Show toast notification for critical SLA alerts
@@ -124,18 +118,16 @@ export default function Page() {
               <div className="px-4 lg:px-6">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {/* Real-time Activity Feed */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-lg">
+                  <NeonGradientCard>
+                    <div className="flex flex-col gap-6">
+                      <div className="flex items-center gap-2 text-lg font-semibold text-white">
                         <Activity className="h-5 w-5 text-blue-500" />
                         Recent Activity
-                      </CardTitle>
-                      <CardDescription>
+                      </div>
+                      <div className="text-gray-400 text-sm">
                         Latest system updates and resolved issues
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
+                      </div>
+                      <div className="space-y-3 text-white">
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                           <div className="flex-1 space-y-1">
@@ -194,21 +186,19 @@ export default function Page() {
                           </div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </NeonGradientCard>
 
                   {/* Predictive Insights */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-lg">
+                  <NeonGradientCard>
+                    <div className="flex flex-col gap-6">
+                      <div className="flex items-center gap-2 text-lg font-semibold text-white">
                         <TrendingUp className="h-5 w-5 text-purple-500" />
                         Predictive Insights
-                      </CardTitle>
-                      <CardDescription>
+                      </div>
+                      <div className="text-gray-400 text-sm">
                         AI-powered recommendations and forecasts
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                      </div>
                       <div className="space-y-4">
                         <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                           <h4 className="font-medium text-sm mb-1">
@@ -245,22 +235,20 @@ export default function Page() {
                           </p>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </NeonGradientCard>
 
                   {/* Community Impact Assessment */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-lg">
+                  <NeonGradientCard>
+                    <div className="flex flex-col gap-6">
+                      <div className="flex items-center gap-2 text-lg font-semibold text-white">
                         <AlertTriangle className="h-5 w-5 text-orange-500" />
                         Community Impact Assessment
-                      </CardTitle>
-                      <CardDescription>
+                      </div>
+                      <div className="text-gray-400 text-sm">
                         High-impact areas requiring urgent civic attention
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
+                      </div>
+                      <div className="space-y-3 text-white">
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="font-medium text-sm">
@@ -317,8 +305,8 @@ export default function Page() {
                           </p>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </NeonGradientCard>
                 </div>
               </div>
             </div>

@@ -21,17 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { WARDS } from "@/lib/types";
+import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
 
 interface FilePreview {
   file: File;
@@ -263,14 +257,16 @@ export default function ReportIssuePage() {
         </div>
 
         {/* Form Card */}
-        <Card className="border-gray-200 dark:border-gray-800">
-          <CardHeader>
-            <CardTitle>Issue Details</CardTitle>
-            <CardDescription>
-              Fill in the details below. Fields marked with * are required.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <NeonGradientCard>
+          <div className="flex flex-col gap-6">
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-2">
+                Issue Details
+              </h2>
+              <p className="text-sm text-gray-400">
+                Fill in the details below. Fields marked with * are required.
+              </p>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Issue Title */}
               <div className="space-y-2">
@@ -502,41 +498,41 @@ export default function ReportIssuePage() {
                 authorities.
               </p>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </NeonGradientCard>
 
         {/* Info Cards */}
         <div className="grid md:grid-cols-3 gap-4 mt-8">
-          <Card className="border-gray-200 dark:border-gray-800">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Quick Response</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+          <NeonGradientCard>
+            <div className="flex flex-col gap-2">
+              <h4 className="text-sm font-semibold text-white">
+                Quick Response
+              </h4>
+              <p className="text-xs text-gray-400">
                 Your report will be reviewed by authorities within 24-48 hours.
               </p>
-            </CardContent>
-          </Card>
-          <Card className="border-gray-200 dark:border-gray-800">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Track Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+            </div>
+          </NeonGradientCard>
+          <NeonGradientCard>
+            <div className="flex flex-col gap-2">
+              <h4 className="text-sm font-semibold text-white">
+                Track Progress
+              </h4>
+              <p className="text-xs text-gray-400">
                 Monitor your issue status in real-time on the map and dashboard.
               </p>
-            </CardContent>
-          </Card>
-          <Card className="border-gray-200 dark:border-gray-800">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Community Impact</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+            </div>
+          </NeonGradientCard>
+          <NeonGradientCard>
+            <div className="flex flex-col gap-2">
+              <h4 className="text-sm font-semibold text-white">
+                Community Impact
+              </h4>
+              <p className="text-xs text-gray-400">
                 Help improve your neighborhood and make a difference together.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </NeonGradientCard>
         </div>
       </div>
     </div>
