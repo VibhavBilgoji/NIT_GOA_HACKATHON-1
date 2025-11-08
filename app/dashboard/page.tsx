@@ -1,7 +1,6 @@
 "use client";
 
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { SLAAlertsTable } from "@/components/sla-alerts-table";
 import { SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,7 +23,6 @@ import { Button } from "@/components/ui/button";
 export default function Page() {
   const {
     stats,
-    slaAlerts,
     recentActivity,
     predictiveInsights,
     geospatialData,
@@ -32,19 +30,16 @@ export default function Page() {
     refreshDashboard,
   } = useDashboard();
 
-  // Show toast notification for critical SLA alerts
+  // Removed SLA alerts notification logic as SLA feature is not implemented
   useEffect(() => {
-    if (slaAlerts.length > 0 && stats.criticalIssuesPending > 0) {
+    if (stats.criticalIssuesPending > 0) {
       const timer = setTimeout(() => {
-        const criticalAlert = slaAlerts.find(
-          (alert) => alert.priority === "Critical",
-        );
-        if (criticalAlert) {
-          toast.error("Critical SLA Alert!", {
-            description: `${criticalAlert.title} at ${criticalAlert.location} - ${criticalAlert.timeRemaining} remaining`,
+        if (stats.criticalIssuesPending > 0) {
+          toast.error("Critical Issues Alert!", {
+            description: `${stats.criticalIssuesPending} critical issue(s) pending attention`,
             action: {
-              label: "View Details",
-              onClick: () => console.log("View alert details"),
+              label: "View Dashboard",
+              onClick: () => console.log("View critical issues"),
             },
           });
         }
@@ -52,7 +47,7 @@ export default function Page() {
 
       return () => clearTimeout(timer);
     }
-  }, [slaAlerts, stats.criticalIssuesPending]);
+  }, [stats.criticalIssuesPending]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -118,20 +113,7 @@ export default function Page() {
               <ChartAreaInteractive />
             </div>
 
-            {/* SLA Alert System - At-Risk Tickets */}
-            <div className="px-4 lg:px-6">
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-2">
-                  <AlertTriangle className="h-6 w-6 text-red-500" />
-                  SLA Alert System - At-Risk Tickets
-                </h2>
-                <p className="text-muted-foreground">
-                  Critical civic issues requiring immediate attention with
-                  automated alerts
-                </p>
-              </div>
-              <SLAAlertsTable />
-            </div>
+
 
             {/* Additional Insights Grid */}
             <div className="px-4 lg:px-6">

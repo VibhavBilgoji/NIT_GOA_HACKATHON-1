@@ -7,8 +7,11 @@ import { ShuffleText } from "@/components/shuffle-text";
 import "@/components/shuffle-text/shuffle.css";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
 import { SparklesText } from "@/components/magicui/sparkles-text";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <div className="flex min-h-screen flex-col bg-white/30 dark:bg-black/30">
       {/* Hero Section */}
@@ -50,21 +53,43 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 h-10 px-8"
-              >
-                <Link href="/signup">Get Started</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-gray-300 dark:border-gray-700 h-10 px-8"
-              >
-                <Link href="/map">View Map</Link>
-              </Button>
+              {!isAuthenticated ? (
+                <>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 h-10 px-8"
+                  >
+                    <Link href="/signup">Get Started</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="border-gray-300 dark:border-gray-700 h-10 px-8"
+                  >
+                    <Link href="/map">View Map</Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 h-10 px-8"
+                  >
+                    <Link href="/report">Report Issue</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="border-gray-300 dark:border-gray-700 h-10 px-8"
+                  >
+                    <Link href="/dashboard">View Dashboard</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </section>
@@ -214,13 +239,23 @@ export default function Home() {
             <p className="mb-8 text-lg text-gray-600 dark:text-gray-400">
               Join OurStreet today and help build a better community
             </p>
-            <Button
-              asChild
-              size="lg"
-              className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 h-10 px-8"
-            >
-              <Link href="/signup">Get Started</Link>
-            </Button>
+            {!isAuthenticated ? (
+              <Button
+                asChild
+                size="lg"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 h-10 px-8"
+              >
+                <Link href="/signup">Get Started</Link>
+              </Button>
+            ) : (
+              <Button
+                asChild
+                size="lg"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 h-10 px-8"
+              >
+                <Link href="/report">Report Issue</Link>
+              </Button>
+            )}
           </div>
         </section>
       </main>

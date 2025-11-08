@@ -29,6 +29,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { BeforeAfterPhotos } from "@/components/before-after-photos";
 import { Issue } from "@/lib/types";
+import { getAuthToken } from "@/lib/api-client";
 
 export default function IssueDetailPage() {
   const router = useRouter();
@@ -71,7 +72,7 @@ export default function IssueDetailPage() {
   };
 
   const handleVote = async () => {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
     if (!token) {
       toast.error("Please login to vote");
       router.push("/login");
@@ -119,7 +120,7 @@ export default function IssueDetailPage() {
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
     if (!token) {
       toast.error("Please login to comment");
       router.push("/login");

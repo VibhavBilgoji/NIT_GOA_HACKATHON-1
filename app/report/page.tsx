@@ -263,6 +263,13 @@ export default function ReportIssuePage() {
       if (result.success && result.data) {
         setAiSuggestion(result.data);
 
+        // Auto-populate category when AI mode is enabled
+        setFormData({
+          ...formData,
+          category: result.data.category,
+          title: result.data.suggestedTitle || formData.title,
+        });
+
         toast.success(
           `AI suggests: ${result.data.category} (${Math.round(result.data.confidence * 100)}% confidence)`,
         );
@@ -298,7 +305,7 @@ export default function ReportIssuePage() {
       return;
     }
 
-    if (!formData.title || !formData.category || !formData.description) {
+    if (!formData.title || !formData.description) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -306,6 +313,26 @@ export default function ReportIssuePage() {
     if (formData.description.length < 20) {
       toast.error("Description must be at least 20 characters");
       return;
+    }
+
+    // If no category is selected, automatically enable AI mode and categorize
+    if (!formData.category) {
+      if (!useAI) {
+        setUseAI(true);
+        toast("No category selected. Enabling AI categorization...", {
+          icon: "🤖",
+        });
+      }
+
+      toast.loading("Getting AI category suggestion...");
+      await handleAICategorization();
+      toast.dismiss();
+
+      // Check if AI categorization was successful
+      if (!formData.category) {
+        toast.error("AI categorization failed. Please select a category manually or try again.");
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -490,8 +517,12 @@ export default function ReportIssuePage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Label>Category *</Label>
-
+                    <Label>Category (Optional)</Label>
+                    {useAI && (
+                      <span className="text-xs text-purple-600 dark:text-purple-400">
+                        (AI enabled)
+                      </span>
+                    )}
                   </div>
 
                 </div>
@@ -503,9 +534,10 @@ export default function ReportIssuePage() {
                   onValueChange={(value) =>
                     setFormData({ ...formData, category: value })
                   }
+                  disabled={useAI && !aiSuggestion}
                 >
                   <SelectTrigger className="bg-white dark:bg-black">
-                    <SelectValue placeholder="Select category or use AI to suggest" />
+                    <SelectValue placeholder={useAI ? "AI will suggest category..." : "Select category manually"} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pothole">🕳️ Pothole</SelectItem>
@@ -521,8 +553,9 @@ export default function ReportIssuePage() {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Select manually or click &quot;AI Suggest&quot; for automatic
-                  categorization
+                  {useAI
+                    ? "AI will automatically categorize based on your title and description"
+                    : "Select a category manually or leave empty to auto-enable AI categorization"}
                 </p>
               </div>
 
