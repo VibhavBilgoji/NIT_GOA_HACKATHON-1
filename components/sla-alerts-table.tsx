@@ -10,6 +10,7 @@ import {
   CheckCircle,
   XCircle,
   Bell,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -37,110 +38,47 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SLAAlert {
   id: string;
-  issueId: number;
+  ticketId: string;
   title: string;
   category: string;
-  priority: "Critical" | "High" | "Medium" | "Low";
-  status: "Open" | "In Progress" | "Escalated";
-  reportedDate: string;
-  slaDeadline: string;
-  timeRemaining: string;
+  priority: "low" | "medium" | "high" | "critical";
+  status: "open" | "in-progress" | "resolved" | "closed";
   location: string;
   assignedTo: string;
-  riskLevel: "Critical" | "High" | "Medium" | "Low";
-  estimatedImpact: string;
+  createdAt: string;
+  slaDeadline: string;
+  timeRemaining: string;
+  timeRemainingHours: number;
+  riskLevel: "low" | "medium" | "high" | "critical";
+  estimatedCompletionTime: string;
+  impact: string;
 }
 
-const mockSLAAlerts: SLAAlert[] = [
-  {
-    id: "SLA-001",
-    issueId: 1342,
-    title: "Broken Water Main - FC Road",
-    category: "Water",
-    priority: "Critical",
-    status: "Open",
-    reportedDate: "2024-11-08T08:30:00Z",
-    slaDeadline: "2024-11-08T14:30:00Z",
-    timeRemaining: "1h 45m",
-    location: "FC Road, Panjim",
-    assignedTo: "Emergency Team Alpha",
-    riskLevel: "Critical",
-    estimatedImpact: "800+ citizens affected",
-  },
-  {
-    id: "SLA-002",
-    issueId: 1358,
-    title: "Traffic Signal System Failure",
-    category: "Traffic",
-    priority: "High",
-    status: "In Progress",
-    reportedDate: "2024-11-08T07:15:00Z",
-    slaDeadline: "2024-11-08T19:15:00Z",
-    timeRemaining: "5h 20m",
-    location: "Dayanand Bandodkar Marg",
-    assignedTo: "Traffic Systems Team",
-    riskLevel: "High",
-    estimatedImpact: "Heavy traffic congestion",
-  },
-  {
-    id: "SLA-003",
-    issueId: 1365,
-    title: "Sewage Overflow - Residential Area",
-    category: "Sanitation",
-    priority: "High",
-    status: "Open",
-    reportedDate: "2024-11-08T06:45:00Z",
-    slaDeadline: "2024-11-08T18:45:00Z",
-    timeRemaining: "7h 30m",
-    location: "Altinho Hill, Panjim",
-    assignedTo: "Sanitation Team Beta",
-    riskLevel: "High",
-    estimatedImpact: "Health & hygiene risk",
-  },
-  {
-    id: "SLA-004",
-    issueId: 1372,
-    title: "Street Lighting Failure - Main Road",
-    category: "Lighting",
-    priority: "Medium",
-    status: "In Progress",
-    reportedDate: "2024-11-07T22:30:00Z",
-    slaDeadline: "2024-11-09T10:30:00Z",
-    timeRemaining: "1d 12h",
-    location: "18th June Road, Panjim",
-    assignedTo: "Electrical Maintenance",
-    riskLevel: "Medium",
-    estimatedImpact: "Public safety concern",
-  },
-  {
-    id: "SLA-005",
-    issueId: 1380,
-    title: "Major Pothole - Heavy Rainfall",
-    category: "Roads",
-    priority: "Critical",
-    status: "Open",
-    reportedDate: "2024-11-08T09:15:00Z",
-    slaDeadline: "2024-11-08T15:15:00Z",
-    timeRemaining: "2h 55m",
-    location: "Campal Gardens Road",
-    assignedTo: "Road Emergency Team",
-    riskLevel: "Critical",
-    estimatedImpact: "400+ commuters affected",
-  },
-];
+interface AlertsData {
+  alerts: SLAAlert[];
+  summary: {
+    total: number;
+    critical: number;
+    high: number;
+    medium: number;
+    low: number;
+    overdue: number;
+  };
+}
 
 const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case "Critical":
+  switch (priority.toLowerCase()) {
+    case "critical":
       return "bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800";
-    case "High":
+    case "high":
       return "bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-800";
-    case "Medium":
+    case "medium":
       return "bg-yellow-100 dark:bg-yellow-950 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800";
-    case "Low":
+    case "low":
       return "bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800";
     default:
       return "bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-200";
@@ -148,191 +86,347 @@ const getPriorityColor = (priority: string) => {
 };
 
 const getStatusColor = (status: string) => {
-  switch (status) {
-    case "Open":
+  switch (status.toLowerCase()) {
+    case "open":
       return "bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-200";
-    case "In Progress":
+    case "in-progress":
       return "bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200";
-    case "Escalated":
-      return "bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-200";
+    case "resolved":
+      return "bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-200";
+    case "closed":
+      return "bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-200";
     default:
       return "bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-200";
   }
 };
 
-const getTimeRemainingColor = (timeRemaining: string) => {
-  if (timeRemaining.includes("h") && parseInt(timeRemaining) < 4) {
-    return "text-red-600 dark:text-red-400 font-semibold";
+const getRiskLevelColor = (riskLevel: string) => {
+  switch (riskLevel.toLowerCase()) {
+    case "critical":
+      return "text-red-600 dark:text-red-400 font-bold";
+    case "high":
+      return "text-orange-600 dark:text-orange-400 font-semibold";
+    case "medium":
+      return "text-yellow-600 dark:text-yellow-400 font-medium";
+    case "low":
+      return "text-green-600 dark:text-green-400";
+    default:
+      return "text-gray-600 dark:text-gray-400";
   }
-  if (timeRemaining.includes("h") && parseInt(timeRemaining) < 8) {
-    return "text-orange-600 dark:text-orange-400 font-medium";
-  }
-  return "text-green-600 dark:text-green-400";
+};
+
+const formatCategoryName = (category: string): string => {
+  const categoryMap: Record<string, string> = {
+    pothole: "Potholes",
+    streetlight: "Street Lights",
+    water_leak: "Water Leak",
+    garbage: "Garbage",
+    sanitation: "Sanitation",
+    drainage: "Drainage",
+    electricity: "Electricity",
+    traffic: "Traffic",
+    road: "Road",
+    other: "Other",
+  };
+  return categoryMap[category] || category;
 };
 
 export function SLAAlertsTable() {
   const [selectedAlert, setSelectedAlert] = useState<SLAAlert | null>(null);
+  const [alertsData, setAlertsData] = useState<AlertsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filterRisk, setFilterRisk] = useState<string | null>(null);
 
-  // Show toast notifications for critical alerts on component mount
   useEffect(() => {
-    const criticalAlerts = mockSLAAlerts.filter(
-      (alert) => alert.priority === "Critical",
-    );
+    const fetchAlerts = async () => {
+      try {
+        setIsLoading(true);
+        const url = filterRisk
+          ? `/api/analytics/sla-alerts?risk=${filterRisk}&limit=20`
+          : "/api/analytics/sla-alerts?limit=20";
 
-    if (criticalAlerts.length > 0) {
-      // Show only the first critical alert to avoid spam
-      const alert = criticalAlerts[0];
-      const timer = setTimeout(() => {
-        toast.error("Critical SLA Alert!", {
-          description: `${alert.title} at ${alert.location} - ${alert.timeRemaining} remaining`,
-          icon: <Bell className="h-4 w-4" />,
-          action: {
-            label: "View",
-            onClick: () => setSelectedAlert(alert),
-          },
-          duration: 8000,
-        });
-      }, 1000);
+        const response = await fetch(url);
+        const data = await response.json();
 
-      return () => clearTimeout(timer);
-    }
-  }, []);
+        if (data.success) {
+          setAlertsData(data.data);
+          setError(null);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
+          // Show toast for critical alerts
+          const criticalAlerts = data.data.alerts.filter(
+            (alert: SLAAlert) => alert.riskLevel === "critical",
+          );
+
+          if (criticalAlerts.length > 0 && !filterRisk) {
+            const alert = criticalAlerts[0];
+            setTimeout(() => {
+              toast.error("Critical SLA Alert!", {
+                description: `${alert.title} at ${alert.location} - ${alert.timeRemaining}`,
+                icon: <Bell className="h-4 w-4" />,
+                action: {
+                  label: "View",
+                  onClick: () => setSelectedAlert(alert),
+                },
+                duration: 8000,
+              });
+            }, 1000);
+          }
+        } else {
+          setError(data.error || "Failed to fetch SLA alerts");
+        }
+      } catch (err) {
+        console.error("Error fetching SLA alerts:", err);
+        setError("Failed to load SLA alerts");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAlerts();
+
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchAlerts, 30000);
+
+    return () => clearInterval(interval);
+  }, [filterRisk]);
+
+  const handleEscalate = (alertId: string) => {
+    toast.success("Alert Escalated!", {
+      description: "Issue has been escalated to senior management",
     });
   };
 
-  const criticalCount = mockSLAAlerts.filter(
-    (alert) => alert.priority === "Critical",
-  ).length;
-  const highCount = mockSLAAlerts.filter(
-    (alert) => alert.priority === "High",
-  ).length;
+  const handleResolve = (alertId: string) => {
+    toast.success("Issue Resolved!", {
+      description: "SLA alert has been marked as resolved",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <NeonGradientCard className="transition-all duration-300 ease-out">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-6 w-6 text-red-500" />
+            <Skeleton className="h-6 w-48" />
+          </CardTitle>
+          <Skeleton className="h-4 w-96" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </div>
+        </CardContent>
+      </NeonGradientCard>
+    );
+  }
+
+  if (error || !alertsData) {
+    return (
+      <NeonGradientCard className="transition-all duration-300 ease-out">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+            <AlertTriangle className="h-6 w-6 text-red-500" />
+            SLA Alert System
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="p-6 border border-red-200 rounded-lg bg-red-50 dark:bg-red-950/20">
+            <p className="text-red-600 dark:text-red-400">
+              {error || "Failed to load SLA alerts"}
+            </p>
+          </div>
+        </CardContent>
+      </NeonGradientCard>
+    );
+  }
 
   return (
-    <NeonGradientCard className="w-full transition-all duration-300 ease-out hover:shadow-lg">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
+    <NeonGradientCard className="transition-all duration-300 ease-out hover:shadow-lg">
+      <CardHeader>
+        <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-xl font-bold flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
+            <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+              <AlertTriangle className="h-6 w-6 text-red-500" />
               SLA Alert System - At-Risk Tickets
             </CardTitle>
-            <CardDescription className="mt-1">
-              Critical civic issues requiring immediate attention with automated
-              push notifications
+            <CardDescription>
+              Real-time monitoring of issues at risk of SLA breach with
+              automated escalation alerts
             </CardDescription>
           </div>
-          <div className="flex gap-2">
-            <Badge
-              variant="outline"
-              className="bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300"
-            >
-              {criticalCount} Critical
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="bg-red-50 dark:bg-red-950">
+              <Bell className="h-3 w-3 mr-1" />
+              {alertsData.summary.critical} Critical
             </Badge>
             <Badge
               variant="outline"
-              className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300"
+              className="bg-orange-50 dark:bg-orange-950"
             >
-              {highCount} High Priority
+              {alertsData.summary.high} High Risk
             </Badge>
           </div>
         </div>
       </CardHeader>
       <CardContent>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border">
+            <div className="text-2xl font-bold text-black dark:text-white">
+              {alertsData.summary.total}
+            </div>
+            <div className="text-xs text-muted-foreground">Total Alerts</div>
+          </div>
+          <div className="p-3 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-800">
+            <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+              {alertsData.summary.critical}
+            </div>
+            <div className="text-xs text-red-600 dark:text-red-400">
+              Critical
+            </div>
+          </div>
+          <div className="p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg border border-orange-200 dark:border-orange-800">
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              {alertsData.summary.high}
+            </div>
+            <div className="text-xs text-orange-600 dark:text-orange-400">
+              High Risk
+            </div>
+          </div>
+          <div className="p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
+            <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+              {alertsData.summary.medium}
+            </div>
+            <div className="text-xs text-yellow-600 dark:text-yellow-400">
+              Medium
+            </div>
+          </div>
+          <div className="p-3 bg-purple-50 dark:bg-purple-950/30 rounded-lg border border-purple-200 dark:border-purple-800">
+            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              {alertsData.summary.overdue}
+            </div>
+            <div className="text-xs text-purple-600 dark:text-purple-400">
+              Overdue
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Buttons */}
+        <div className="flex gap-2 mb-4">
+          <Button
+            variant={filterRisk === null ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterRisk(null)}
+          >
+            All
+          </Button>
+          <Button
+            variant={filterRisk === "critical" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterRisk("critical")}
+          >
+            Critical
+          </Button>
+          <Button
+            variant={filterRisk === "high" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterRisk("high")}
+          >
+            High
+          </Button>
+          <Button
+            variant={filterRisk === "medium" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterRisk("medium")}
+          >
+            Medium
+          </Button>
+        </div>
+
+        {/* Alerts Table */}
         <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Alert ID</TableHead>
+                <TableHead className="w-[100px]">Ticket ID</TableHead>
                 <TableHead>Issue Details</TableHead>
                 <TableHead>Priority</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Time Remaining</TableHead>
                 <TableHead>Location</TableHead>
-                <TableHead>Assigned To</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockSLAAlerts.map((alert) => (
-                <TableRow
-                  key={alert.id}
-                  className={`${
-                    alert.priority === "Critical"
-                      ? "bg-red-50/50 dark:bg-red-950/20"
-                      : ""
-                  } hover:bg-gray-50 dark:hover:bg-gray-900/50`}
-                >
-                  <TableCell className="font-mono text-sm">
-                    {alert.id}
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <p className="font-medium text-sm leading-tight">
-                        {alert.title}
+              {alertsData.alerts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <div className="flex flex-col items-center gap-2">
+                      <CheckCircle className="h-8 w-8 text-green-500" />
+                      <p className="text-muted-foreground">
+                        No SLA alerts at this risk level
                       </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                alertsData.alerts.map((alert) => (
+                  <TableRow key={alert.id}>
+                    <TableCell className="font-mono text-xs">
+                      #{alert.ticketId}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <div className="font-medium text-sm">{alert.title}</div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Badge variant="outline" className="text-xs">
+                            {formatCategoryName(alert.category)}
+                          </Badge>
+                          <span className="flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            {alert.assignedTo}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={getPriorityColor(alert.priority)}
+                      >
+                        {alert.priority.toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={getStatusColor(alert.status)}
+                      >
+                        {alert.status === "in-progress"
+                          ? "In Progress"
+                          : alert.status.charAt(0).toUpperCase() +
+                            alert.status.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
-                        <Badge
-                          variant="outline"
-                          className="text-xs px-2 py-0.5"
-                        >
-                          {alert.category}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          #{alert.issueId}
+                        <Clock className="h-4 w-4" />
+                        <span className={getRiskLevelColor(alert.riskLevel)}>
+                          {alert.timeRemaining}
                         </span>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getPriorityColor(alert.priority)}>
-                      {alert.priority}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={getStatusColor(alert.status)}
-                    >
-                      {alert.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      <span
-                        className={`text-sm ${getTimeRemainingColor(
-                          alert.timeRemaining,
-                        )}`}
-                      >
-                        {alert.timeRemaining}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-sm">
-                      <MapPin className="h-3 w-3 text-muted-foreground" />
-                      <span className="truncate max-w-[120px]">
-                        {alert.location}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-sm">
-                      <User className="h-3 w-3 text-muted-foreground" />
-                      <span className="truncate max-w-[100px]">
-                        {alert.assignedTo}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center gap-1 justify-end">
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-start gap-1 text-xs">
+                        <MapPin className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                        <span className="line-clamp-2">{alert.location}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button
@@ -345,181 +439,168 @@ export function SLAAlertsTable() {
                         </DialogTrigger>
                         <DialogContent className="max-w-2xl">
                           <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                              <AlertTriangle className="h-5 w-5 text-red-500" />
-                              SLA Alert Details - {alert.id}
-                            </DialogTitle>
+                            <DialogTitle>SLA Alert Details</DialogTitle>
                             <DialogDescription>
-                              Comprehensive information about this critical
-                              issue
+                              #{alert.ticketId} - {alert.title}
                             </DialogDescription>
                           </DialogHeader>
-                          {selectedAlert && (
-                            <div className="space-y-6">
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-3">
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                      Issue Title
-                                    </label>
-                                    <p className="text-sm font-medium">
-                                      {selectedAlert.title}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                      Category & ID
-                                    </label>
-                                    <div className="flex items-center gap-2">
-                                      <Badge variant="outline">
-                                        {selectedAlert.category}
-                                      </Badge>
-                                      <span className="text-sm">
-                                        #{selectedAlert.issueId}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                      Priority Level
-                                    </label>
-                                    <div>
-                                      <Badge
-                                        className={getPriorityColor(
-                                          selectedAlert.priority,
-                                        )}
-                                      >
-                                        {selectedAlert.priority}
-                                      </Badge>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                      Current Status
-                                    </label>
-                                    <div>
-                                      <Badge
-                                        variant="outline"
-                                        className={getStatusColor(
-                                          selectedAlert.status,
-                                        )}
-                                      >
-                                        {selectedAlert.status}
-                                      </Badge>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="space-y-3">
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                      Reported Date
-                                    </label>
-                                    <p className="text-sm">
-                                      {formatDate(selectedAlert.reportedDate)}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                      SLA Deadline
-                                    </label>
-                                    <p className="text-sm">
-                                      {formatDate(selectedAlert.slaDeadline)}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                      Time Remaining
-                                    </label>
-                                    <p
-                                      className={`text-sm ${getTimeRemainingColor(
-                                        selectedAlert.timeRemaining,
-                                      )}`}
-                                    >
-                                      {selectedAlert.timeRemaining}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                      Risk Level
-                                    </label>
-                                    <div>
-                                      <Badge
-                                        className={getPriorityColor(
-                                          selectedAlert.riskLevel,
-                                        )}
-                                      >
-                                        {selectedAlert.riskLevel}
-                                      </Badge>
-                                    </div>
-                                  </div>
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium">
+                                  Priority
+                                </label>
+                                <div className="mt-1">
+                                  <Badge
+                                    variant="outline"
+                                    className={getPriorityColor(alert.priority)}
+                                  >
+                                    {alert.priority.toUpperCase()}
+                                  </Badge>
                                 </div>
                               </div>
-                              <div className="space-y-3">
-                                <div>
-                                  <label className="text-sm font-medium text-muted-foreground">
-                                    Location
-                                  </label>
-                                  <p className="text-sm flex items-center gap-1">
-                                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    {selectedAlert.location}
-                                  </p>
-                                </div>
-                                <div>
-                                  <label className="text-sm font-medium text-muted-foreground">
-                                    Assigned Team
-                                  </label>
-                                  <p className="text-sm flex items-center gap-1">
-                                    <User className="h-4 w-4 text-muted-foreground" />
-                                    {selectedAlert.assignedTo}
-                                  </p>
-                                </div>
-                                <div>
-                                  <label className="text-sm font-medium text-muted-foreground">
-                                    Estimated Impact
-                                  </label>
-                                  <p className="text-sm">
-                                    {selectedAlert.estimatedImpact}
-                                  </p>
+                              <div>
+                                <label className="text-sm font-medium">
+                                  Status
+                                </label>
+                                <div className="mt-1">
+                                  <Badge
+                                    variant="outline"
+                                    className={getStatusColor(alert.status)}
+                                  >
+                                    {alert.status === "in-progress"
+                                      ? "In Progress"
+                                      : alert.status.charAt(0).toUpperCase() +
+                                        alert.status.slice(1)}
+                                  </Badge>
                                 </div>
                               </div>
-                              <div className="flex gap-2 pt-4 border-t">
-                                <Button
-                                  size="sm"
-                                  className="bg-green-600 hover:bg-green-700"
+                              <div>
+                                <label className="text-sm font-medium">
+                                  Category
+                                </label>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {formatCategoryName(alert.category)}
+                                </p>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium">
+                                  Risk Level
+                                </label>
+                                <p
+                                  className={`text-sm mt-1 ${getRiskLevelColor(alert.riskLevel)}`}
                                 >
-                                  <CheckCircle className="h-4 w-4 mr-1" />
-                                  Mark Resolved
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                  <XCircle className="h-4 w-4 mr-1" />
-                                  Escalate Issue
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                  <User className="h-4 w-4 mr-1" />
-                                  Reassign
-                                </Button>
+                                  {alert.riskLevel.toUpperCase()}
+                                </p>
                               </div>
                             </div>
-                          )}
+
+                            <div>
+                              <label className="text-sm font-medium">
+                                Location
+                              </label>
+                              <p className="text-sm text-muted-foreground mt-1 flex items-start gap-2">
+                                <MapPin className="h-4 w-4 mt-0.5" />
+                                {alert.location}
+                              </p>
+                            </div>
+
+                            <div>
+                              <label className="text-sm font-medium">
+                                Assigned To
+                              </label>
+                              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                                <User className="h-4 w-4" />
+                                {alert.assignedTo}
+                              </p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium">
+                                  Time Remaining
+                                </label>
+                                <p
+                                  className={`text-sm mt-1 flex items-center gap-2 ${getRiskLevelColor(alert.riskLevel)}`}
+                                >
+                                  <Clock className="h-4 w-4" />
+                                  {alert.timeRemaining}
+                                </p>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium">
+                                  Estimated Completion
+                                </label>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {alert.estimatedCompletionTime}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="text-sm font-medium">
+                                Impact Assessment
+                              </label>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {alert.impact}
+                              </p>
+                            </div>
+
+                            <div>
+                              <label className="text-sm font-medium">
+                                SLA Deadline
+                              </label>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {new Date(alert.slaDeadline).toLocaleString()}
+                              </p>
+                            </div>
+
+                            <div className="flex gap-2 pt-4">
+                              <Button
+                                className="flex-1"
+                                variant="outline"
+                                onClick={() => handleEscalate(alert.id)}
+                              >
+                                <AlertTriangle className="h-4 w-4 mr-2" />
+                                Escalate
+                              </Button>
+                              <Button
+                                className="flex-1"
+                                onClick={() => handleResolve(alert.id)}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                Mark Resolved
+                              </Button>
+                            </div>
+                          </div>
                         </DialogContent>
                       </Dialog>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
-        <div className="mt-4 text-sm text-muted-foreground text-center">
-          Showing {mockSLAAlerts.length} active SLA alerts •{" "}
-          <span className="text-red-600 dark:text-red-400 font-medium">
-            {criticalCount} Critical
-          </span>{" "}
-          •{" "}
-          <span className="text-orange-600 dark:text-orange-400 font-medium">
-            {highCount} High Priority
-          </span>
-        </div>
+
+        {/* Info Banner */}
+        {alertsData.summary.critical > 0 && (
+          <div className="mt-4 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-900 dark:text-red-100">
+                  ⚠️ Critical SLA Breach Risk Detected
+                </p>
+                <p className="text-xs text-red-700 dark:text-red-300 mt-1">
+                  {alertsData.summary.critical} critical issue(s) require
+                  immediate attention to prevent SLA violations and maintain
+                  service quality standards.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </NeonGradientCard>
   );

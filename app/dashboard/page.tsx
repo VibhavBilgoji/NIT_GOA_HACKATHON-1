@@ -15,8 +15,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
+<<<<<<< Updated upstream
 import { RotatingText } from "@/components/magicui/rotating-text";
 import { useDashboard } from "@/contexts/dashboard-context";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,50 @@ export default function Page() {
     isLoading,
     refreshDashboard,
   } = useDashboard();
+=======
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface RecentActivity {
+  id: string;
+  type: string;
+  message: string;
+  location?: string;
+  timestamp: string;
+}
+
+interface DashboardStats {
+  recentActivity: RecentActivity[];
+}
+
+export default function Page() {
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [isLoadingActivity, setIsLoadingActivity] = useState(true);
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        setIsLoadingActivity(true);
+        const response = await fetch("/api/analytics/stats");
+        const data = await response.json();
+
+        if (data.success && data.data?.recentActivity) {
+          setRecentActivity(data.data.recentActivity);
+        }
+      } catch (err) {
+        console.error("Error fetching recent activity:", err);
+      } finally {
+        setIsLoadingActivity(false);
+      }
+    };
+
+    fetchActivity();
+
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchActivity, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+>>>>>>> Stashed changes
 
   // Show toast notification for critical SLA alerts
   useEffect(() => {
@@ -53,6 +98,20 @@ export default function Page() {
       return () => clearTimeout(timer);
     }
   }, [slaAlerts, stats.criticalIssuesPending]);
+
+  const getActivityIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "resolved":
+        return "🟢";
+      case "critical":
+        return "🔴";
+      case "in-progress":
+        return "🟡";
+      case "new":
+      default:
+        return "🔵";
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -144,9 +203,10 @@ export default function Page() {
                       Recent Activity
                     </div>
                     <div className="text-gray-600 dark:text-gray-400 text-sm">
-                      Latest system updates and resolved issues
+                      Latest system updates and resolved issues (live)
                     </div>
                     <div className="space-y-3 text-black dark:text-white">
+<<<<<<< Updated upstream
                       {recentActivity.slice(0, 5).map((activity) => {
                         const severityColors = {
                           success: "bg-green-500",
@@ -161,10 +221,27 @@ export default function Page() {
                           info: <Users className="h-3 w-3" />,
                         };
                         return (
+=======
+                      {isLoadingActivity ? (
+                        <>
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-start gap-3">
+                              <Skeleton className="w-2 h-2 rounded-full mt-2" />
+                              <div className="flex-1 space-y-2">
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-3 w-48" />
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      ) : recentActivity.length > 0 ? (
+                        recentActivity.map((activity) => (
+>>>>>>> Stashed changes
                           <div
                             key={activity.id}
                             className="flex items-start gap-3"
                           >
+<<<<<<< Updated upstream
                             <div
                               className={`w-2 h-2 ${severityColors[activity.severity as keyof typeof severityColors] || "bg-gray-500"} rounded-full mt-2`}
                             ></div>
@@ -184,6 +261,25 @@ export default function Page() {
                           </div>
                         );
                       })}
+=======
+                            <div className="text-lg mt-0.5">
+                              {getActivityIcon(activity.type)}
+                            </div>
+                            <div className="flex-1 space-y-1">
+                              <p className="text-xs text-muted-foreground">
+                                {activity.message}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-sm text-muted-foreground">
+                            No recent activity
+                          </p>
+                        </div>
+                      )}
+>>>>>>> Stashed changes
                     </div>
                   </div>
                 </NeonGradientCard>

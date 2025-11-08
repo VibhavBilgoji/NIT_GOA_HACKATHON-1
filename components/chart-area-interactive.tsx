@@ -1,27 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Area,
   AreaChart,
   Bar,
   BarChart,
+  CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Legend,
 } from "recharts";
-import {
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
 import {
   Select,
   SelectContent,
@@ -29,191 +22,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, AlertTriangle, BarChart3, Activity } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Activity, TrendingUp, Users, Target } from "lucide-react";
+import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const hotspotTrendData = [
-  {
-    month: "Jan",
-    potholes: 24,
-    streetlights: 15,
-    water: 9,
-    sanitation: 21,
-    predicted: 28,
-  },
-  {
-    month: "Feb",
-    potholes: 31,
-    streetlights: 18,
-    water: 12,
-    sanitation: 26,
-    predicted: 35,
-  },
-  {
-    month: "Mar",
-    potholes: 28,
-    streetlights: 22,
-    water: 15,
-    sanitation: 30,
-    predicted: 38,
-  },
-  {
-    month: "Apr",
-    potholes: 35,
-    streetlights: 26,
-    water: 18,
-    sanitation: 33,
-    predicted: 42,
-  },
-  {
-    month: "May",
-    potholes: 42,
-    streetlights: 31,
-    water: 22,
-    sanitation: 38,
-    predicted: 48,
-  },
-  {
-    month: "Jun",
-    potholes: 38,
-    streetlights: 28,
-    water: 25,
-    sanitation: 35,
-    predicted: 45,
-  },
-  {
-    month: "Jul",
-    potholes: 45,
-    streetlights: 33,
-    water: 28,
-    sanitation: 42,
-    predicted: 52,
-  },
-  {
-    month: "Aug",
-    potholes: 52,
-    streetlights: 38,
-    water: 32,
-    sanitation: 48,
-    predicted: 58,
-  },
-];
-
-const resourceDemandData = [
-  {
-    week: "Week 1",
-    maintenance: 72,
-    emergency: 85,
-    planned: 68,
-    capacity: 100,
-  },
-  {
-    week: "Week 2",
-    maintenance: 68,
-    emergency: 78,
-    planned: 74,
-    capacity: 100,
-  },
-  {
-    week: "Week 3",
-    maintenance: 82,
-    emergency: 88,
-    planned: 65,
-    capacity: 100,
-  },
-  {
-    week: "Week 4",
-    maintenance: 78,
-    emergency: 82,
-    planned: 72,
-    capacity: 100,
-  },
-  {
-    week: "Week 5",
-    maintenance: 86,
-    emergency: 92,
-    planned: 62,
-    capacity: 100,
-  },
-  {
-    week: "Week 6",
-    maintenance: 80,
-    emergency: 86,
-    planned: 70,
-    capacity: 100,
-  },
-];
-
-const departmentPerformanceData = [
-  {
-    department: "Water & Sewage",
-    resolved: 38,
-    total: 45,
-    slaCompliance: 84.4,
-    efficiency: 88,
-  },
-  {
-    department: "Roads & Transport",
-    resolved: 46,
-    total: 52,
-    slaCompliance: 92.3,
-    efficiency: 91,
-  },
-  {
-    department: "Sanitation",
-    resolved: 35,
-    total: 38,
-    slaCompliance: 94.7,
-    efficiency: 95,
-  },
-  {
-    department: "Electrical",
-    resolved: 19,
-    total: 21,
-    slaCompliance: 90.5,
-    efficiency: 87,
-  },
-];
-
-const predictionAccuracyData = [
-  {
-    month: "Jan",
-    predicted: 40,
-    actual: 42,
-    accuracy: 95,
-  },
-  {
-    month: "Feb",
-    predicted: 44,
-    actual: 46,
-    accuracy: 94,
-  },
-  {
-    month: "Mar",
-    predicted: 57,
-    actual: 55,
-    accuracy: 96,
-  },
-  {
-    month: "Apr",
-    predicted: 68,
-    actual: 71,
-    accuracy: 95,
-  },
-  {
-    month: "May",
-    predicted: 79,
-    actual: 77,
-    accuracy: 97,
-  },
-  {
-    month: "Jun",
-    predicted: 89,
-    actual: 91,
-    accuracy: 97,
-  },
-];
+interface TrendData {
+  hotspotTrends: Array<{
+    month: string;
+    potholes: number;
+    streetlights: number;
+    water: number;
+    sanitation: number;
+    drainage: number;
+    electricity: number;
+    traffic: number;
+    other: number;
+    predicted: number;
+  }>;
+  resourceDemand: Array<{
+    week: string;
+    maintenance: number;
+    emergency: number;
+    planned: number;
+    capacity: number;
+  }>;
+  departmentPerformance: Array<{
+    department: string;
+    resolved: number;
+    pending: number;
+    avgTime: number;
+  }>;
+  predictionAccuracy: Array<{
+    week: string;
+    predicted: number;
+    actual: number;
+    accuracy: number;
+  }>;
+}
 
 interface TooltipProps {
   active?: boolean;
@@ -221,6 +75,7 @@ interface TooltipProps {
     name: string;
     value: number;
     color: string;
+    dataKey: string;
   }>;
   label?: string;
 }
@@ -228,8 +83,8 @@ interface TooltipProps {
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white dark:bg-gray-800 p-3 border rounded-lg shadow-lg">
-        <p className="font-medium">{label}</p>
+      <div className="bg-background border rounded-lg shadow-lg p-3">
+        <p className="font-semibold mb-2">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} style={{ color: entry.color }} className="text-sm">
             {entry.name}: {entry.value}
@@ -244,6 +99,64 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
 export function ChartAreaInteractive() {
   const [selectedTimeframe, setSelectedTimeframe] = useState("6months");
   const [selectedChart, setSelectedChart] = useState("hotspot");
+  const [trendData, setTrendData] = useState<TrendData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTrendData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/analytics/trends");
+        const data = await response.json();
+
+        if (data.success) {
+          setTrendData(data.data);
+          setError(null);
+        } else {
+          setError(data.error || "Failed to fetch trend data");
+        }
+      } catch (err) {
+        console.error("Error fetching trend data:", err);
+        setError("Failed to load analytics data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTrendData();
+
+    // Refresh data every 60 seconds
+    const interval = setInterval(fetchTrendData, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <Skeleton className="h-8 w-96 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="p-6 border rounded-lg">
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !trendData) {
+    return (
+      <div className="p-6 border border-red-200 rounded-lg bg-red-50 dark:bg-red-950/20">
+        <p className="text-red-600 dark:text-red-400">
+          {error || "Failed to load analytics data"}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -295,188 +208,253 @@ export function ChartAreaInteractive() {
         <TabsContent value="hotspot">
           <NeonGradientCard className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-black dark:text-white">
                 <TrendingUp className="h-5 w-5 text-blue-500" />
                 Hotspot Trend Projection
               </CardTitle>
               <CardDescription>
-                AI-predicted issue trends by category with 94% accuracy
+                Monthly issue trends by category with AI-powered predictions for
+                upcoming periods
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={hotspotTrendData}>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      className="opacity-30"
-                    />
-                    <XAxis
-                      dataKey="month"
-                      tick={{ fontSize: 12 }}
-                      axisLine={false}
-                    />
-                    <YAxis tick={{ fontSize: 12 }} axisLine={false} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Area
-                      type="monotone"
-                      dataKey="potholes"
-                      stackId="1"
-                      stroke="#ef4444"
-                      fill="#ef4444"
-                      fillOpacity={0.6}
-                      name="Potholes"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="streetlights"
-                      stackId="1"
-                      stroke="#f59e0b"
-                      fill="#f59e0b"
-                      fillOpacity={0.6}
-                      name="Street Lights"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="water"
-                      stackId="1"
-                      stroke="#3b82f6"
-                      fill="#3b82f6"
-                      fillOpacity={0.6}
-                      name="Water Issues"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="sanitation"
-                      stackId="1"
-                      stroke="#10b981"
-                      fill="#10b981"
-                      fillOpacity={0.6}
-                      name="Sanitation"
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="predicted"
-                      stroke="#8b5cf6"
-                      strokeWidth={3}
-                      strokeDasharray="5 5"
-                      name="AI Prediction"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span>Potholes: +18% trend</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                  <span>Lighting: +12% trend</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span>Water: +15% trend</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span>Sanitation: +8% trend</span>
-                </div>
+              <ResponsiveContainer width="100%" height={400}>
+                <AreaChart data={trendData.hotspotTrends}>
+                  <defs>
+                    <linearGradient
+                      id="colorPotholes"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient
+                      id="colorStreetlights"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorWater" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient
+                      id="colorSanitation"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient
+                      id="colorPredicted"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                  <XAxis
+                    dataKey="month"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value}`}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="potholes"
+                    stackId="1"
+                    stroke="#ef4444"
+                    fill="url(#colorPotholes)"
+                    name="Potholes"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="streetlights"
+                    stackId="1"
+                    stroke="#f59e0b"
+                    fill="url(#colorStreetlights)"
+                    name="Streetlights"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="water"
+                    stackId="1"
+                    stroke="#3b82f6"
+                    fill="url(#colorWater)"
+                    name="Water Issues"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="sanitation"
+                    stackId="1"
+                    stroke="#10b981"
+                    fill="url(#colorSanitation)"
+                    name="Sanitation"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="predicted"
+                    stroke="#8b5cf6"
+                    strokeWidth={3}
+                    strokeDasharray="5 5"
+                    dot={{ fill: "#8b5cf6", r: 4 }}
+                    name="AI Predicted"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                  📊 Insight: The prediction model forecasts a{" "}
+                  {trendData.hotspotTrends.length > 0 &&
+                  trendData.hotspotTrends[trendData.hotspotTrends.length - 1]
+                    .predicted >
+                    trendData.hotspotTrends[trendData.hotspotTrends.length - 1]
+                      .potholes +
+                      trendData.hotspotTrends[
+                        trendData.hotspotTrends.length - 1
+                      ].streetlights +
+                      trendData.hotspotTrends[
+                        trendData.hotspotTrends.length - 1
+                      ].water +
+                      trendData.hotspotTrends[
+                        trendData.hotspotTrends.length - 1
+                      ].sanitation
+                    ? "rise"
+                    : "decline"}{" "}
+                  in civic issues based on historical patterns and seasonal
+                  trends.
+                </p>
               </div>
             </CardContent>
           </NeonGradientCard>
         </TabsContent>
 
-        {/* Resource Demand Forecasting */}
+        {/* Resource Demand */}
         <TabsContent value="resource">
           <NeonGradientCard className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-green-500" />
-                Resource Demand Forecasting
+              <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                <Users className="h-5 w-5 text-purple-500" />
+                Resource Demand Analysis
               </CardTitle>
               <CardDescription>
-                Team capacity utilization and demand predictions
+                Weekly resource utilization showing emergency, maintenance, and
+                planned work capacity
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={resourceDemandData}>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      className="opacity-30"
-                    />
-                    <XAxis
-                      dataKey="week"
-                      tick={{ fontSize: 12 }}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      tick={{ fontSize: 12 }}
-                      axisLine={false}
-                      domain={[0, 100]}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Bar
-                      dataKey="maintenance"
-                      fill="#3b82f6"
-                      name="Maintenance Teams"
-                      radius={[2, 2, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="emergency"
-                      fill="#ef4444"
-                      name="Emergency Response"
-                      radius={[2, 2, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="planned"
-                      fill="#10b981"
-                      name="Planned Projects"
-                      radius={[2, 2, 0, 0]}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="capacity"
-                      stroke="#6b7280"
-                      strokeWidth={2}
-                      strokeDasharray="3 3"
-                      name="Team Capacity"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-3 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-1">
-                    <AlertTriangle className="h-4 w-4 text-red-500" />
-                    <span className="font-medium text-sm">Capacity Alert</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Week 3 & 5 showing 95%+ utilization
-                  </p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-1">
-                    <TrendingUp className="h-4 w-4 text-blue-500" />
-                    <span className="font-medium text-sm">Peak Demand</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Emergency response peaks mid-month
-                  </p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-1">
-                    <BarChart3 className="h-4 w-4 text-green-500" />
-                    <span className="font-medium text-sm">Efficiency</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Average 89% resource utilization
-                  </p>
-                </div>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart data={trendData.resourceDemand}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                  <XAxis
+                    dataKey="week"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value}%`}
+                  />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-background border rounded-lg shadow-lg p-3">
+                            <p className="font-semibold mb-2">{label}</p>
+                            {payload.map((entry, index) => (
+                              <p
+                                key={index}
+                                style={{ color: entry.color }}
+                                className="text-sm"
+                              >
+                                {entry.name}: {entry.value}%
+                              </p>
+                            ))}
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="emergency"
+                    stackId="a"
+                    fill="#ef4444"
+                    name="Emergency"
+                    radius={[0, 0, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="maintenance"
+                    stackId="a"
+                    fill="#f59e0b"
+                    name="Maintenance"
+                    radius={[0, 0, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="planned"
+                    stackId="a"
+                    fill="#10b981"
+                    name="Planned"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="capacity"
+                    stroke="#6366f1"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    name="Capacity"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                <p className="text-sm font-medium text-purple-900 dark:text-purple-100">
+                  ⚡ Recommendation: Resource utilization is{" "}
+                  {trendData.resourceDemand.some(
+                    (week) =>
+                      week.emergency + week.maintenance + week.planned > 90,
+                  )
+                    ? "high"
+                    : "optimal"}
+                  . Consider{" "}
+                  {trendData.resourceDemand.some(
+                    (week) =>
+                      week.emergency + week.maintenance + week.planned > 90,
+                  )
+                    ? "deploying additional teams during peak periods"
+                    : "maintaining current resource allocation"}
+                  .
+                </p>
               </div>
             </CardContent>
           </NeonGradientCard>
@@ -486,79 +464,66 @@ export function ChartAreaInteractive() {
         <TabsContent value="performance">
           <NeonGradientCard className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-purple-500" />
-                Department Performance Analytics
+              <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                <Target className="h-5 w-5 text-green-500" />
+                Department Performance Metrics
               </CardTitle>
               <CardDescription>
-                SLA compliance and efficiency metrics by department
+                Comparative analysis of department efficiency and resolution
+                times
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={departmentPerformanceData}
-                    layout="horizontal"
-                  >
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      className="opacity-30"
-                    />
-                    <XAxis
-                      type="number"
-                      domain={[0, 100]}
-                      tick={{ fontSize: 12 }}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      type="category"
-                      dataKey="department"
-                      tick={{ fontSize: 12 }}
-                      axisLine={false}
-                      width={120}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Bar
-                      dataKey="slaCompliance"
-                      fill="#10b981"
-                      name="SLA Compliance %"
-                      radius={[0, 4, 4, 0]}
-                    />
-                    <Bar
-                      dataKey="efficiency"
-                      fill="#3b82f6"
-                      name="Efficiency %"
-                      radius={[0, 4, 4, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                {departmentPerformanceData.map((dept, index) => (
-                  <div key={index} className="p-3 border rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">
-                      {dept.department}
-                    </h4>
-                    <div className="space-y-1 text-xs">
-                      <div className="flex justify-between">
-                        <span>Resolved:</span>
-                        <span className="font-medium">
-                          {dept.resolved}/{dept.total}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>SLA:</span>
-                        <span
-                          className={`font-medium ${dept.slaCompliance > 90 ? "text-green-600" : "text-orange-600"}`}
-                        >
-                          {dept.slaCompliance}%
-                        </span>
-                      </div>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart
+                  data={trendData.departmentPerformance}
+                  layout="vertical"
+                  margin={{ left: 120 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                  <XAxis type="number" stroke="#888888" fontSize={12} />
+                  <YAxis
+                    type="category"
+                    dataKey="department"
+                    stroke="#888888"
+                    fontSize={12}
+                    width={110}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar
+                    dataKey="resolved"
+                    fill="#10b981"
+                    name="Resolved"
+                    radius={[0, 4, 4, 0]}
+                  />
+                  <Bar
+                    dataKey="pending"
+                    fill="#f59e0b"
+                    name="Pending"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {trendData.departmentPerformance
+                  .sort((a, b) => a.avgTime - b.avgTime)
+                  .slice(0, 3)
+                  .map((dept, index) => (
+                    <div
+                      key={dept.department}
+                      className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg"
+                    >
+                      <p className="text-sm font-medium text-green-900 dark:text-green-100">
+                        {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}{" "}
+                        {dept.department}
+                      </p>
+                      <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                        Avg Resolution: {dept.avgTime} days | Resolved:{" "}
+                        {dept.resolved}
+                      </p>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </NeonGradientCard>
@@ -568,80 +533,87 @@ export function ChartAreaInteractive() {
         <TabsContent value="prediction">
           <NeonGradientCard className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-indigo-500" />
+              <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                <Activity className="h-5 w-5 text-indigo-500" />
                 AI Prediction Accuracy
               </CardTitle>
               <CardDescription>
-                Model performance and prediction vs actual issue trends
+                Model accuracy comparison between predicted and actual issue
+                volumes
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={predictionAccuracyData}>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      className="opacity-30"
-                    />
-                    <XAxis
-                      dataKey="month"
-                      tick={{ fontSize: 12 }}
-                      axisLine={false}
-                    />
-                    <YAxis tick={{ fontSize: 12 }} axisLine={false} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="predicted"
-                      stroke="#8b5cf6"
-                      strokeWidth={3}
-                      strokeDasharray="5 5"
-                      name="AI Predicted"
-                      dot={{ fill: "#8b5cf6", strokeWidth: 2, r: 4 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="actual"
-                      stroke="#10b981"
-                      strokeWidth={3}
-                      name="Actual Issues"
-                      dot={{ fill: "#10b981", strokeWidth: 2, r: 4 }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="accuracy"
-                      stroke="#3b82f6"
-                      fill="#3b82f6"
-                      fillOpacity={0.1}
-                      name="Accuracy %"
-                      yAxisId="right"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 border rounded-lg text-center">
-                  <div className="text-2xl font-bold text-green-600">96.2%</div>
-                  <div className="text-sm text-muted-foreground">
-                    Average Accuracy
-                  </div>
-                </div>
-                <div className="p-4 border rounded-lg text-center">
-                  <div className="text-2xl font-bold text-blue-600">±2.1</div>
-                  <div className="text-sm text-muted-foreground">
-                    Average Deviation
-                  </div>
-                </div>
-                <div className="p-4 border rounded-lg text-center">
-                  <div className="text-2xl font-bold text-purple-600">
-                    7 days
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Prediction Window
-                  </div>
-                </div>
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart data={trendData.predictionAccuracy}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                  <XAxis
+                    dataKey="week"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    yAxisId="left"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value}%`}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="predicted"
+                    stroke="#8b5cf6"
+                    strokeWidth={3}
+                    dot={{ fill: "#8b5cf6", r: 5 }}
+                    name="Predicted Issues"
+                  />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="actual"
+                    stroke="#06b6d4"
+                    strokeWidth={3}
+                    dot={{ fill: "#06b6d4", r: 5 }}
+                    name="Actual Issues"
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="accuracy"
+                    stroke="#10b981"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    name="Accuracy %"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+              <div className="mt-4 p-4 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
+                <p className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
+                  🤖 Model Performance: Average prediction accuracy is{" "}
+                  {trendData.predictionAccuracy.length > 0
+                    ? Math.round(
+                        trendData.predictionAccuracy.reduce(
+                          (sum, week) => sum + week.accuracy,
+                          0,
+                        ) / trendData.predictionAccuracy.length,
+                      )
+                    : 0}
+                  %, enabling proactive resource planning and issue prevention
+                  strategies.
+                </p>
               </div>
             </CardContent>
           </NeonGradientCard>
