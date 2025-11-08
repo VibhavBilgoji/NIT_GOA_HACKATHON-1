@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AlertCircle, TrendingUp, Shield, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ShuffleText } from "@/components/shuffle-text";
 
 export default function Home() {
   return (
@@ -19,10 +20,10 @@ export default function Home() {
             </div>
 
             <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-black dark:text-white sm:text-5xl md:text-6xl lg:text-7xl">
-              Empower Your Community with{" "}
-              <span className="underline decoration-gray-300 dark:decoration-gray-700 underline-offset-8">
-                CityPulse
-              </span>
+              <ShuffleText
+                text="Empower Your Community with CityPulse"
+                className="inline-block"
+              />
             </h1>
 
             <p className="max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400 sm:text-xl">
