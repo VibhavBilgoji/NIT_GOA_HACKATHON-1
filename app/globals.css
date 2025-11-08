@@ -115,8 +115,13 @@
     * {
         @apply border-border outline-ring/50;
     }
+    html {
+        overflow-x: hidden;
+    }
     body {
         @apply text-foreground;
         background: transparent;
+        position: relative;
+        overflow-x: hidden;
     }
 }
