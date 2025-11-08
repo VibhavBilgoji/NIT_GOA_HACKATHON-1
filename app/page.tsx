@@ -24,7 +24,7 @@ export default function Home() {
 
             <div className="relative flex h-auto w-full flex-col items-center justify-center overflow-hidden">
               <ShuffleText
-                text="Empower Your Community with CityPulse"
+                text="Empower Your Community with OurStreet"
                 tag="h1"
                 className="pointer-events-none z-10 max-w-4xl text-4xl font-bold tracking-tight text-black dark:text-white sm:text-5xl md:text-6xl lg:text-7xl"
                 shuffleDirection="right"
@@ -98,7 +98,7 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="mb-16 text-center">
               <h2 className="text-3xl font-bold text-black dark:text-white sm:text-4xl">
-                Why CityPulse?
+                Why OurStreet?
               </h2>
               <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
                 Bridging the gap between citizens and municipal authorities
@@ -191,7 +191,7 @@ export default function Home() {
                 </p>
                 <p className="text-lg leading-relaxed">
                   <strong className="text-black dark:text-white">
-                    CityPulse
+                    OurStreet
                   </strong>{" "}
                   provides a smart, transparent, and community-driven platform
                   that enables effortless issue reporting, real-time tracking,
@@ -211,7 +211,7 @@ export default function Home() {
               Ready to Make a Difference?
             </h2>
             <p className="mb-8 text-lg text-gray-600 dark:text-gray-400">
-              Join CityPulse today and help build a better community
+              Join OurStreet today and help build a better community
             </p>
             <Button
               asChild
@@ -231,11 +231,11 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <MapPin className="size-5 text-black dark:text-white" />
               <span className="font-semibold text-black dark:text-white">
-                CityPulse
+                OurStreet
               </span>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © 2024 CityPulse. Empowering communities through technology.
+              © 2024 OurStreet. Empowering communities through technology.
             </p>
           </div>
         </div>
