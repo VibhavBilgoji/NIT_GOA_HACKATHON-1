@@ -1,11 +1,22 @@
-// Analytics utilities for CityPulse
-import { Issue, IssueCategory, IssuePriority, WardAnalytics, IssueHotspot, TrendData, ImpactReport, PublicStats } from "./types";
+// Analytics utilities for OurStreet
+import {
+  Issue,
+  IssueCategory,
+  IssuePriority,
+  WardAnalytics,
+  IssueHotspot,
+  TrendData,
+  ImpactReport,
+  PublicStats,
+} from "./types";
 
 /**
  * Calculate average resolution time for a set of issues
  */
 export function calculateAverageResolutionTime(issues: Issue[]): number {
-  const resolvedIssues = issues.filter((i) => i.status === "resolved" && i.resolvedAt);
+  const resolvedIssues = issues.filter(
+    (i) => i.status === "resolved" && i.resolvedAt,
+  );
 
   if (resolvedIssues.length === 0) return 0;
 
@@ -27,11 +38,16 @@ export function getWardAnalytics(issues: Issue[], ward: string): WardAnalytics {
 
   const totalIssues = wardIssues.length;
   const openIssues = wardIssues.filter((i) => i.status === "open").length;
-  const inProgressIssues = wardIssues.filter((i) => i.status === "in-progress").length;
-  const resolvedIssues = wardIssues.filter((i) => i.status === "resolved").length;
+  const inProgressIssues = wardIssues.filter(
+    (i) => i.status === "in-progress",
+  ).length;
+  const resolvedIssues = wardIssues.filter(
+    (i) => i.status === "resolved",
+  ).length;
 
   const averageResolutionTime = calculateAverageResolutionTime(wardIssues);
-  const resolutionRate = totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 0;
+  const resolutionRate =
+    totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 0;
 
   // Category breakdown
   const categoryMap = new Map<IssueCategory, number>();
@@ -40,10 +56,12 @@ export function getWardAnalytics(issues: Issue[], ward: string): WardAnalytics {
     categoryMap.set(issue.category, count + 1);
   });
 
-  const categoryBreakdown = Array.from(categoryMap.entries()).map(([category, count]) => ({
-    category,
-    count,
-  }));
+  const categoryBreakdown = Array.from(categoryMap.entries()).map(
+    ([category, count]) => ({
+      category,
+      count,
+    }),
+  );
 
   // Priority breakdown
   const priorityMap = new Map<IssuePriority, number>();
@@ -52,10 +70,12 @@ export function getWardAnalytics(issues: Issue[], ward: string): WardAnalytics {
     priorityMap.set(issue.priority, count + 1);
   });
 
-  const priorityBreakdown = Array.from(priorityMap.entries()).map(([priority, count]) => ({
-    priority,
-    count,
-  }));
+  const priorityBreakdown = Array.from(priorityMap.entries()).map(
+    ([priority, count]) => ({
+      priority,
+      count,
+    }),
+  );
 
   return {
     ward,
@@ -73,7 +93,10 @@ export function getWardAnalytics(issues: Issue[], ward: string): WardAnalytics {
 /**
  * Identify issue hotspots based on location clustering
  */
-export function identifyHotspots(issues: Issue[], radiusKm: number = 0.5): IssueHotspot[] {
+export function identifyHotspots(
+  issues: Issue[],
+  radiusKm: number = 0.5,
+): IssueHotspot[] {
   const hotspots: IssueHotspot[] = [];
   const processedIssues = new Set<string>();
 
@@ -87,7 +110,7 @@ export function identifyHotspots(issues: Issue[], radiusKm: number = 0.5): Issue
         issue.coordinates.lat,
         issue.coordinates.lng,
         other.coordinates.lat,
-        other.coordinates.lng
+        other.coordinates.lng,
       );
       return distance <= radiusKm;
     });
@@ -97,15 +120,25 @@ export function identifyHotspots(issues: Issue[], radiusKm: number = 0.5): Issue
       nearbyIssues.forEach((i) => processedIssues.add(i.id));
 
       // Calculate centroid
-      const avgLat = nearbyIssues.reduce((sum, i) => sum + i.coordinates.lat, 0) / nearbyIssues.length;
-      const avgLng = nearbyIssues.reduce((sum, i) => sum + i.coordinates.lng, 0) / nearbyIssues.length;
+      const avgLat =
+        nearbyIssues.reduce((sum, i) => sum + i.coordinates.lat, 0) /
+        nearbyIssues.length;
+      const avgLng =
+        nearbyIssues.reduce((sum, i) => sum + i.coordinates.lng, 0) /
+        nearbyIssues.length;
 
       // Get unique categories
-      const categories = Array.from(new Set(nearbyIssues.map((i) => i.category)));
+      const categories = Array.from(
+        new Set(nearbyIssues.map((i) => i.category)),
+      );
 
       // Determine severity
-      const criticalCount = nearbyIssues.filter((i) => i.priority === "critical").length;
-      const highCount = nearbyIssues.filter((i) => i.priority === "high").length;
+      const criticalCount = nearbyIssues.filter(
+        (i) => i.priority === "critical",
+      ).length;
+      const highCount = nearbyIssues.filter(
+        (i) => i.priority === "high",
+      ).length;
 
       let severity: "low" | "medium" | "high" | "critical" = "low";
       if (criticalCount > 0) severity = "critical";
@@ -132,14 +165,22 @@ export function identifyHotspots(issues: Issue[], radiusKm: number = 0.5): Issue
 /**
  * Calculate distance between two coordinates in kilometers
  */
-function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+function calculateDistance(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): number {
   const R = 6371; // Earth's radius in km
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
 
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
@@ -152,12 +193,18 @@ function toRad(degrees: number): number {
 /**
  * Generate trend data for a date range
  */
-export function generateTrendData(issues: Issue[], days: number = 30): TrendData[] {
+export function generateTrendData(
+  issues: Issue[],
+  days: number = 30,
+): TrendData[] {
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
-  const trendMap = new Map<string, { open: number; resolved: number; new: number }>();
+  const trendMap = new Map<
+    string,
+    { open: number; resolved: number; new: number }
+  >();
 
   // Initialize all dates
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
@@ -175,7 +222,9 @@ export function generateTrendData(issues: Issue[], days: number = 30): TrendData
 
     // Count resolved issues per day
     if (issue.resolvedAt) {
-      const resolvedDate = new Date(issue.resolvedAt).toISOString().split("T")[0];
+      const resolvedDate = new Date(issue.resolvedAt)
+        .toISOString()
+        .split("T")[0];
       if (trendMap.has(resolvedDate)) {
         const data = trendMap.get(resolvedDate)!;
         data.resolved += 1;
@@ -210,7 +259,7 @@ export function generateTrendData(issues: Issue[], days: number = 30): TrendData
 export function generateImpactReport(
   issues: Issue[],
   wards: string[],
-  dateRange?: { start: string; end: string }
+  dateRange?: { start: string; end: string },
 ): ImpactReport {
   let filteredIssues = issues;
 
@@ -225,12 +274,17 @@ export function generateImpactReport(
   }
 
   const totalIssues = filteredIssues.length;
-  const resolvedIssues = filteredIssues.filter((i) => i.status === "resolved").length;
+  const resolvedIssues = filteredIssues.filter(
+    (i) => i.status === "resolved",
+  ).length;
   const averageResolutionTime = calculateAverageResolutionTime(filteredIssues);
-  const resolutionRate = totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 0;
+  const resolutionRate =
+    totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 0;
 
   // Ward analytics
-  const wardAnalytics = wards.map((ward) => getWardAnalytics(filteredIssues, ward));
+  const wardAnalytics = wards.map((ward) =>
+    getWardAnalytics(filteredIssues, ward),
+  );
 
   // Hotspots
   const hotspots = identifyHotspots(filteredIssues);
@@ -246,12 +300,15 @@ export function generateImpactReport(
     categoryMap.set(issue.category, categoryIssues);
   });
 
-  const categoryPerformance = Array.from(categoryMap.entries()).map(([category, categoryIssues]) => ({
-    category,
-    totalIssues: categoryIssues.length,
-    resolvedIssues: categoryIssues.filter((i) => i.status === "resolved").length,
-    averageResolutionTime: calculateAverageResolutionTime(categoryIssues),
-  }));
+  const categoryPerformance = Array.from(categoryMap.entries()).map(
+    ([category, categoryIssues]) => ({
+      category,
+      totalIssues: categoryIssues.length,
+      resolvedIssues: categoryIssues.filter((i) => i.status === "resolved")
+        .length,
+      averageResolutionTime: calculateAverageResolutionTime(categoryIssues),
+    }),
+  );
 
   // Determine date range
   let reportDateRange = dateRange;
@@ -289,10 +346,16 @@ export function generateImpactReport(
 /**
  * Generate public-facing statistics (anonymized)
  */
-export function generatePublicStats(issues: Issue[], users: number): PublicStats {
+export function generatePublicStats(
+  issues: Issue[],
+  users: number,
+): PublicStats {
   const totalIssuesReported = issues.length;
   const issuesResolved = issues.filter((i) => i.status === "resolved").length;
-  const resolutionRate = totalIssuesReported > 0 ? Math.round((issuesResolved / totalIssuesReported) * 100) : 0;
+  const resolutionRate =
+    totalIssuesReported > 0
+      ? Math.round((issuesResolved / totalIssuesReported) * 100)
+      : 0;
   const averageResolutionTime = calculateAverageResolutionTime(issues);
 
   // Ward performance
@@ -305,22 +368,32 @@ export function generatePublicStats(issues: Issue[], users: number): PublicStats
     }
   });
 
-  const wardPerformance = Array.from(wardMap.entries()).map(([ward, wardIssues]) => ({
-    ward,
-    issuesReported: wardIssues.length,
-    issuesResolved: wardIssues.filter((i) => i.status === "resolved").length,
-    resolutionRate: Math.round((wardIssues.filter((i) => i.status === "resolved").length / wardIssues.length) * 100),
-  }));
+  const wardPerformance = Array.from(wardMap.entries()).map(
+    ([ward, wardIssues]) => ({
+      ward,
+      issuesReported: wardIssues.length,
+      issuesResolved: wardIssues.filter((i) => i.status === "resolved").length,
+      resolutionRate: Math.round(
+        (wardIssues.filter((i) => i.status === "resolved").length /
+          wardIssues.length) *
+          100,
+      ),
+    }),
+  );
 
   // Recent resolutions (last 10)
   const recentlyResolved = issues
     .filter((i) => i.status === "resolved" && i.resolvedAt)
-    .sort((a, b) => new Date(b.resolvedAt!).getTime() - new Date(a.resolvedAt!).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.resolvedAt!).getTime() - new Date(a.resolvedAt!).getTime(),
+    )
     .slice(0, 10)
     .map((issue) => {
       const created = new Date(issue.createdAt).getTime();
       const resolved = new Date(issue.resolvedAt!).getTime();
-      const resolutionTime = Math.round((resolved - created) / (1000 * 60 * 60 * 24) * 10) / 10;
+      const resolutionTime =
+        Math.round(((resolved - created) / (1000 * 60 * 60 * 24)) * 10) / 10;
 
       return {
         id: issue.id,
@@ -333,7 +406,10 @@ export function generatePublicStats(issues: Issue[], users: number): PublicStats
     });
 
   // Category stats
-  const categoryMap = new Map<IssueCategory, { total: number; resolved: number }>();
+  const categoryMap = new Map<
+    IssueCategory,
+    { total: number; resolved: number }
+  >();
   issues.forEach((issue) => {
     const stats = categoryMap.get(issue.category) || { total: 0, resolved: 0 };
     stats.total += 1;
@@ -341,11 +417,13 @@ export function generatePublicStats(issues: Issue[], users: number): PublicStats
     categoryMap.set(issue.category, stats);
   });
 
-  const categoryStats = Array.from(categoryMap.entries()).map(([category, stats]) => ({
-    category,
-    count: stats.total,
-    resolvedCount: stats.resolved,
-  }));
+  const categoryStats = Array.from(categoryMap.entries()).map(
+    ([category, stats]) => ({
+      category,
+      count: stats.total,
+      resolvedCount: stats.resolved,
+    }),
+  );
 
   return {
     totalIssuesReported,
@@ -365,14 +443,14 @@ export function generatePublicStats(issues: Issue[], users: number): PublicStats
 export function formatResolutionTime(days: number): string {
   if (days < 1) {
     const hours = Math.round(days * 24);
-    return `${hours} hour${hours !== 1 ? 's' : ''}`;
+    return `${hours} hour${hours !== 1 ? "s" : ""}`;
   } else if (days < 7) {
-    return `${Math.round(days)} day${Math.round(days) !== 1 ? 's' : ''}`;
+    return `${Math.round(days)} day${Math.round(days) !== 1 ? "s" : ""}`;
   } else if (days < 30) {
     const weeks = Math.round(days / 7);
-    return `${weeks} week${weeks !== 1 ? 's' : ''}`;
+    return `${weeks} week${weeks !== 1 ? "s" : ""}`;
   } else {
     const months = Math.round(days / 30);
-    return `${months} month${months !== 1 ? 's' : ''}`;
+    return `${months} month${months !== 1 ? "s" : ""}`;
   }
 }

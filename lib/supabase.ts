@@ -1,4 +1,4 @@
-// Supabase client configuration for CityPulse
+// Supabase client configuration for OurStreet
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 // Get Supabase credentials from environment variables

@@ -1,4 +1,4 @@
-// Database types and interfaces for CityPulse
+// Database types and interfaces for OurStreet
 
 export interface User {
   id: string;

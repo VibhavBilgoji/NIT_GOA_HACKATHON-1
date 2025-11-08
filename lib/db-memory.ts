@@ -249,7 +249,7 @@ export async function seedDatabase() {
 
   const admin = await userDb.create({
     name: "Admin User",
-    email: "admin@citypulse.com",
+    email: "admin@ourstreet.com",
     password: await hashPassword("Admin1234"), // Password: Admin1234
     role: "admin",
   });

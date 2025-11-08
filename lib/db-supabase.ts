@@ -1,4 +1,4 @@
-// Supabase database operations for CityPulse
+// Supabase database operations for OurStreet
 // This replaces the in-memory database with persistent Supabase storage
 
 import { supabase } from "./supabase";

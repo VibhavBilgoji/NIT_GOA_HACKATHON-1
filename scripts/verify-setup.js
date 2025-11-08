@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-// Verification script for CityPulse Supabase setup
+// Verification script for OurStreet Supabase setup
 const fs = require("fs");
 const path = require("path");
 
-console.log("🔍 CityPulse Setup Verification\n");
+console.log("🔍 OurStreet Setup Verification\n");
 
 // Check 1: .env.local file
 console.log("1️⃣ Checking .env.local file...");

@@ -44,7 +44,8 @@ export async function GET(request: NextRequest) {
       dbResponseTime = Date.now() - dbCheckStart;
       dbStatus = "up";
     } catch (error) {
-      dbError = error instanceof Error ? error.message : "Database check failed";
+      dbError =
+        error instanceof Error ? error.message : "Database check failed";
       dbStatus = "down";
     }
 
@@ -142,7 +143,7 @@ export async function GET(request: NextRequest) {
           "Cache-Control": "no-cache, no-store, must-revalidate",
           "X-Response-Time": `${Date.now() - checkStartTime}ms`,
         },
-      }
+      },
     );
   }
 }

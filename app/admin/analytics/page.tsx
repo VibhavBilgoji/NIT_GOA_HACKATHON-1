@@ -148,7 +148,7 @@ export default function AnalyticsPage() {
   };
 
   const generateCSVReport = (report: ImpactReport): string => {
-    let csv = "CityPulse Impact Report\n\n";
+    let csv = "OurStreet Impact Report\n\n";
     csv += `Date Range:,${new Date(report.dateRange.start).toLocaleDateString()},to,${new Date(report.dateRange.end).toLocaleDateString()}\n\n`;
     csv += "Summary Statistics\n";
     csv += `Total Issues,${report.summary.totalIssues}\n`;

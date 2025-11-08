@@ -1,8 +1,12 @@
-// Notification utilities for CityPulse
+// Notification utilities for OurStreet
 // Supports email notifications via Resend API
 // SMS can be integrated with Twilio or similar service
 
-import { NotificationPayload, NotificationResponse, IssueStatus } from "./types";
+import {
+  NotificationPayload,
+  NotificationResponse,
+  IssueStatus,
+} from "./types";
 
 /**
  * Send email notification using Resend API
@@ -11,7 +15,7 @@ import { NotificationPayload, NotificationResponse, IssueStatus } from "./types"
 export async function sendEmailNotification(
   to: string,
   subject: string,
-  htmlContent: string
+  htmlContent: string,
 ): Promise<NotificationResponse> {
   const apiKey = process.env.RESEND_API_KEY;
 
@@ -31,7 +35,8 @@ export async function sendEmailNotification(
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        from: process.env.EMAIL_FROM || "CityPulse <notifications@citypulse.app>",
+        from:
+          process.env.EMAIL_FROM || "OurStreet <notifications@ourstreet.app>",
         to: [to],
         subject,
         html: htmlContent,
@@ -67,7 +72,7 @@ export async function sendEmailNotification(
  */
 export async function sendSMSNotification(
   to: string,
-  message: string
+  message: string,
 ): Promise<NotificationResponse> {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -96,7 +101,7 @@ export async function sendSMSNotification(
           From: fromPhone,
           Body: message,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -126,20 +131,28 @@ export async function sendSMSNotification(
  * Send notification based on payload
  */
 export async function sendNotification(
-  payload: NotificationPayload
+  payload: NotificationPayload,
 ): Promise<{ email?: NotificationResponse; sms?: NotificationResponse }> {
-  const results: { email?: NotificationResponse; sms?: NotificationResponse } = {};
+  const results: { email?: NotificationResponse; sms?: NotificationResponse } =
+    {};
 
   // Generate email content
   if (payload.recipient.email) {
     const { subject, html } = generateEmailContent(payload);
-    results.email = await sendEmailNotification(payload.recipient.email, subject, html);
+    results.email = await sendEmailNotification(
+      payload.recipient.email,
+      subject,
+      html,
+    );
   }
 
   // Generate SMS content
   if (payload.recipient.phone) {
     const smsMessage = generateSMSContent(payload);
-    results.sms = await sendSMSNotification(payload.recipient.phone, smsMessage);
+    results.sms = await sendSMSNotification(
+      payload.recipient.phone,
+      smsMessage,
+    );
   }
 
   return results;
@@ -148,7 +161,10 @@ export async function sendNotification(
 /**
  * Generate email content based on notification type
  */
-function generateEmailContent(payload: NotificationPayload): { subject: string; html: string } {
+function generateEmailContent(payload: NotificationPayload): {
+  subject: string;
+  html: string;
+} {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const issueUrl = `${baseUrl}/issues/${payload.issueId}`;
 
@@ -189,7 +205,7 @@ function generateEmailContent(payload: NotificationPayload): { subject: string; 
                   <p>Thank you for helping improve our community!</p>
                 </div>
                 <div class="footer">
-                  <p>CityPulse - Community Issue Tracking</p>
+                  <p>OurStreet - Community Issue Tracking</p>
                   <p>This is an automated notification. Please do not reply to this email.</p>
                 </div>
               </div>
@@ -230,7 +246,7 @@ function generateEmailContent(payload: NotificationPayload): { subject: string; 
                   <p><em>Please feel free to view the before/after photos and leave feedback.</em></p>
                 </div>
                 <div class="footer">
-                  <p>CityPulse - Community Issue Tracking</p>
+                  <p>OurStreet - Community Issue Tracking</p>
                   <p>This is an automated notification. Please do not reply to this email.</p>
                 </div>
               </div>
@@ -270,7 +286,7 @@ function generateEmailContent(payload: NotificationPayload): { subject: string; 
                   <a href="${issueUrl}" class="button">View Issue & Reply</a>
                 </div>
                 <div class="footer">
-                  <p>CityPulse - Community Issue Tracking</p>
+                  <p>OurStreet - Community Issue Tracking</p>
                   <p>This is an automated notification. Please do not reply to this email.</p>
                 </div>
               </div>
@@ -311,7 +327,7 @@ function generateEmailContent(payload: NotificationPayload): { subject: string; 
                   <p>Please review the issue details and update the status accordingly.</p>
                 </div>
                 <div class="footer">
-                  <p>CityPulse - Community Issue Tracking</p>
+                  <p>OurStreet - Community Issue Tracking</p>
                   <p>This is an automated notification. Please do not reply to this email.</p>
                 </div>
               </div>
@@ -346,19 +362,19 @@ function generateSMSContent(payload: NotificationPayload): string {
 
   switch (payload.type) {
     case "status_change":
-      return `CityPulse: Issue "${payload.issueTitle}" status changed to ${payload.data.newStatus?.toUpperCase()}. View: ${issueUrl}`;
+      return `OurStreet: Issue "${payload.issueTitle}" status changed to ${payload.data.newStatus?.toUpperCase()}. View: ${issueUrl}`;
 
     case "resolution":
-      return `CityPulse: Great news! Your issue "${payload.issueTitle}" has been RESOLVED. View photos: ${issueUrl}`;
+      return `OurStreet: Great news! Your issue "${payload.issueTitle}" has been RESOLVED. View photos: ${issueUrl}`;
 
     case "comment":
-      return `CityPulse: New comment on "${payload.issueTitle}". View: ${issueUrl}`;
+      return `OurStreet: New comment on "${payload.issueTitle}". View: ${issueUrl}`;
 
     case "assignment":
-      return `CityPulse: Issue "${payload.issueTitle}" assigned to you. View: ${issueUrl}`;
+      return `OurStreet: Issue "${payload.issueTitle}" assigned to you. View: ${issueUrl}`;
 
     default:
-      return `CityPulse: Update on "${payload.issueTitle}". View: ${issueUrl}`;
+      return `OurStreet: Update on "${payload.issueTitle}". View: ${issueUrl}`;
   }
 }
 

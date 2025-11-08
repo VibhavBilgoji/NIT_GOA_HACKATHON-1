@@ -1,4 +1,4 @@
-// Notification trigger utilities for CityPulse
+// Notification trigger utilities for OurStreet
 // Automatically sends notifications when issue status changes
 
 import { Issue, IssueStatus, NotificationPayload } from "./types";

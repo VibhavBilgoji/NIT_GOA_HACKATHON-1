@@ -1,4 +1,4 @@
-// API Client for CityPulse frontend
+// API Client for OurStreet frontend
 // Handles all API requests with authentication
 
 import Cookies from "js-cookie";
@@ -25,8 +25,8 @@ export interface AuthUser {
 }
 
 // Token management
-const TOKEN_KEY = "citypulse_token";
-const USER_KEY = "citypulse_user";
+const TOKEN_KEY = "ourstreet_token";
+const USER_KEY = "ourstreet_user";
 
 // Base API URL
 const API_BASE_URL =

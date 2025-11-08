@@ -1,4 +1,4 @@
-// Database layer for CityPulse
+// Database layer for OurStreet
 // Automatically uses Supabase when configured, otherwise falls back to in-memory storage
 
 import { isSupabaseConfigured } from "./supabase";

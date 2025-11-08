@@ -1,4 +1,4 @@
-// Database Schema Types for CityPulse
+// Database Schema Types for OurStreet
 
 export interface User {
   id: string;
@@ -51,7 +51,12 @@ export type IssueCategory =
   | "drainage"
   | "other";
 
-export type IssueStatus = "open" | "in_progress" | "resolved" | "closed" | "rejected";
+export type IssueStatus =
+  | "open"
+  | "in_progress"
+  | "resolved"
+  | "closed"
+  | "rejected";
 
 export type IssuePriority = "low" | "medium" | "high" | "critical";
 

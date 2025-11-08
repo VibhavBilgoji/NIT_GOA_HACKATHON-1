@@ -1,4 +1,4 @@
--- CityPulse Database Schema for Supabase
+-- OurStreet Database Schema for Supabase
 -- Run this in Supabase SQL Editor to set up the database
 
 -- Enable UUID extension
@@ -200,7 +200,7 @@ CREATE POLICY "Users can delete own votes" ON votes
 INSERT INTO users (id, name, email, password, role, created_at) VALUES
   ('550e8400-e29b-41d4-a716-446655440001'::UUID, 'John Doe', 'john@example.com', '$2b$10$P0XqvSRbQhS6Xy5hnp3g/OH5Qce90q1aq810DJJYOW5rRk7evX4Hy', 'citizen', NOW()),
   ('550e8400-e29b-41d4-a716-446655440002'::UUID, 'Jane Smith', 'jane@example.com', '$2b$10$P0XqvSRbQhS6Xy5hnp3g/OH5Qce90q1aq810DJJYOW5rRk7evX4Hy', 'citizen', NOW()),
-  ('550e8400-e29b-41d4-a716-446655440003'::UUID, 'Admin User', 'admin@citypulse.com', '$2b$10$Ut7Ku4Dlnf0CUX4wjKHVAuTCCW2kFlp7QodpsCjsessXvlZ1rYqtK', 'admin', NOW())
+  ('550e8400-e29b-41d4-a716-446655440003'::UUID, 'Admin User', 'admin@ourstreet.com', '$2b$10$Ut7Ku4Dlnf0CUX4wjKHVAuTCCW2kFlp7QodpsCjsessXvlZ1rYqtK', 'admin', NOW())
 ON CONFLICT (email) DO NOTHING;
 
 -- Insert sample issues
