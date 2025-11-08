@@ -10,7 +10,7 @@ export function LaserFlowBackground() {
         top: 0,
         left: 0,
         width: "100%",
-        height: "600px",
+        height: "700px",
         pointerEvents: "none",
         margin: 0,
         padding: 0,
