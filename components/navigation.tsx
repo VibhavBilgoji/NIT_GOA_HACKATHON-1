@@ -95,10 +95,6 @@ export function Navigation() {
           )}
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-100 dark:bg-gray-900">
-                <User className="size-4" />
-                <span className="text-sm font-medium">{user.name}</span>
-              </div>
               <Button
                 variant="ghost"
                 size="sm"
