@@ -35,12 +35,17 @@ import toast from "react-hot-toast";
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { WARDS } from "@/lib/types";
 
 interface FilePreview {
   file: File;
   preview: string;
 }
+=======
+import { getAuthToken } from "@/lib/api-client";
+import { IssueCategory } from "@/lib/types";
+>>>>>>> Stashed changes
 =======
 import { getAuthToken } from "@/lib/api-client";
 import { IssueCategory } from "@/lib/types";
@@ -140,6 +145,7 @@ export default function ReportIssuePage() {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   const removeFile = (index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
@@ -183,6 +189,8 @@ export default function ReportIssuePage() {
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
   // Map UI categories to API categories
   const mapCategoryToAPI = (uiCategory: string): IssueCategory => {
     const categoryMap: Record<string, IssueCategory> = {
@@ -199,6 +207,9 @@ export default function ReportIssuePage() {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -226,11 +237,14 @@ export default function ReportIssuePage() {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       toast.error("Description must be at least 20 characters");
       return;
     }
 
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -252,6 +266,9 @@ export default function ReportIssuePage() {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -263,6 +280,7 @@ export default function ReportIssuePage() {
     let photoUrl: string | undefined;
 
     try {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -413,6 +431,37 @@ export default function ReportIssuePage() {
       }
 
 >>>>>>> Stashed changes
+=======
+      // Step 1: Upload photo if provided
+      if (formData.photo) {
+        const uploadToast = toast.loading("Uploading photo...");
+
+        const uploadFormData = new FormData();
+        uploadFormData.append("files", formData.photo);
+
+        const headers: HeadersInit = {};
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers,
+          body: uploadFormData,
+        });
+
+        const uploadResult = await uploadResponse.json();
+        toast.dismiss(uploadToast);
+
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || "Failed to upload photo");
+        }
+
+        photoUrl = uploadResult.url || uploadResult.urls?.[0];
+        toast.success("Photo uploaded successfully!");
+      }
+
+>>>>>>> Stashed changes
       // Step 2: Create the issue
       const submitToast = toast.loading("Submitting report...");
 
@@ -429,6 +478,9 @@ export default function ReportIssuePage() {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -440,6 +492,7 @@ export default function ReportIssuePage() {
           lat: location.lat,
           lng: location.lng,
         },
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -646,6 +699,48 @@ export default function ReportIssuePage() {
       }, 1500);
     } catch (error) {
 >>>>>>> Stashed changes
+=======
+        photoUrl: photoUrl,
+      };
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const issueResponse = await fetch("/api/issues", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(issueData),
+      });
+
+      const issueResult = await issueResponse.json();
+      toast.dismiss(submitToast);
+
+      if (!issueResult.success) {
+        throw new Error(issueResult.error || "Failed to create issue");
+      }
+
+      toast.success("Issue reported successfully!");
+
+      // Reset form
+      setFormData({
+        title: "",
+        category: "",
+        description: "",
+        photo: null,
+      });
+      setSelectedImage(null);
+      setLocation(null);
+
+      // Redirect to map page with a delay to show success message
+      setTimeout(() => {
+        router.push("/map");
+      }, 1500);
+    } catch (error) {
+>>>>>>> Stashed changes
       console.error("Error submitting report:", error);
       const errorMessage =
         error instanceof Error
@@ -655,6 +750,9 @@ export default function ReportIssuePage() {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
