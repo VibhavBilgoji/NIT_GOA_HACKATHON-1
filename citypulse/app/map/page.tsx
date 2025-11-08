@@ -31,6 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InteractiveMap } from "@/components/interactive-map";
 
 // Mock issues data
 const mockIssues = [
@@ -39,7 +40,7 @@ const mockIssues = [
     title: "Pothole on Main Street",
     description: "Large pothole causing traffic issues",
     category: "Road",
-    status: "open",
+    status: "open" as const,
     location: { lat: 15.4909, lng: 73.8278 },
     address: "Main Street, Panjim",
     date: "2024-01-15",
@@ -49,7 +50,7 @@ const mockIssues = [
     title: "Broken Streetlight",
     description: "Streetlight not working since last week",
     category: "Lighting",
-    status: "in-progress",
+    status: "in-progress" as const,
     location: { lat: 15.4989, lng: 73.8345 },
     address: "Church Square, Panjim",
     date: "2024-01-14",
@@ -59,7 +60,7 @@ const mockIssues = [
     title: "Overflowing Garbage Bin",
     description: "Garbage bin overflowing for 3 days",
     category: "Sanitation",
-    status: "resolved",
+    status: "resolved" as const,
     location: { lat: 15.485, lng: 73.825 },
     address: "Market Area, Panjim",
     date: "2024-01-13",
@@ -69,7 +70,7 @@ const mockIssues = [
     title: "Water Leak",
     description: "Continuous water leak from pipe",
     category: "Water",
-    status: "open",
+    status: "open" as const,
     location: { lat: 15.495, lng: 73.83 },
     address: "Residency Road, Panjim",
     date: "2024-01-12",
@@ -320,37 +321,35 @@ export default function MapPage() {
 
           {/* Map and Issues */}
           <div className="grid gap-6 lg:grid-cols-2">
-            {/* Map Placeholder */}
+            {/* Interactive Map */}
             <Card className="border-gray-200 dark:border-gray-800">
               <CardHeader>
                 <CardTitle className="text-black dark:text-white">
                   Interactive City Map
                 </CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Click on markers to view issue details. Color-coded by status:
+                </p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <Badge className="bg-red-500 text-white">● Open</Badge>
+                  <Badge className="bg-amber-500 text-white">
+                    ● In Progress
+                  </Badge>
+                  <Badge className="bg-green-500 text-white">● Resolved</Badge>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="relative aspect-square w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                    <MapPin className="mb-4 size-16 text-gray-400 dark:text-gray-600" />
-                    <h3 className="mb-2 text-xl font-semibold text-black dark:text-white">
-                      Interactive Map View
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Color-coded markers showing issue status:
-                    </p>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      <Badge className={statusColors.open}>● Open</Badge>
-                      <Badge className={statusColors["in-progress"]}>
-                        ● In Progress
-                      </Badge>
-                      <Badge className={statusColors.resolved}>
-                        ● Resolved
-                      </Badge>
-                    </div>
-                    <p className="mt-4 text-xs text-gray-500 dark:text-gray-500">
-                      Map integration with Google Maps/Mapbox will be added here
-                    </p>
-                  </div>
-                </div>
+                <InteractiveMap
+                  center={[81.81298, 15.215]}
+                  zoom={12}
+                  markers={mockIssues.map((issue) => ({
+                    id: issue.id,
+                    position: [issue.location.lng, issue.location.lat],
+                    title: issue.title,
+                    status: issue.status,
+                  }))}
+                  onMarkerClick={(id) => setSelectedIssue(id)}
+                />
               </CardContent>
             </Card>
 
