@@ -23,6 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="stylesheet" href="/maptiler-sdk.css" />
+      </head>
       <body className={`${inter.variable} antialiased font-sans`}>
         <ThemeProvider
           attribute="class"
