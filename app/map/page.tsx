@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  MapPin,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-} from "lucide-react";
+import { MapPin, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { InteractiveMap } from "@/components/interactive-map";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,6 +44,13 @@ export default function MapPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
   const [focusOnMarker, setFocusOnMarker] = useState<string | null>(null);
+
+  // Form state
+  const [formTitle, setFormTitle] = useState("");
+  const [formDescription, setFormDescription] = useState("");
+  const [formCategory, setFormCategory] = useState("");
+  const [formPhoto, setFormPhoto] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch issues from API
   useEffect(() => {
@@ -132,7 +134,6 @@ export default function MapPage() {
                 progress in real-time
               </p>
             </div>
-
           </div>
 
           {/* Stats Cards */}

@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { dashboardAPI } from "@/lib/api-client";
+import { dashboardAPI, isAuthenticated } from "@/lib/api-client";
 
 export interface DashboardStats {
   totalActiveIssues: number;
@@ -149,6 +149,12 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch dashboard data using analytics/stats endpoint
   const fetchDashboardData = useCallback(async () => {
+    // Don't fetch if user is not authenticated
+    if (!isAuthenticated()) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -177,15 +183,30 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         });
       } else if (result.error) {
         // API returned an error
-        setError(result.error);
+        // Don't set error for auth failures - user will be redirected to login
+        if (
+          !result.error.includes("Unauthorized") &&
+          !result.error.includes("Authentication required")
+        ) {
+          setError(result.error);
+        }
+        // Silently fail for auth errors since api-client handles redirect
       }
 
       // Note: The API client handles retries internally for 500+ errors
       // We don't need manual retry logic here
     } catch (err) {
+      // Catch any thrown errors (like ApiError from api-client)
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch dashboard data";
-      setError(errorMessage);
+
+      // Don't show error for auth failures - user will be redirected to login
+      if (
+        !errorMessage.includes("Unauthorized") &&
+        !errorMessage.includes("Authentication required")
+      ) {
+        setError(errorMessage);
+      }
 
       // Keep existing default data visible on error
     } finally {
@@ -195,6 +216,11 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
   // Update stats only
   const updateStats = useCallback(async () => {
+    // Don't fetch if user is not authenticated
+    if (!isAuthenticated()) {
+      return;
+    }
+
     try {
       const response = await fetch("/api/analytics/stats");
       const result = await response.json();

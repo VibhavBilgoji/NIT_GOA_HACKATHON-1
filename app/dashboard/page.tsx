@@ -4,14 +4,13 @@ import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { SLAAlertsTable } from "@/components/sla-alerts-table";
 import { SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Bell,
   TrendingUp,
   AlertTriangle,
   Activity,
   MapPin,
-  Users,
-  Clock,
   RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -19,7 +18,6 @@ import { useEffect } from "react";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
 import { RotatingText } from "@/components/magicui/rotating-text";
 import { useDashboard } from "@/contexts/dashboard-context";
-import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const {
@@ -53,6 +51,20 @@ export default function Page() {
       return () => clearTimeout(timer);
     }
   }, [slaAlerts, stats.criticalIssuesPending]);
+
+  const getActivityIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "resolved":
+        return "🟢";
+      case "critical":
+        return "🔴";
+      case "in-progress":
+        return "🟡";
+      case "new":
+      default:
+        return "🔵";
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -121,198 +133,219 @@ export default function Page() {
             {/* SLA Alert System - At-Risk Tickets */}
             <div className="px-4 lg:px-6">
               <div className="mb-4">
-                <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-2">
-                  <AlertTriangle className="h-6 w-6 text-red-500" />
+                <h2 className="text-2xl font-bold tracking-tight mb-2">
                   SLA Alert System - At-Risk Tickets
                 </h2>
                 <p className="text-muted-foreground">
-                  Critical civic issues requiring immediate attention with
-                  automated alerts
+                  Monitor tickets approaching SLA deadlines to prioritize
+                  interventions
                 </p>
               </div>
               <SLAAlertsTable />
             </div>
 
-            {/* Additional Insights Grid */}
+            {/* Recent Activity & Insights Grid */}
             <div className="px-4 lg:px-6">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {/* Real-time Activity Feed */}
-                <NeonGradientCard className="transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer">
-                  <div className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
-                      <Activity className="h-5 w-5 text-blue-500" />
-                      Recent Activity
-                    </div>
-                    <div className="text-gray-600 dark:text-gray-400 text-sm">
-                      Latest system updates and resolved issues
-                    </div>
-                    <div className="space-y-3 text-black dark:text-white">
-                      {recentActivity.slice(0, 5).map((activity) => {
-                        const severityColors = {
-                          success: "bg-green-500",
-                          warning: "bg-yellow-500",
-                          error: "bg-red-500",
-                          info: "bg-blue-500",
-                        };
-                        const severityIcons = {
-                          success: <MapPin className="h-3 w-3" />,
-                          warning: <Clock className="h-3 w-3" />,
-                          error: <AlertTriangle className="h-3 w-3" />,
-                          info: <Users className="h-3 w-3" />,
-                        };
-                        return (
-                          <div
-                            key={activity.id}
-                            className="flex items-start gap-3"
-                          >
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                {/* Recent Activity Feed */}
+                <div className="col-span-full lg:col-span-4">
+                  <NeonGradientCard className="h-full">
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold">
+                          Recent Activity
+                        </h3>
+                        <Activity className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <div className="space-y-4">
+                        {recentActivity.length > 0 ? (
+                          recentActivity.slice(0, 6).map((activity) => (
                             <div
-                              className={`w-2 h-2 ${severityColors[activity.severity as keyof typeof severityColors] || "bg-gray-500"} rounded-full mt-2`}
-                            ></div>
-                            <div className="flex-1 space-y-1">
-                              <p className="text-sm font-medium">
-                                {activity.message}
-                              </p>
-                              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                {
-                                  severityIcons[
-                                    activity.severity as keyof typeof severityIcons
-                                  ]
-                                }
-                                {new Date(activity.timestamp).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </NeonGradientCard>
-
-                {/* Predictive Insights */}
-                <NeonGradientCard className="transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer">
-                  <div className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
-                      <TrendingUp className="h-5 w-5 text-purple-500" />
-                      Predictive Insights
-                    </div>
-                    <div className="text-gray-600 dark:text-gray-400 text-sm">
-                      AI-powered recommendations and forecasts
-                    </div>
-                    <div className="space-y-4">
-                      {predictiveInsights && (
-                        <>
-                          <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                            <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
-                              Hotspot Prediction
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              {predictiveInsights.expectedIssues.nextWeek} new
-                              civic issues predicted for next week
-                            </p>
-                          </div>
-                          <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                            <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
-                              Resource Allocation
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              Deploy{" "}
-                              {predictiveInsights.resourceNeeds.additionalStaff}{" "}
-                              additional teams based on demand forecast
-                            </p>
-                          </div>
-                          <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
-                            <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
-                              Peak Days
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              {predictiveInsights.expectedIssues.peakDays.join(
-                                " & ",
-                              )}{" "}
-                              show higher citizen reports
-                            </p>
-                          </div>
-                          {predictiveInsights.recommendations[0] && (
-                            <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
-                              <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
-                                Top Recommendation
-                              </h4>
-                              <p className="text-xs text-muted-foreground">
-                                {predictiveInsights.recommendations[0]}
-                              </p>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </NeonGradientCard>
-
-                {/* Community Impact Assessment */}
-                <NeonGradientCard className="transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer">
-                  <div className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
-                      <AlertTriangle className="h-5 w-5 text-orange-500" />
-                      Community Impact Assessment
-                    </div>
-                    <div className="text-gray-600 dark:text-gray-400 text-sm">
-                      High-impact areas requiring urgent civic attention
-                    </div>
-                    <div className="space-y-3 text-black dark:text-white">
-                      {geospatialData
-                        .sort((a, b) => b.riskScore - a.riskScore)
-                        .slice(0, 4)
-                        .map((area) => {
-                          const riskLevel =
-                            area.riskScore > 7.5
-                              ? {
-                                  label: "High Risk",
-                                  className:
-                                    "bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-200",
-                                }
-                              : area.riskScore > 6
-                                ? {
-                                    label: "Medium Risk",
-                                    className:
-                                      "bg-yellow-100 dark:bg-yellow-950 text-yellow-800 dark:text-yellow-200",
-                                  }
-                                : {
-                                    label: "Low Risk",
-                                    className:
-                                      "bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-200",
-                                  };
-                          return (
-                            <div
-                              key={area.area}
-                              className="flex items-center justify-between"
+                              key={activity.id}
+                              className="flex items-start gap-3 pb-3 border-b border-border/40 last:border-0"
                             >
-                              <div>
-                                <p className="font-medium text-sm text-black dark:text-white">
-                                  {area.area}
+                              <span className="text-2xl">
+                                {getActivityIcon(activity.type)}
+                              </span>
+                              <div className="flex-1 space-y-1">
+                                <p className="text-sm font-medium leading-none">
+                                  {activity.message}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                  {area.issueCount} active issues
+                                  {activity.timestamp}
                                 </p>
                               </div>
-                              <Badge className={riskLevel.className}>
-                                {riskLevel.label}
+                              <Badge
+                                variant="outline"
+                                className={
+                                  activity.severity === "high"
+                                    ? "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300"
+                                    : activity.severity === "medium"
+                                      ? "bg-yellow-50 dark:bg-yellow-950 text-yellow-700 dark:text-yellow-300"
+                                      : "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
+                                }
+                              >
+                                {activity.type}
                               </Badge>
                             </div>
-                          );
-                        })}
-                      {predictiveInsights &&
-                        predictiveInsights.recommendations.length > 1 && (
-                          <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
-                            <p className="text-xs font-medium text-orange-800 dark:text-orange-200">
-                              {predictiveInsights.recommendations[1] ||
-                                "Increase municipal response teams in high-impact areas"}
-                            </p>
-                          </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-muted-foreground text-center py-8">
+                            No recent activity
+                          </p>
                         )}
+                      </div>
+                    </div>
+                  </NeonGradientCard>
+                </div>
+
+                {/* Predictive Insights */}
+                <div className="col-span-full lg:col-span-3">
+                  <NeonGradientCard className="h-full">
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold">
+                          AI Predictive Insights
+                        </h3>
+                        <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <div className="space-y-4">
+                        {predictiveInsights ? (
+                          <>
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-medium text-muted-foreground">
+                                Expected Issues
+                              </h4>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="p-3 rounded-lg bg-muted/50">
+                                  <p className="text-xs text-muted-foreground">
+                                    Next Week
+                                  </p>
+                                  <p className="text-2xl font-bold">
+                                    {predictiveInsights.expectedIssues.nextWeek}
+                                  </p>
+                                </div>
+                                <div className="p-3 rounded-lg bg-muted/50">
+                                  <p className="text-xs text-muted-foreground">
+                                    Next Month
+                                  </p>
+                                  <p className="text-2xl font-bold">
+                                    {
+                                      predictiveInsights.expectedIssues
+                                        .nextMonth
+                                    }
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-medium text-muted-foreground">
+                                High Risk Areas
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {predictiveInsights.expectedIssues.highRiskAreas.map(
+                                  (area, i) => (
+                                    <Badge
+                                      key={i}
+                                      variant="outline"
+                                      className="bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300"
+                                    >
+                                      <MapPin className="h-3 w-3 mr-1" />
+                                      {area}
+                                    </Badge>
+                                  ),
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-medium text-muted-foreground">
+                                Recommendations
+                              </h4>
+                              <ul className="space-y-2">
+                                {predictiveInsights.recommendations
+                                  .slice(0, 3)
+                                  .map((rec, i) => (
+                                    <li
+                                      key={i}
+                                      className="text-sm flex items-start gap-2"
+                                    >
+                                      <AlertTriangle className="h-4 w-4 mt-0.5 text-orange-500" />
+                                      <span>{rec}</span>
+                                    </li>
+                                  ))}
+                              </ul>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="text-sm text-muted-foreground text-center py-8">
+                            No predictive insights available
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </NeonGradientCard>
+                </div>
+              </div>
+            </div>
+
+            {/* Geospatial Hotspot Map Preview */}
+            {geospatialData.length > 0 && (
+              <div className="px-4 lg:px-6">
+                <div className="mb-4">
+                  <h2 className="text-2xl font-bold tracking-tight mb-2">
+                    Geospatial Issue Hotspots
+                  </h2>
+                  <p className="text-muted-foreground">
+                    High-density issue areas requiring immediate attention
+                  </p>
+                </div>
+                <NeonGradientCard>
+                  <div className="p-6">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {geospatialData.slice(0, 6).map((area, i) => (
+                        <div
+                          key={i}
+                          className="p-4 rounded-lg border border-border/40 hover:border-border transition-colors"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <h4 className="font-medium">{area.area}</h4>
+                            <Badge
+                              variant="outline"
+                              className={
+                                area.riskScore > 75
+                                  ? "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300"
+                                  : area.riskScore > 50
+                                    ? "bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300"
+                                    : "bg-yellow-50 dark:bg-yellow-950 text-yellow-700 dark:text-yellow-300"
+                              }
+                            >
+                              Risk: {area.riskScore}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {area.category}
+                          </p>
+                          <div className="flex items-center gap-4 text-sm">
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4 text-muted-foreground" />
+                              <span>
+                                {area.lat.toFixed(4)}, {area.lng.toFixed(4)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                              <span>{area.issueCount} issues</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </NeonGradientCard>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
