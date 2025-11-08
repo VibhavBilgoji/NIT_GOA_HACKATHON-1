@@ -328,3 +328,74 @@ export interface NotificationResponse {
   messageId?: string;
   error?: string;
 }
+
+// Ward Management Types
+export interface WardData {
+  id: string;
+  ward_number: number;
+  ward_name: string;
+  ward_area_sq_km: number;
+  population: number;
+  boundaries: unknown; // GeoJSON type
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WardWithMetrics extends WardData {
+  ward_performance_metrics?: WardPerformanceMetrics[];
+  ward_analytics?: unknown[];
+}
+
+export interface WardIssue {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  latitude: number;
+  longitude: number;
+  photo_url?: string;
+  status: string;
+  priority: string;
+  user_id: string;
+  ward_id: string;
+  votes: number;
+  created_at: string;
+  updated_at: string;
+  resolved_at?: string;
+}
+
+export interface WardPerformanceMetrics {
+  id: string;
+  ward_id: string;
+  metric_date: string;
+  total_issues: number;
+  resolved_issues: number;
+  avg_resolution_time_hours: number;
+  citizen_satisfaction_score: number;
+  response_time_hours: number;
+  created_at: string;
+}
+
+export interface WardAnalyticsData {
+  ward_id: string;
+  ward_name: string;
+  totalIssues: number;
+  openIssues: number;
+  inProgressIssues: number;
+  resolvedIssues: number;
+  criticalIssues: number;
+  avgResolutionHours: number;
+  categoryBreakdown: Record<string, number>;
+  priorityBreakdown: Record<string, number>;
+  issuesLastWeek: number;
+  issuesLastMonth: number;
+  population: number;
+  metrics?: WardPerformanceMetrics;
+  aiInsights?: {
+    summary: string;
+    recommendations: string[];
+    trends: string[];
+    riskFactors: string[];
+  };
+}

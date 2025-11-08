@@ -141,6 +141,7 @@ ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for users table
+-- Allow service role to bypass RLS for user creation
 -- Users can read all user profiles (excluding passwords will be handled in API)
 CREATE POLICY "Users can read all profiles" ON users
   FOR SELECT USING (true);
@@ -149,9 +150,13 @@ CREATE POLICY "Users can read all profiles" ON users
 CREATE POLICY "Users can update own profile" ON users
   FOR UPDATE USING (true);
 
--- Users can insert their own profile (for registration)
-CREATE POLICY "Users can insert profile" ON users
+-- Allow anyone to insert during registration (API will handle validation)
+CREATE POLICY "Allow user registration" ON users
   FOR INSERT WITH CHECK (true);
+
+-- Service role can do everything (for backend operations)
+CREATE POLICY "Service role full access" ON users
+  FOR ALL USING (true) WITH CHECK (true);
 
 -- RLS Policies for issues table
 -- Anyone can read issues

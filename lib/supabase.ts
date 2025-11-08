@@ -4,10 +4,17 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 // Get Supabase credentials from environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
     "⚠️ Supabase credentials not found. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment variables.",
+  );
+}
+
+if (!supabaseServiceRoleKey && process.env.NODE_ENV !== "development") {
+  console.warn(
+    "⚠️ SUPABASE_SERVICE_ROLE_KEY not found. Some admin operations may fail.",
   );
 }
 
@@ -16,7 +23,7 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(supabaseUrl && supabaseAnonKey);
 }
 
-// Create Supabase client only if configured
+// Create Supabase client only if configured (for client-side/public operations)
 export const supabase: SupabaseClient | null = isSupabaseConfigured()
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
@@ -25,6 +32,28 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured()
       },
     })
   : null;
+
+// Create Supabase admin client with service role key (for server-side operations)
+// This bypasses RLS policies and should ONLY be used in API routes
+export const supabaseAdmin: SupabaseClient | null =
+  supabaseUrl && supabaseServiceRoleKey
+    ? createClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      })
+    : null;
+
+// Helper to get the appropriate client based on context
+export function getSupabaseClient(
+  useServiceRole = false,
+): SupabaseClient | null {
+  if (useServiceRole && supabaseAdmin) {
+    return supabaseAdmin;
+  }
+  return supabase;
+}
 
 // Database types for TypeScript
 export type Database = {

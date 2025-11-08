@@ -10,6 +10,7 @@ import {
   LogOut,
   PlusCircle,
   Home,
+  Shield,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -94,8 +95,20 @@ export function Navigation() {
           </TooltipProvider>
         </div>
 
-        {/* Right Side - Report Issue, Auth & Theme Toggle */}
+        {/* Right Side - Admin Button, Report Issue, Auth & Theme Toggle */}
         <div className="flex items-center gap-2">
+          {isAuthenticated && user?.role === "admin" && (
+            <Link href="/admin">
+              <Button
+                size="sm"
+                variant="outline"
+                className="font-medium border-2 hover:bg-gray-100 dark:hover:bg-gray-900"
+              >
+                <Shield className="mr-1.5 size-4" />
+                Admin Panel
+              </Button>
+            </Link>
+          )}
           {isAuthenticated && (
             <Link href="/report">
               <Button

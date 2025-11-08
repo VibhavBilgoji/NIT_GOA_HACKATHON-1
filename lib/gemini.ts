@@ -481,12 +481,16 @@ function validatePriority(priority: string): IssuePriority {
  */
 export async function analyzeAreaFrequency(
   coordinates: { lat: number; lng: number },
-  _radius: number = 0.01, // ~1km
+  radius: number = 0.01, // ~1km
 ): Promise<number> {
   // This would query the database for issues near these coordinates
   // For now, return 0 as placeholder
-  // TODO: Implement actual database query
-  // radius parameter reserved for future use
-  console.log("Analyzing area frequency for coordinates:", coordinates);
+  // TODO: Implement actual database query with radius parameter
+  console.log(
+    "Analyzing area frequency for coordinates:",
+    coordinates,
+    "within radius:",
+    radius,
+  );
   return 0;
 }

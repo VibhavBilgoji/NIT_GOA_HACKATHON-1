@@ -767,6 +767,14 @@ export const dashboardAPI = {
     try {
       return await apiRequest("/dashboard");
     } catch (error) {
+      // Don't log auth errors since they're expected when not logged in
+      if (error instanceof ApiError && error.statusCode === 401) {
+        // User is being redirected to login, don't spam console
+        return {
+          success: false,
+          error: "Authentication required",
+        };
+      }
       console.error("Failed to fetch dashboard stats:", error);
       return {
         success: false,

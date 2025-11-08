@@ -1,7 +1,7 @@
 // Supabase database operations for OurStreet
 // This replaces the in-memory database with persistent Supabase storage
 
-import { supabase } from "./supabase";
+import { supabase, supabaseAdmin } from "./supabase";
 import {
   User,
   Issue,
@@ -59,6 +59,7 @@ type VoteRow = {
 };
 
 // Safety check helper
+// Get Supabase client
 function getSupabase() {
   if (!supabase) {
     throw new Error(
@@ -66,6 +67,17 @@ function getSupabase() {
     );
   }
   return supabase;
+}
+
+// Get Supabase admin client (for server-side operations that need to bypass RLS)
+function getSupabaseAdmin() {
+  if (!supabaseAdmin) {
+    console.warn(
+      "Supabase admin client not configured, falling back to regular client",
+    );
+    return getSupabase();
+  }
+  return supabaseAdmin;
 }
 
 // Helper function to generate unique IDs (Supabase uses UUIDs)
@@ -78,7 +90,8 @@ export const userDb = {
   async create(
     user: Omit<User, "id" | "createdAt" | "updatedAt">,
   ): Promise<User | null> {
-    const { data, error } = await getSupabase()
+    // Use admin client to bypass RLS policies for user creation
+    const { data, error } = await getSupabaseAdmin()
       .from("users")
       .insert({
         name: user.name,
