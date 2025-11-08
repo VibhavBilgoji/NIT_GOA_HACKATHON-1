@@ -41,7 +41,7 @@ export function LoginForm({
       } else {
         setError(result.error || "Login failed. Please try again.");
       }
-    } catch (_err) {
+    } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);

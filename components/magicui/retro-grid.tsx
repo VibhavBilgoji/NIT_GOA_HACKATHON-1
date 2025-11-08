@@ -11,27 +11,27 @@ export function RetroGrid({ className, angle = 65 }: RetroGridProps) {
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-0 overflow-hidden opacity-80 [perspective:200px]",
+        "pointer-events-none absolute inset-0 overflow-hidden opacity-80 perspective-[200px]",
         className,
       )}
       style={{ "--grid-angle": `${angle}deg` } as React.CSSProperties}
     >
       {/* Grid */}
-      <div className="absolute inset-0 [transform:rotateX(var(--grid-angle))]">
+      <div className="absolute inset-0 transform-[rotateX(var(--grid-angle))]">
         <div
           className={cn(
             "animate-grid",
-            "[background-repeat:repeat] [background-size:60px_60px] [height:300vh] [inset:0%_0px] [margin-left:-50%] [transform-origin:100%_0_0] [width:600vw]",
+            "absolute inset-0 bg-repeat bg-size-[60px_60px] h-[300vh] ml-[-50%] origin-[100%_0_0] w-[600vw]",
             // Light styles
-            "[background-image:linear-gradient(to_right,rgba(0,0,0,0.6)_2px,transparent_0),linear-gradient(to_bottom,rgba(0,0,0,0.6)_2px,transparent_0)]",
+            "bg-[linear-gradient(to_right,rgba(0,0,0,0.6)_2px,transparent_0),linear-gradient(to_bottom,rgba(0,0,0,0.6)_2px,transparent_0)]",
             // Dark styles
-            "dark:[background-image:linear-gradient(to_right,rgba(255,255,255,0.5)_2px,transparent_0),linear-gradient(to_bottom,rgba(255,255,255,0.5)_2px,transparent_0)]",
+            "dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.5)_2px,transparent_0),linear-gradient(to_bottom,rgba(255,255,255,0.5)_2px,transparent_0)]",
           )}
         />
       </div>
 
       {/* Gradient overlay for fade effect */}
-      <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-black" />
+      <div className="absolute inset-0 bg-linear-to-t from-white via-transparent to-transparent dark:from-black" />
 
       <style jsx>{`
         @keyframes grid {
@@ -44,7 +44,7 @@ export function RetroGrid({ className, angle = 65 }: RetroGridProps) {
         }
 
         .animate-grid {
-          animation: grid 20s linear infinite;
+          animation: grid 30s linear infinite;
         }
       `}</style>
     </div>
