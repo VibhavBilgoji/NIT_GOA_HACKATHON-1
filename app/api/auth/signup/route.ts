@@ -1,62 +1,117 @@
 import { NextRequest, NextResponse } from "next/server";
+import { userDb } from "@/lib/db";
+import {
+  hashPassword,
+  validateEmail,
+  generateToken,
+  sanitizeUser,
+} from "@/lib/auth";
+import { SignupRequest, AuthResponse } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: SignupRequest = await request.json();
     const { name, email, password, confirmPassword } = body;
 
     // Validation
     if (!name || !email || !password || !confirmPassword) {
       return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
+        {
+          success: false,
+          error: "All fields are required",
+        } as AuthResponse,
+        { status: 400 },
       );
     }
 
+    // Validate name
+    if (name.trim().length < 2) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Name must be at least 2 characters long",
+        } as AuthResponse,
+        { status: 400 },
+      );
+    }
+
+    // Validate email
+    if (!validateEmail(email)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid email address",
+        } as AuthResponse,
+        { status: 400 },
+      );
+    }
+
+    // Check if passwords match
     if (password !== confirmPassword) {
       return NextResponse.json(
-        { error: "Passwords do not match" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Passwords do not match",
+        } as AuthResponse,
+        { status: 400 },
       );
     }
 
+    // Validate password strength
     if (password.length < 8) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters long" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Password must be at least 8 characters long",
+        } as AuthResponse,
+        { status: 400 },
       );
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Check if user already exists
+    const existingUser = userDb.findByEmail(email.toLowerCase());
+    if (existingUser) {
       return NextResponse.json(
-        { error: "Invalid email address" },
-        { status: 400 }
+        {
+          success: false,
+          error: "User with this email already exists",
+        } as AuthResponse,
+        { status: 409 },
       );
     }
 
-    // TODO: Check if user already exists in database
-    // TODO: Hash password with bcrypt
-    // TODO: Store user in database
-    // TODO: Generate JWT token or session
+    // Hash password
+    const hashedPassword = await hashPassword(password);
 
-    // Temporary success response
+    // Create new user
+    const newUser = userDb.create({
+      name: name.trim(),
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      role: "citizen",
+    });
+
+    // Generate token
+    const token = generateToken(newUser.id, newUser.email, newUser.role);
+
+    // Return success response
     return NextResponse.json(
       {
+        success: true,
         message: "Account created successfully",
-        user: {
-          name,
-          email,
-        },
-      },
-      { status: 201 }
+        user: sanitizeUser(newUser),
+        token,
+      } as AuthResponse,
+      { status: 201 },
     );
   } catch (error) {
     console.error("Signup error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      {
+        success: false,
+        error: "Internal server error. Please try again later.",
+      } as AuthResponse,
+      { status: 500 },
     );
   }
 }

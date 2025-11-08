@@ -1,47 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
+import { userDb } from "@/lib/db";
+import {
+  comparePasswords,
+  validateEmail,
+  generateToken,
+  sanitizeUser,
+} from "@/lib/auth";
+import { LoginRequest, AuthResponse } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: LoginRequest = await request.json();
     const { email, password } = body;
 
     // Validation
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Email and password are required",
+        } as AuthResponse,
+        { status: 400 },
       );
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Validate email format
+    if (!validateEmail(email)) {
       return NextResponse.json(
-        { error: "Invalid email address" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Invalid email address",
+        } as AuthResponse,
+        { status: 400 },
       );
     }
 
-    // TODO: Find user in database by email
-    // TODO: Compare password hash with bcrypt
-    // TODO: Generate JWT token or create session
-    // TODO: Set authentication cookie
+    // Find user by email
+    const user = userDb.findByEmail(email.toLowerCase());
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid email or password",
+        } as AuthResponse,
+        { status: 401 },
+      );
+    }
 
-    // Temporary success response
+    // Compare passwords
+    const isPasswordValid = await comparePasswords(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid email or password",
+        } as AuthResponse,
+        { status: 401 },
+      );
+    }
+
+    // Generate token
+    const token = generateToken(user.id, user.email, user.role);
+
+    // Return success response
     return NextResponse.json(
       {
+        success: true,
         message: "Login successful",
-        user: {
-          email,
-        },
-      },
-      { status: 200 }
+        user: sanitizeUser(user),
+        token,
+      } as AuthResponse,
+      { status: 200 },
     );
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      {
+        success: false,
+        error: "Internal server error. Please try again later.",
+      } as AuthResponse,
+      { status: 500 },
     );
   }
 }
