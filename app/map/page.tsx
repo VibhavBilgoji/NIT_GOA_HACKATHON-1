@@ -325,7 +325,7 @@ export default function MapPage() {
           {/* Stats */}
           <div className="grid gap-4 md:grid-cols-4 mb-8">
             <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
-              <BorderBeam size={150} duration={6} delay={0} />
+              <BorderBeam duration={6} delay={0} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Total Issues
@@ -338,7 +338,7 @@ export default function MapPage() {
               </CardContent>
             </Card>
             <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
-              <BorderBeam size={150} duration={6} delay={1} />
+              <BorderBeam duration={6} delay={1} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Open Issues
@@ -353,7 +353,7 @@ export default function MapPage() {
               </CardContent>
             </Card>
             <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
-              <BorderBeam size={150} duration={6} delay={2} />
+              <BorderBeam duration={6} delay={2} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   In Progress
@@ -368,7 +368,7 @@ export default function MapPage() {
               </CardContent>
             </Card>
             <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
-              <BorderBeam size={150} duration={6} delay={3} />
+              <BorderBeam duration={6} delay={3} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Resolved
@@ -386,7 +386,7 @@ export default function MapPage() {
 
           {/* Map - Full Width and Larger */}
           <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg mb-6">
-            <BorderBeam size={200} duration={8} delay={0} />
+            <BorderBeam duration={6} delay={0} />
             <CardHeader>
               <CardTitle className="text-black dark:text-white">
                 Interactive City Map
@@ -431,7 +431,7 @@ export default function MapPage() {
           {/* Issues List - Below Map */}
           <div className="grid gap-6 lg:grid-cols-1">
             <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
-              <BorderBeam size={200} duration={8} delay={2} />
+              <BorderBeam duration={6} delay={1} />
               <CardHeader>
                 <CardTitle className="text-black dark:text-white">
                   Reported Issues
@@ -504,7 +504,7 @@ export default function MapPage() {
 
           {/* Legend */}
           <Card className="mt-6 border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
-            <BorderBeam size={200} duration={8} delay={4} />
+            <BorderBeam duration={6} delay={2} />
             <CardHeader>
               <CardTitle className="text-black dark:text-white">
                 How It Works
