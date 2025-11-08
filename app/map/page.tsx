@@ -85,7 +85,10 @@ export default function MapPage() {
           });
         },
         (error) => {
-          console.error("Error getting user location:", error);
+          console.error(
+            "Error getting user location:",
+            error.message || "Unknown error",
+          );
         },
       );
     }

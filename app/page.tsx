@@ -6,37 +6,40 @@ import { Button } from "@/components/ui/button";
 import { ShuffleText } from "@/components/shuffle-text";
 import "@/components/shuffle-text/shuffle.css";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
+import { SparklesText } from "@/components/magicui/sparkles-text";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-white/30 dark:bg-black/30">
       {/* Hero Section */}
       <main className="flex flex-1 flex-col">
-        <section className="container mx-auto px-4 py-32 md:py-48">
+        <section className="container mx-auto px-4 py-20 md:py-32">
           <div className="flex flex-col items-center gap-8 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 px-3 py-1 text-xs">
-              <AlertCircle className="size-3" />
-              <span className="text-gray-700 dark:text-gray-300">
-                Local Issue Reporting & Impact Tracker
-              </span>
-            </div>
-
             <div className="relative flex w-full flex-col items-center justify-center py-8 md:py-12">
-              <ShuffleText
-                text="Empower Your Community with OurStreet"
-                tag="h1"
+              <SparklesText
                 className="pointer-events-none z-10 max-w-4xl text-4xl font-bold tracking-tight text-black dark:text-white sm:text-5xl md:text-6xl lg:text-7xl"
-                shuffleDirection="right"
-                duration={1.5}
-                shuffleTimes={3}
-                animationMode="evenodd"
-                ease="power3.out"
-                stagger={0.08}
-                threshold={0.1}
-                triggerOnce={true}
-                triggerOnHover={true}
-                respectReducedMotion={true}
-              />
+                sparklesCount={15}
+                colors={{
+                  first: "#9E7AFF",
+                  second: "#FE8BBB",
+                }}
+              >
+                <ShuffleText
+                  text="Empower Your Community with OurStreet"
+                  tag="h1"
+                  className="pointer-events-none z-10"
+                  shuffleDirection="right"
+                  duration={1.5}
+                  shuffleTimes={3}
+                  animationMode="evenodd"
+                  ease="power3.out"
+                  stagger={0.08}
+                  threshold={0.1}
+                  triggerOnce={true}
+                  triggerOnHover={true}
+                  respectReducedMotion={true}
+                />
+              </SparklesText>
             </div>
 
             <p className="max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400 sm:text-xl">
