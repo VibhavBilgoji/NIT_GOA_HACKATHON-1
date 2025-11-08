@@ -3,7 +3,6 @@
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { SLAAlertsTable } from "@/components/sla-alerts-table";
 import { SectionCards } from "@/components/section-cards";
-import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import {
   Bell,
@@ -13,31 +12,50 @@ import {
   MapPin,
   Users,
   Clock,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
+import { RotatingText } from "@/components/magicui/rotating-text";
+import { useDashboard } from "@/contexts/dashboard-context";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
+  const {
+    stats,
+    slaAlerts,
+    recentActivity,
+    predictiveInsights,
+    geospatialData,
+    isLoading,
+    refreshDashboard,
+  } = useDashboard();
+
   // Show toast notification for critical SLA alerts
   useEffect(() => {
-    const timer = setTimeout(() => {
-      toast.error("Critical SLA Alert!", {
-        description:
-          "Traffic signal malfunction at Panjim City Center - 2 hours remaining",
-        action: {
-          label: "View Details",
-          onClick: () => console.log("View alert details"),
-        },
-      });
-    }, 2000);
+    if (slaAlerts.length > 0 && stats.criticalIssuesPending > 0) {
+      const timer = setTimeout(() => {
+        const criticalAlert = slaAlerts.find(
+          (alert) => alert.priority === "Critical",
+        );
+        if (criticalAlert) {
+          toast.error("Critical SLA Alert!", {
+            description: `${criticalAlert.title} at ${criticalAlert.location} - ${criticalAlert.timeRemaining} remaining`,
+            action: {
+              label: "View Details",
+              onClick: () => console.log("View alert details"),
+            },
+          });
+        }
+      }, 2000);
 
-    return () => clearTimeout(timer);
-  }, []);
+      return () => clearTimeout(timer);
+    }
+  }, [slaAlerts, stats.criticalIssuesPending]);
 
   return (
     <div className="flex flex-col min-h-screen">
-      <SiteHeader />
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
@@ -46,7 +64,7 @@ export default function Page() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h1 className="text-3xl font-bold tracking-tight">
-                    OurStreet - Issue Tracking Dashboard
+                    <RotatingText text="OurStreet - Issue Tracking Dashboard" />
                   </h1>
                   <p className="text-muted-foreground">
                     Real-time civic issue reporting, tracking, and resolution
@@ -59,14 +77,26 @@ export default function Page() {
                     className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300"
                   >
                     <Activity className="h-3 w-3 mr-1" />
-                    System Active
+                    {isLoading ? "Updating..." : "System Active"}
                   </Badge>
                   <Badge
                     variant="outline"
                     className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300"
                   >
-                    <Bell className="h-3 w-3 mr-1" />5 Critical Issues
+                    <Bell className="h-3 w-3 mr-1" />
+                    {stats.criticalIssuesPending} Critical Issues
                   </Badge>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={refreshDashboard}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw
+                      className={`h-4 w-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
+                    />
+                    Refresh
+                  </Button>
                 </div>
               </div>
             </div>
@@ -117,63 +147,43 @@ export default function Page() {
                       Latest system updates and resolved issues
                     </div>
                     <div className="space-y-3 text-black dark:text-white">
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium">
-                            Pothole Repaired
-                          </p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            FC Road, Panjim • 15 mins ago
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium">SLA Warning</p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            Water pipeline • 2h remaining
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium">
-                            Critical Escalation
-                          </p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <AlertTriangle className="h-3 w-3" />
-                            Traffic light malfunction • 30 mins ago
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium">
-                            New Report Submitted
-                          </p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Users className="h-3 w-3" />
-                            Drainage issue • Citizen reported
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium">
-                            Citizen Feedback
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            5-star rating • Street light repair
-                          </p>
-                        </div>
-                      </div>
+                      {recentActivity.slice(0, 5).map((activity) => {
+                        const severityColors = {
+                          success: "bg-green-500",
+                          warning: "bg-yellow-500",
+                          error: "bg-red-500",
+                          info: "bg-blue-500",
+                        };
+                        const severityIcons = {
+                          success: <MapPin className="h-3 w-3" />,
+                          warning: <Clock className="h-3 w-3" />,
+                          error: <AlertTriangle className="h-3 w-3" />,
+                          info: <Users className="h-3 w-3" />,
+                        };
+                        return (
+                          <div
+                            key={activity.id}
+                            className="flex items-start gap-3"
+                          >
+                            <div
+                              className={`w-2 h-2 ${severityColors[activity.severity as keyof typeof severityColors] || "bg-gray-500"} rounded-full mt-2`}
+                            ></div>
+                            <div className="flex-1 space-y-1">
+                              <p className="text-sm font-medium">
+                                {activity.message}
+                              </p>
+                              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                {
+                                  severityIcons[
+                                    activity.severity as keyof typeof severityIcons
+                                  ]
+                                }
+                                {new Date(activity.timestamp).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </NeonGradientCard>
@@ -189,40 +199,50 @@ export default function Page() {
                       AI-powered recommendations and forecasts
                     </div>
                     <div className="space-y-4">
-                      <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                        <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
-                          Hotspot Prediction
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          28 new civic issues predicted for next week in Panjim
-                          area
-                        </p>
-                      </div>
-                      <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                        <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
-                          Resource Allocation
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          Deploy 3 additional teams to Panjim City Center based
-                          on demand
-                        </p>
-                      </div>
-                      <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
-                        <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
-                          Citizen Engagement
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          Mondays & Fridays show 40% higher citizen reports
-                        </p>
-                      </div>
-                      <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
-                        <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
-                          Preventive Maintenance
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          Schedule infrastructure checks before monsoon season
-                        </p>
-                      </div>
+                      {predictiveInsights && (
+                        <>
+                          <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                            <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
+                              Hotspot Prediction
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              {predictiveInsights.expectedIssues.nextWeek} new
+                              civic issues predicted for next week
+                            </p>
+                          </div>
+                          <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                            <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
+                              Resource Allocation
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              Deploy{" "}
+                              {predictiveInsights.resourceNeeds.additionalStaff}{" "}
+                              additional teams based on demand forecast
+                            </p>
+                          </div>
+                          <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+                            <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
+                              Peak Days
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              {predictiveInsights.expectedIssues.peakDays.join(
+                                " & ",
+                              )}{" "}
+                              show higher citizen reports
+                            </p>
+                          </div>
+                          {predictiveInsights.recommendations[0] && (
+                            <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                              <h4 className="font-medium text-sm mb-1 text-black dark:text-white">
+                                Top Recommendation
+                              </h4>
+                              <p className="text-xs text-muted-foreground">
+                                {predictiveInsights.recommendations[0]}
+                              </p>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
                 </NeonGradientCard>
@@ -238,65 +258,56 @@ export default function Page() {
                       High-impact areas requiring urgent civic attention
                     </div>
                     <div className="space-y-3 text-black dark:text-white">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm text-black dark:text-white">
-                            Panjim City Center
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            34 active issues
-                          </p>
-                        </div>
-                        <Badge className="bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-200">
-                          High Risk
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm text-black dark:text-white">
-                            Margao Station Area
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            31 active issues
-                          </p>
-                        </div>
-                        <Badge className="bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-200">
-                          High Risk
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm text-black dark:text-white">
-                            Mapusa Market
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            28 active issues
-                          </p>
-                        </div>
-                        <Badge className="bg-yellow-100 dark:bg-yellow-950 text-yellow-800 dark:text-yellow-200">
-                          Medium Risk
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm text-black dark:text-white">
-                            Vasco da Gama
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            19 active issues
-                          </p>
-                        </div>
-                        <Badge className="bg-yellow-100 dark:bg-yellow-950 text-yellow-800 dark:text-yellow-200">
-                          Medium Risk
-                        </Badge>
-                      </div>
-                      <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
-                        <p className="text-xs font-medium text-orange-800 dark:text-orange-200">
-                          Recommendation: Increase municipal response teams in
-                          high-impact areas and improve citizen communication
-                          channels.
-                        </p>
-                      </div>
+                      {geospatialData
+                        .sort((a, b) => b.riskScore - a.riskScore)
+                        .slice(0, 4)
+                        .map((area) => {
+                          const riskLevel =
+                            area.riskScore > 7.5
+                              ? {
+                                  label: "High Risk",
+                                  className:
+                                    "bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-200",
+                                }
+                              : area.riskScore > 6
+                                ? {
+                                    label: "Medium Risk",
+                                    className:
+                                      "bg-yellow-100 dark:bg-yellow-950 text-yellow-800 dark:text-yellow-200",
+                                  }
+                                : {
+                                    label: "Low Risk",
+                                    className:
+                                      "bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-200",
+                                  };
+                          return (
+                            <div
+                              key={area.area}
+                              className="flex items-center justify-between"
+                            >
+                              <div>
+                                <p className="font-medium text-sm text-black dark:text-white">
+                                  {area.area}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {area.issueCount} active issues
+                                </p>
+                              </div>
+                              <Badge className={riskLevel.className}>
+                                {riskLevel.label}
+                              </Badge>
+                            </div>
+                          );
+                        })}
+                      {predictiveInsights &&
+                        predictiveInsights.recommendations.length > 1 && (
+                          <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+                            <p className="text-xs font-medium text-orange-800 dark:text-orange-200">
+                              {predictiveInsights.recommendations[1] ||
+                                "Increase municipal response teams in high-impact areas"}
+                            </p>
+                          </div>
+                        )}
                     </div>
                   </div>
                 </NeonGradientCard>

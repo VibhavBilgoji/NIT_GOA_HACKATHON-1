@@ -1,3 +1,5 @@
+"use client";
+
 import {
   IconTrendingDown,
   IconTrendingUp,
@@ -7,38 +9,44 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
+import { useDashboard } from "@/contexts/dashboard-context";
 
 export function SectionCards() {
+  const { stats, isLoading } = useDashboard();
+
   return (
     <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <NeonGradientCard
-        className="@container/card transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer"
-        neonColors={{
-          firstColor: "#404040",
-          secondColor: "#606060",
-        }}
-      >
+      <NeonGradientCard className="@container/card transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer">
         <div className="flex flex-col gap-6">
           <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto]">
             <div className="text-gray-600 dark:text-gray-400 text-sm">
               Total Active Issues
             </div>
             <div className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-black dark:text-white">
-              243
+              {isLoading ? "..." : stats.totalActiveIssues}
             </div>
             <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
               <Badge
                 variant="outline"
-                className="bg-red-950 border-red-900 text-red-300"
+                className={
+                  stats.trendPercentages.activeIssues >= 0
+                    ? "bg-red-950 border-red-900 text-red-300"
+                    : "bg-green-950 border-green-900 text-green-300"
+                }
               >
-                <IconTrendingUp />
-                +18%
+                {stats.trendPercentages.activeIssues >= 0 ? (
+                  <IconTrendingUp />
+                ) : (
+                  <IconTrendingDown />
+                )}
+                {stats.trendPercentages.activeIssues >= 0 ? "+" : ""}
+                {stats.trendPercentages.activeIssues}%
               </Badge>
             </div>
           </div>
           <div className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium text-black dark:text-white">
-              35 Critical Issues Pending{" "}
+              {stats.criticalIssuesPending} Critical Issues Pending{" "}
               <IconAlertTriangle className="size-4 text-red-500" />
             </div>
             <div className="text-gray-600 dark:text-gray-400">
@@ -48,34 +56,37 @@ export function SectionCards() {
         </div>
       </NeonGradientCard>
 
-      <NeonGradientCard
-        className="@container/card transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer"
-        neonColors={{
-          firstColor: "#404040",
-          secondColor: "#606060",
-        }}
-      >
+      <NeonGradientCard className="@container/card transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer">
         <div className="flex flex-col gap-6">
           <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto]">
             <div className="text-gray-600 dark:text-gray-400 text-sm">
               SLA Compliance Rate
             </div>
             <div className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-black dark:text-white">
-              82.3%
+              {isLoading ? "..." : `${stats.slaComplianceRate}%`}
             </div>
             <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
               <Badge
                 variant="outline"
-                className="bg-yellow-950 border-yellow-900 text-yellow-300"
+                className={
+                  stats.trendPercentages.slaCompliance >= 0
+                    ? "bg-green-950 border-green-900 text-green-300"
+                    : "bg-yellow-950 border-yellow-900 text-yellow-300"
+                }
               >
-                <IconTrendingDown />
-                -5.1%
+                {stats.trendPercentages.slaCompliance >= 0 ? (
+                  <IconTrendingUp />
+                ) : (
+                  <IconTrendingDown />
+                )}
+                {stats.trendPercentages.slaCompliance >= 0 ? "+" : ""}
+                {stats.trendPercentages.slaCompliance}%
               </Badge>
             </div>
           </div>
           <div className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium text-black dark:text-white">
-              8 SLA breaches this week{" "}
+              {stats.slaBreeches} SLA breaches this week{" "}
               <IconAlertTriangle className="size-4 text-yellow-500" />
             </div>
             <div className="text-gray-600 dark:text-gray-400">
@@ -85,28 +96,31 @@ export function SectionCards() {
         </div>
       </NeonGradientCard>
 
-      <NeonGradientCard
-        className="@container/card transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer"
-        neonColors={{
-          firstColor: "#404040",
-          secondColor: "#606060",
-        }}
-      >
+      <NeonGradientCard className="@container/card transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer">
         <div className="flex flex-col gap-6">
           <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto]">
             <div className="text-gray-600 dark:text-gray-400 text-sm">
               Average Resolution Time
             </div>
             <div className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-black dark:text-white">
-              3.8 days
+              {isLoading ? "..." : `${stats.averageResolutionTime} days`}
             </div>
             <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
               <Badge
                 variant="outline"
-                className="bg-green-950 border-green-900 text-green-300"
+                className={
+                  stats.trendPercentages.resolutionTime <= 0
+                    ? "bg-green-950 border-green-900 text-green-300"
+                    : "bg-red-950 border-red-900 text-red-300"
+                }
               >
-                <IconTrendingDown />
-                -1.2d
+                {stats.trendPercentages.resolutionTime <= 0 ? (
+                  <IconTrendingDown />
+                ) : (
+                  <IconTrendingUp />
+                )}
+                {stats.trendPercentages.resolutionTime >= 0 ? "+" : ""}
+                {stats.trendPercentages.resolutionTime}d
               </Badge>
             </div>
           </div>
@@ -116,40 +130,44 @@ export function SectionCards() {
               <IconCircleCheck className="size-4 text-green-500" />
             </div>
             <div className="text-gray-600 dark:text-gray-400">
-              Efficiency improved by 24%
+              Efficiency improved by{" "}
+              {Math.abs(stats.trendPercentages.resolutionTime * 20).toFixed(0)}%
             </div>
           </div>
         </div>
       </NeonGradientCard>
 
-      <NeonGradientCard
-        className="@container/card transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer"
-        neonColors={{
-          firstColor: "#404040",
-          secondColor: "#606060",
-        }}
-      >
+      <NeonGradientCard className="@container/card transition-all duration-300 ease-in-out hover:scale-[1.03] cursor-pointer">
         <div className="flex flex-col gap-6">
           <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto]">
             <div className="text-gray-600 dark:text-gray-400 text-sm">
               Citizen Satisfaction
             </div>
             <div className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-black dark:text-white">
-              4.5/5.0
+              {isLoading ? "..." : `${stats.citizenSatisfaction}/5.0`}
             </div>
             <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
               <Badge
                 variant="outline"
-                className="bg-green-950 border-green-900 text-green-300"
+                className={
+                  stats.trendPercentages.satisfaction >= 0
+                    ? "bg-green-950 border-green-900 text-green-300"
+                    : "bg-red-950 border-red-900 text-red-300"
+                }
               >
-                <IconTrendingUp />
-                +0.3
+                {stats.trendPercentages.satisfaction >= 0 ? (
+                  <IconTrendingUp />
+                ) : (
+                  <IconTrendingDown />
+                )}
+                {stats.trendPercentages.satisfaction >= 0 ? "+" : ""}
+                {stats.trendPercentages.satisfaction}
               </Badge>
             </div>
           </div>
           <div className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium text-black dark:text-white">
-              127 resolved issues this month{" "}
+              {stats.resolvedIssuesThisMonth} resolved issues this month{" "}
               <IconCircleCheck className="size-4 text-green-500" />
             </div>
             <div className="text-gray-600 dark:text-gray-400">

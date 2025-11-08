@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
+import { IssueProvider } from "@/contexts/issue-context";
+import { DashboardProvider } from "@/contexts/dashboard-context";
 import { Navigation } from "@/components/navigation";
 import { Toaster } from "react-hot-toast";
 
@@ -26,20 +28,24 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <Navigation />
-            {children}
+            <IssueProvider>
+              <DashboardProvider>
+                <Navigation />
+                {children}
 
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: "var(--background)",
-                  color: "var(--foreground)",
-                  border: "1px solid var(--border)",
-                },
-              }}
-            />
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: "var(--background)",
+                      color: "var(--foreground)",
+                      border: "1px solid var(--border)",
+                    },
+                  }}
+                />
+              </DashboardProvider>
+            </IssueProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
