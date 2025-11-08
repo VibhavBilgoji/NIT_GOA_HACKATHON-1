@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ShuffleText } from "@/components/shuffle-text";
 import "@/components/shuffle-text/shuffle.css";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
-import { RetroGrid } from "@/components/magicui/retro-grid";
 
 export default function Home() {
   return (
@@ -22,7 +21,7 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="relative flex min-h-[200px] sm:min-h-[250px] md:min-h-[300px] w-full flex-col items-center justify-center overflow-hidden py-8 md:py-12">
+            <div className="relative flex w-full flex-col items-center justify-center py-8 md:py-12">
               <ShuffleText
                 text="Empower Your Community with OurStreet"
                 tag="h1"
@@ -38,7 +37,6 @@ export default function Home() {
                 triggerOnHover={true}
                 respectReducedMotion={true}
               />
-              <RetroGrid />
             </div>
 
             <p className="max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400 sm:text-xl">
