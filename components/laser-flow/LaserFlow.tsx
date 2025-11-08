@@ -213,15 +213,15 @@ void mainImage(out vec4 fc,in vec2 frag){
     float hW=mix(1.0,hE,clamp(yP,0.0,1.0));
     float bBias=mix(1.0,1.0-sPix,FOG_BOTTOM_BIAS);
     float browserFogIntensity = uFogIntensity;
-    browserFogIntensity *= 1.8;
+    browserFogIntensity *= 3.5;
     float radialFade = 1.0 - smoothstep(0.0, 0.7, length(uvc) / 120.0);
     float safariFog = n * browserFogIntensity * bBias * bm * hW * radialFade;
-    fog = safariFog;
+    fog = safariFog * 1.5;
 #endif
-    float LF=L+fog;
+    float LF=(L*2.0)+fog;
     float dith=(h21(frag)-0.5)*(DITHER_STRENGTH/255.0);
-    float tone=g(LF+w);
-    vec3 col=tone*uColor+dith;
+    float tone=g(LF+(w*2.0));
+    vec3 col=(tone*2.5)*uColor+dith;
     float alpha=clamp(g(L+w*0.6)+dith*0.6,0.0,1.0);
     float nxE=abs((frag.x-C.x)*invW),xF=pow(clamp(1.0-smoothstep(EDGE_X0,EDGE_X1,nxE),0.0,1.0),EDGE_X_GAMMA);
     float scene=LF+max(0.0,w)*0.5,hi=smoothstep(EDGE_LUMA_T0,EDGE_LUMA_T1,scene);
