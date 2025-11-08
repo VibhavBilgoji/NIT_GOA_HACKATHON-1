@@ -98,7 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       }
     : {
         name: "Guest User",
-        email: "guest@citypulse.app",
+        email: "guest@ourstreet.app",
         avatar: "/avatars/default.jpg",
       };
 
@@ -117,7 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <IconMapPin className="!size-5" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">CityPulse</span>
+                  <span className="font-semibold">OurStreet</span>
                   <span className="text-xs text-sidebar-foreground/70">
                     Civic Reporting
                   </span>

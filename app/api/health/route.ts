@@ -76,9 +76,13 @@ export async function GET(_request: NextRequest) {
       envWarnings.push("JWT_SECRET not configured");
     }
 
+<<<<<<< Updated upstream
     if (
       process.env.JWT_SECRET === "citypulse-secret-key-change-in-production"
     ) {
+=======
+    if (process.env.JWT_SECRET === "ourstreet-secret-key-change-in-production") {
+>>>>>>> Stashed changes
       envWarnings.push("Using default JWT_SECRET - change in production");
     }
 

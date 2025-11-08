@@ -1,8 +1,8 @@
-# CityPulse Animations Visual Guide
+# OurStreet Animations Visual Guide
 
 ## 🎨 Overview
 
-This guide demonstrates the visual animations added to CityPulse for enhanced user experience.
+This guide demonstrates the visual animations added to OurStreet for enhanced user experience.
 
 ---
 
@@ -49,7 +49,7 @@ Creates an animated gradient beam that travels along the borders of elements, ad
 ```
 ┌───────────────────────────────┐
 │  ╔═══════════════════════╗    │
-│  ║  Join CityPulse       ║    │  ← BorderBeam animates
+│  ║  Join OurStreet       ║    │  ← BorderBeam animates
 │  ║                       ║    │    around this card
 │  ║  Name:  ___________   ║    │
 │  ║  Email: ___________   ║    │
@@ -133,7 +133,7 @@ Fades out at top and bottom
 │  ║                                       ║ │
 │  ║    ┌─────────────────────────────┐   ║ │
 │  ║    │   Empower Your Community    │   ║ │
-│  ║    │    with CityPulse           │   ║ │  ← RetroGrid behind
+│  ║    │    with OurStreet           │   ║ │  ← RetroGrid behind
 │  ║    └─────────────────────────────┘   ║ │    the hero text
 │  ║                                       ║ │
 │  ║         [Grid Animation]              ║ │
@@ -438,4 +438,4 @@ import { RetroGrid } from "@/components/magicui/retro-grid";
 
 *Last Updated: 2024*  
 *Version: 1.0.0*  
-*CityPulse - Empowering Communities Through Technology*
+*OurStreet - Empowering Communities Through Technology*

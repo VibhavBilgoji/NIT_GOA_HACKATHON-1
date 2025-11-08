@@ -14,7 +14,7 @@ const teamMembers = [
     initials: "NM",
     github: "https://github.com/NoahMenezes",
     linkedin: "#",
-    email: "noah@citypulse.com",
+    email: "noah@ourstreet.com",
   },
   {
     name: "Team Member 2",
@@ -23,7 +23,7 @@ const teamMembers = [
     initials: "TM",
     github: "#",
     linkedin: "#",
-    email: "member2@citypulse.com",
+    email: "member2@ourstreet.com",
   },
   {
     name: "Team Member 3",
@@ -32,7 +32,7 @@ const teamMembers = [
     initials: "TM",
     github: "#",
     linkedin: "#",
-    email: "member3@citypulse.com",
+    email: "member3@ourstreet.com",
   },
   {
     name: "Team Member 4",
@@ -41,7 +41,7 @@ const teamMembers = [
     initials: "TM",
     github: "#",
     linkedin: "#",
-    email: "member4@citypulse.com",
+    email: "member4@ourstreet.com",
   },
 ];
 
@@ -119,10 +119,10 @@ export default function TeamPage() {
           <NeonGradientCard className="overflow-hidden">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-3xl font-bold text-white mb-4">
-                About CityPulse
+                About OurStreet
               </h2>
               <p className="text-lg text-gray-400 mb-6">
-                CityPulse is our submission for the NIT Goa Hackathon, focusing
+                OurStreet is our submission for the NIT Goa Hackathon, focusing
                 on CivicTech and Social Good. Our mission is to create a
                 transparent, accountable, and participatory civic ecosystem
                 through technology and collaboration.
@@ -182,7 +182,7 @@ export default function TeamPage() {
                 Want to Contribute?
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                CityPulse is an open-source project. We welcome contributions
+                OurStreet is an open-source project. We welcome contributions
                 from the community!
               </p>
               <Button
@@ -211,11 +211,11 @@ export default function TeamPage() {
             <div className="flex items-center gap-2">
               <MapPin className="size-5 text-black dark:text-white" />
               <span className="font-semibold text-black dark:text-white">
-                CityPulse
+                OurStreet
               </span>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © 2024 CityPulse. Empowering communities through technology.
+              © 2024 OurStreet. Empowering communities through technology.
             </p>
           </div>
         </div>

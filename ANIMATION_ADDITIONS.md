@@ -1,7 +1,7 @@
 # Animation Additions Summary
 
 ## Overview
-Added two new MagicUI animations to enhance the visual appeal of CityPulse:
+Added two new MagicUI animations to enhance the visual appeal of OurStreet:
 
 1. **BorderBeam** - Animated border effect with moving gradient beam
 2. **RetroGrid** - Retro-style animated grid background
@@ -67,7 +67,7 @@ import { RetroGrid } from "@/components/magicui/retro-grid";
 **Two animations added:**
 
 #### a) RetroGrid on Hero Title
-- Wraps the "Empower Your Community with CityPulse" heading
+- Wraps the "Empower Your Community with OurStreet" heading
 - Creates a dynamic retro-futuristic background effect
 - Enhances the main call-to-action area
 - Positioned behind the ShuffleText component

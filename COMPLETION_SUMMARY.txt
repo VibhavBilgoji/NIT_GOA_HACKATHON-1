@@ -2,7 +2,7 @@
 ║                    🎉 SESSION COMPLETE - SUCCESS! 🎉                  ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
-Project: CityPulse - NIT Goa Hackathon
+Project: OurStreet - NIT Goa Hackathon
 Date: December 2024
 Status: ✅ ALL OBJECTIVES ACHIEVED
 
@@ -106,7 +106,7 @@ Status: ✅ ALL OBJECTIVES ACHIEVED
 📞 QUICK REFERENCE
 
   Demo Accounts:
-    Admin:   admin@citypulse.com / Admin1234
+    Admin:   admin@ourstreet.com / Admin1234
     Citizen: john@example.com / Demo1234
     Citizen: jane@example.com / Demo1234
 

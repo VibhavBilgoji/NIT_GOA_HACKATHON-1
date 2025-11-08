@@ -1,4 +1,4 @@
-// Authentication utilities for CityPulse with proper security
+// Authentication utilities for OurStreet with proper security
 import { NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -6,7 +6,7 @@ import { User } from "./types";
 
 // JWT secret (in production, use environment variable)
 const JWT_SECRET =
-  process.env.JWT_SECRET || "citypulse-secret-key-change-in-production";
+  process.env.JWT_SECRET || "ourstreet-secret-key-change-in-production";
 const JWT_EXPIRES_IN = "7d";
 
 // Generate JWT token

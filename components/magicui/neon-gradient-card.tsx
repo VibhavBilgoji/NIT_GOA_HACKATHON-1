@@ -52,7 +52,7 @@ export function NeonGradientCard({
     <div
       ref={containerRef}
       className={cn(
-        "relative overflow-hidden rounded-[var(--border-radius)] p-[var(--border-size)]",
+        "relative overflow-hidden rounded-[var(--border-radius)] p-[var(--border-size)] transition-all duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl cursor-pointer",
         className,
       )}
       style={

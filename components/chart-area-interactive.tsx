@@ -293,7 +293,7 @@ export function ChartAreaInteractive() {
 
         {/* Hotspot Trend Projection */}
         <TabsContent value="hotspot">
-          <Card>
+          <Card className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-blue-500" />
@@ -390,7 +390,7 @@ export function ChartAreaInteractive() {
 
         {/* Resource Demand Forecasting */}
         <TabsContent value="resource">
-          <Card>
+          <Card className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-green-500" />
@@ -484,7 +484,7 @@ export function ChartAreaInteractive() {
 
         {/* Department Performance */}
         <TabsContent value="performance">
-          <Card>
+          <Card className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5 text-purple-500" />
@@ -566,7 +566,7 @@ export function ChartAreaInteractive() {
 
         {/* Prediction Accuracy */}
         <TabsContent value="prediction">
-          <Card>
+          <Card className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-indigo-500" />

@@ -56,7 +56,7 @@ export function LoginForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Welcome Back to CityPulse</h1>
+          <h1 className="text-2xl font-bold">Welcome Back to OurStreet</h1>
           <p className="text-muted-foreground text-sm text-balance">
             Login to report and track civic issues in your community
           </p>

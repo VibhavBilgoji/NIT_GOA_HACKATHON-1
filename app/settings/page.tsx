@@ -143,7 +143,7 @@ export default function SettingsPage() {
 
               {/* Profile Section */}
               <div className="px-4 lg:px-6">
-                <Card>
+                <Card className="transition-all duration-300 ease-out hover:shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <User className="h-5 w-5" />
@@ -375,7 +375,7 @@ export default function SettingsPage() {
 
               {/* Notification Settings */}
               <div className="px-4 lg:px-6">
-                <Card>
+                <Card className="transition-all duration-300 ease-out hover:shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Bell className="h-5 w-5" />
@@ -567,9 +567,9 @@ export default function SettingsPage() {
                 </Card>
               </div>
 
-              {/* CityPulse Account Settings */}
+              {/* OurStreet Account Settings */}
               <div className="px-4 lg:px-6">
-                <Card>
+                <Card className="transition-all duration-300 ease-out hover:shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Shield className="h-5 w-5" />

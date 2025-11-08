@@ -67,7 +67,7 @@ async function uploadToCloudinary(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("file", dataURI);
   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-  formData.append("folder", "citypulse");
+  formData.append("folder", "ourstreet");
   formData.append("resource_type", "image");
 
   const response = await fetch(

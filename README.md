@@ -1,4 +1,4 @@
-# CityPulse - Smart City Issue Reporting Platform
+# OurStreet - Smart City Issue Reporting Platform
 
 > A modern, serverless Next.js application for citizens to report local issues and authorities to manage them efficiently with real-time tracking, ward-wise analytics, and cloud-based photo management.
 
@@ -529,7 +529,7 @@ After running the database schema, use these accounts:
 
 | Email | Password | Role |
 |-------|----------|------|
-| admin@citypulse.com | Admin1234 | admin |
+| admin@ourstreet.com | Admin1234 | admin |
 | john@example.com | Demo1234 | citizen |
 | jane@example.com | Demo1234 | citizen |
 
@@ -782,7 +782,7 @@ This project is licensed under the MIT License.
 
 ## 👥 Authors
 
-- CityPulse Team - NIT Goa Hackathon Project
+- OurStreet Team - NIT Goa Hackathon Project
 
 ---
 
@@ -804,5 +804,5 @@ For support, email your-email@example.com or open an issue on GitHub.
 <div align="center">
   <strong>Built with ❤️ for smarter cities</strong>
   <br />
-  <sub>CityPulse - Making cities better, one report at a time</sub>
+  <sub>OurStreet - Making cities better, one report at a time</sub>
 </div>

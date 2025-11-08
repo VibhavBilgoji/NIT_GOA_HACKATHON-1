@@ -303,7 +303,7 @@ export default function MapPage() {
 
           {/* Stats */}
           <div className="grid gap-4 md:grid-cols-4 mb-8">
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden">
+            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
               <BorderBeam size={150} duration={6} delay={0} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -316,7 +316,7 @@ export default function MapPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden">
+            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
               <BorderBeam size={150} duration={6} delay={1} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -331,7 +331,7 @@ export default function MapPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden">
+            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
               <BorderBeam size={150} duration={6} delay={2} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -346,7 +346,7 @@ export default function MapPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden">
+            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
               <BorderBeam size={150} duration={6} delay={3} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -366,7 +366,7 @@ export default function MapPage() {
           {/* Map and Issues */}
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Interactive Map */}
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden">
+            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
               <BorderBeam size={200} duration={8} delay={0} />
               <CardHeader>
                 <CardTitle className="text-black dark:text-white">
@@ -399,7 +399,7 @@ export default function MapPage() {
             </Card>
 
             {/* Issues List */}
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden">
+            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
               <BorderBeam size={200} duration={8} delay={2} />
               <CardHeader>
                 <CardTitle className="text-black dark:text-white">
@@ -423,9 +423,9 @@ export default function MapPage() {
                       return (
                         <div
                           key={issue.id}
-                          className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                          className={`p-4 rounded-lg border transition-all duration-300 ease-out cursor-pointer hover:scale-[1.02] hover:-translate-y-1 hover:shadow-lg ${
                             selectedIssue === issue.id
-                              ? "border-black dark:border-white bg-gray-50 dark:bg-gray-900"
+                              ? "border-black dark:border-white bg-gray-50 dark:bg-gray-900 shadow-md"
                               : "border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600"
                           }`}
                           onClick={() => setSelectedIssue(issue.id)}
@@ -472,7 +472,7 @@ export default function MapPage() {
           </div>
 
           {/* Legend */}
-          <Card className="mt-6 border-gray-200 dark:border-gray-800 relative overflow-hidden">
+          <Card className="mt-6 border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
             <BorderBeam size={200} duration={8} delay={4} />
             <CardHeader>
               <CardTitle className="text-black dark:text-white">

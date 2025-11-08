@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       user = {
         userId: "guest-" + Date.now(),
-        email: "guest@citypulse.com",
+        email: "guest@ourstreet.com",
         role: "citizen",
       };
     }

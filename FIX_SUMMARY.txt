@@ -1,5 +1,5 @@
 ================================================================================
-  CITYPULSE LOGIN ISSUE - DIAGNOSIS & FIX COMPLETE
+  OURSTREET LOGIN ISSUE - DIAGNOSIS & FIX COMPLETE
 ================================================================================
 
 ISSUES REPORTED:
@@ -72,7 +72,7 @@ DEMO ACCOUNT CREDENTIALS (after running fix script):
 
 john@example.com     / Demo1234    (citizen)
 jane@example.com     / Demo1234    (citizen)
-admin@citypulse.com  / Admin1234   (admin)
+admin@ourstreet.com  / Admin1234   (admin)
 
 ================================================================================
 VERIFICATION:

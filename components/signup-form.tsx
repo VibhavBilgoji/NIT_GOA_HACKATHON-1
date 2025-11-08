@@ -71,7 +71,7 @@ export function SignupForm({
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold text-black dark:text-white">
-            Join CityPulse
+            Join OurStreet
           </h1>
           <p className="text-muted-foreground text-sm text-balance">
             Create an account to start reporting and tracking civic issues

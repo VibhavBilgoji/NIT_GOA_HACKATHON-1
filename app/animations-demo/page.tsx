@@ -83,7 +83,7 @@ export default function AnimationsDemo() {
 
           <div className="relative overflow-hidden rounded-lg border-2 border-gray-300 dark:border-gray-700 h-[500px] flex items-center justify-center">
             <div className="z-10 relative text-center space-y-4">
-              <h3 className="text-5xl font-bold">CityPulse</h3>
+              <h3 className="text-5xl font-bold">OurStreet</h3>
               <p className="text-xl text-gray-600 dark:text-gray-400">
                 BorderBeam + RetroGrid Together
               </p>

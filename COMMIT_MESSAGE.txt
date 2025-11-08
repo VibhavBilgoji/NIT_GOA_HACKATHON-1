@@ -92,4 +92,4 @@ Noah's recent improvements. Zero breaking changes, all features working together
 ---
 
 Co-authored-by: noahmenezes
-Built with collaboration for CityPulse Platform 🚀
+Built with collaboration for OurStreet Platform 🚀

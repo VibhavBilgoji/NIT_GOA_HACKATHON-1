@@ -278,7 +278,7 @@ export default function AnalyticsPage() {
               {/* Summary Cards */}
               <div className="px-4 lg:px-6">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  <Card>
+                  <Card className="transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
                         Total Issues
@@ -295,7 +295,7 @@ export default function AnalyticsPage() {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
                         Resolution Rate
@@ -312,7 +312,7 @@ export default function AnalyticsPage() {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
                         Avg Resolution Time
@@ -329,7 +329,7 @@ export default function AnalyticsPage() {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
                         Active Hotspots
@@ -350,7 +350,7 @@ export default function AnalyticsPage() {
 
               {/* Ward-wise Performance */}
               <div className="px-4 lg:px-6">
-                <Card>
+                <Card className="transition-all duration-300 ease-out hover:shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <TrendingUp className="h-5 w-5" />
@@ -440,7 +440,7 @@ export default function AnalyticsPage() {
               <div className="px-4 lg:px-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Issue Hotspots */}
-                  <Card>
+                  <Card className="transition-all duration-300 ease-out hover:shadow-lg">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <MapPin className="h-5 w-5 text-red-500" />
@@ -498,7 +498,7 @@ export default function AnalyticsPage() {
                   </Card>
 
                   {/* Category Performance */}
-                  <Card>
+                  <Card className="transition-all duration-300 ease-out hover:shadow-lg">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <BarChart3 className="h-5 w-5 text-purple-500" />

@@ -215,7 +215,7 @@ export function SLAAlertsTable() {
   ).length;
 
   return (
-    <Card className="w-full">
+    <Card className="w-full transition-all duration-300 ease-out hover:shadow-lg">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>

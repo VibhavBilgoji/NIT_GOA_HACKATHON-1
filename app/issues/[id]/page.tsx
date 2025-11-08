@@ -273,7 +273,7 @@ export default function IssueDetailPage() {
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Card>
+            <Card className="transition-all duration-300 ease-out hover:shadow-lg">
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
@@ -324,7 +324,7 @@ export default function IssueDetailPage() {
               />
             )}
 
-            <Card>
+            <Card className="transition-all duration-300 ease-out hover:shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="h-5 w-5" />
@@ -399,7 +399,7 @@ export default function IssueDetailPage() {
           </div>
 
           <div className="space-y-6">
-            <Card>
+            <Card className="transition-all duration-300 ease-out hover:shadow-lg">
               <CardHeader>
                 <CardTitle className="text-lg">Actions</CardTitle>
               </CardHeader>

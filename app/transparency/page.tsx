@@ -160,7 +160,7 @@ export default function TransparencyPage() {
               Public Dashboard
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              CityPulse Transparency Portal
+              OurStreet Transparency Portal
             </h1>
             <p className="text-lg text-blue-100 mb-6">
               Track our community&apos;s progress in resolving civic issues.
@@ -195,7 +195,7 @@ export default function TransparencyPage() {
       <div className="container mx-auto px-4 py-12">
         {/* Key Metrics */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card className="border-t-4 border-t-blue-500">
+          <Card className="border-t-4 border-t-blue-500 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Total Issues Reported
@@ -212,7 +212,7 @@ export default function TransparencyPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-t-4 border-t-green-500">
+          <Card className="border-t-4 border-t-green-500 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Issues Resolved
@@ -229,7 +229,7 @@ export default function TransparencyPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-t-4 border-t-purple-500">
+          <Card className="border-t-4 border-t-purple-500 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Resolution Rate
@@ -244,7 +244,7 @@ export default function TransparencyPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-t-4 border-t-orange-500">
+          <Card className="border-t-4 border-t-orange-500 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Avg Resolution Time
@@ -264,7 +264,7 @@ export default function TransparencyPage() {
 
         <div className="grid gap-6 lg:grid-cols-2 mb-8">
           {/* Ward Performance */}
-          <Card>
+          <Card className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />
@@ -322,7 +322,7 @@ export default function TransparencyPage() {
           </Card>
 
           {/* Category Statistics */}
-          <Card>
+          <Card className="transition-all duration-300 ease-out hover:shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-primary" />
@@ -369,7 +369,7 @@ export default function TransparencyPage() {
         </div>
 
         {/* Recent Resolutions */}
-        <Card>
+        <Card className="transition-all duration-300 ease-out hover:shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -424,7 +424,7 @@ export default function TransparencyPage() {
         </Card>
 
         {/* Community Impact Statement */}
-        <Card className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-none">
+        <Card className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-none transition-all duration-300 ease-out hover:shadow-lg">
           <CardContent className="pt-6">
             <div className="flex items-start gap-4">
               <Users className="h-12 w-12 text-primary flex-shrink-0" />
@@ -471,11 +471,16 @@ export default function TransparencyPage() {
             improve our community.
           </p>
           <Link href="/signup">
+<<<<<<< Updated upstream
             <Button
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-purple-600"
             >
               Join CityPulse Today
+=======
+            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
+              Join OurStreet Today
+>>>>>>> Stashed changes
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>

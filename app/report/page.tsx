@@ -364,7 +364,7 @@ export default function ReportIssuePage() {
         </div>
 
         {/* Form Card */}
-        <Card className="border-gray-200 dark:border-gray-800">
+        <Card className="border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:shadow-lg">
           <CardHeader>
             <CardTitle>Issue Details</CardTitle>
             <CardDescription>
@@ -700,6 +700,7 @@ export default function ReportIssuePage() {
         </Card>
 
         {/* Info Cards */}
+<<<<<<< Updated upstream
         <div className="grid md:grid-cols-4 gap-4 mt-8">
           <Card className="border-gray-200 dark:border-gray-800">
             <CardHeader className="pb-3">
@@ -715,6 +716,10 @@ export default function ReportIssuePage() {
             </CardContent>
           </Card>
           <Card className="border-gray-200 dark:border-gray-800">
+=======
+        <div className="grid md:grid-cols-3 gap-4 mt-8">
+          <Card className="border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
+>>>>>>> Stashed changes
             <CardHeader className="pb-3">
               <CardTitle className="text-sm">Quick Response</CardTitle>
             </CardHeader>
@@ -724,7 +729,7 @@ export default function ReportIssuePage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="border-gray-200 dark:border-gray-800">
+          <Card className="border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm">Track Progress</CardTitle>
             </CardHeader>
@@ -734,7 +739,7 @@ export default function ReportIssuePage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="border-gray-200 dark:border-gray-800">
+          <Card className="border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm">Community Impact</CardTitle>
             </CardHeader>
