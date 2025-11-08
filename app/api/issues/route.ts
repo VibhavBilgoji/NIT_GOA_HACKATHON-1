@@ -8,6 +8,31 @@ import {
   IssueFilters,
 } from "@/lib/types";
 
+// Validation helpers
+function isValidCoordinate(lat: number, lng: number): boolean {
+  return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+}
+
+function sanitizeUrl(url: string): string | null {
+  try {
+    const parsedUrl = new URL(url);
+    // Only allow http and https protocols
+    if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+      return null;
+    }
+    return parsedUrl.href;
+  } catch {
+    return null;
+  }
+}
+
+function sanitizeInput(input: string): string {
+  return input
+    .trim()
+    .replace(/\s+/g, " ") // Replace multiple spaces with single space
+    .replace(/[<>]/g, ""); // Remove potential HTML tags
+}
+
 // GET /api/issues - Get all issues with filters
 export async function GET(request: NextRequest) {
   try {
@@ -132,7 +157,7 @@ export async function POST(request: NextRequest) {
     const { title, description, category, location, coordinates, photoUrl } =
       body;
 
-    // Validation
+    // Validation - Check required fields
     if (!title || !description || !category || !location) {
       return NextResponse.json(
         {
@@ -143,23 +168,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Sanitize inputs
+    const sanitizedTitle = sanitizeInput(title);
+    const sanitizedDescription = sanitizeInput(description);
+    const sanitizedLocation = sanitizeInput(location);
+
     // Validate title length
-    if (title.trim().length < 5) {
+    if (sanitizedTitle.length < 5 || sanitizedTitle.length > 200) {
       return NextResponse.json(
         {
           success: false,
-          error: "Title must be at least 5 characters long",
+          error: "Title must be between 5 and 200 characters long",
         } as ApiResponse,
         { status: 400 },
       );
     }
 
     // Validate description length
-    if (description.trim().length < 10) {
+    if (
+      sanitizedDescription.length < 10 ||
+      sanitizedDescription.length > 2000
+    ) {
       return NextResponse.json(
         {
           success: false,
-          error: "Description must be at least 10 characters long",
+          error: "Description must be between 10 and 2000 characters long",
+        } as ApiResponse,
+        { status: 400 },
+      );
+    }
+
+    // Validate location length
+    if (sanitizedLocation.length < 3 || sanitizedLocation.length > 500) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Location must be between 3 and 500 characters long",
         } as ApiResponse,
         { status: 400 },
       );
@@ -200,6 +244,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate coordinate values
+    if (
+      typeof coordinates.lat !== "number" ||
+      typeof coordinates.lng !== "number"
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Coordinates must be valid numbers",
+        } as ApiResponse,
+        { status: 400 },
+      );
+    }
+
+    if (!isValidCoordinate(coordinates.lat, coordinates.lng)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Invalid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180",
+        } as ApiResponse,
+        { status: 400 },
+      );
+    }
+
+    // Validate and sanitize photo URL if provided
+    let validPhotoUrl: string | undefined;
+    if (photoUrl) {
+      if (typeof photoUrl !== "string") {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Photo URL must be a string",
+          } as ApiResponse,
+          { status: 400 },
+        );
+      }
+
+      const sanitized = sanitizeUrl(photoUrl);
+      if (!sanitized) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Invalid photo URL format",
+          } as ApiResponse,
+          { status: 400 },
+        );
+      }
+      validPhotoUrl = sanitized;
+    }
+
     // Determine priority based on category
     let priority: "low" | "medium" | "high" | "critical" = "medium";
     if (["water_leak", "electricity", "traffic"].includes(category)) {
@@ -210,14 +305,17 @@ export async function POST(request: NextRequest) {
       priority = "low";
     }
 
-    // Create new issue
+    // Create new issue with sanitized data
     const newIssue = await issueDb.create({
-      title: title.trim(),
-      description: description.trim(),
+      title: sanitizedTitle,
+      description: sanitizedDescription,
       category,
-      location: location.trim(),
-      coordinates,
-      photoUrl: photoUrl || undefined,
+      location: sanitizedLocation,
+      coordinates: {
+        lat: coordinates.lat,
+        lng: coordinates.lng,
+      },
+      photoUrl: validPhotoUrl,
       status: "open",
       priority,
       userId: user.userId,
@@ -233,10 +331,19 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error creating issue:", error);
+
+    // Check for specific error types
+    let errorMessage = "Failed to create issue. Please try again.";
+    if (error instanceof SyntaxError) {
+      errorMessage = "Invalid request format. Please check your data.";
+    } else if (error instanceof Error && error.message.includes("database")) {
+      errorMessage = "Database error. Please try again later.";
+    }
+
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to create issue. Please try again.",
+        error: errorMessage,
       } as ApiResponse,
       { status: 500 },
     );

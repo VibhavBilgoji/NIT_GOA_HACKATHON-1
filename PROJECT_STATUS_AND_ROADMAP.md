@@ -1,7 +1,7 @@
 # CityPulse - Project Status & Roadmap
 
-**Last Updated:** December 2024  
-**Project:** NIT Goa Hackathon Submission  
+**Last Updated:** December 2024
+**Project:** NIT Goa Hackathon Submission
 **Status:** Backend Complete ✅ | Frontend Partially Complete 🚧
 
 ---
@@ -10,7 +10,7 @@
 
 ### ✅ Completed Features
 
-#### Backend (100% Complete)
+#### Backend (100% Complete + Enhanced Security & Monitoring)
 - [x] **Database Layer**
   - Supabase integration with PostgreSQL
   - In-memory fallback for local development
@@ -26,14 +26,18 @@
   - Password validation (8+ chars, uppercase, lowercase, number)
 
 - [x] **API Endpoints (All Working)**
-  - `/api/auth/login` - User login
+  - `/api/auth/login` - User login (with rate limiting & audit logs)
   - `/api/auth/signup` - User registration
+  - `/api/auth/refresh` - Token refresh endpoint
   - `/api/issues` - List/Create issues
   - `/api/issues/[id]` - Get/Update/Delete issue
   - `/api/issues/[id]/comments` - Issue comments CRUD
   - `/api/issues/[id]/vote` - Vote on issues
   - `/api/dashboard` - Dashboard statistics
   - `/api/user` - User profile management
+  - `/api/upload` - Enhanced file upload (Cloudinary + Supabase Storage)
+  - `/api/admin/audit-logs` - System audit logs (admin only)
+  - `/api/health` - System health check endpoint
 
 - [x] **Database Schema**
   - Users table with RLS policies
@@ -43,6 +47,22 @@
   - Automated triggers for timestamps
   - Issue stats view for analytics
   - Proper foreign key relationships
+
+- [x] **Security & Monitoring** 🆕
+  - Rate limiting middleware for all endpoints
+  - Audit logging for admin actions and security events
+  - Enhanced input validation and sanitization
+  - URL validation for photo uploads
+  - Coordinate validation for issue locations
+  - Request metadata tracking (IP, User-Agent)
+
+- [x] **File Upload Enhancement** 🆕
+  - Support for both Cloudinary and Supabase Storage
+  - Automatic fallback between providers
+  - File type and size validation (max 10MB)
+  - Multiple file upload support (max 5 files)
+  - Image compression ready
+  - Secure file handling
 
 - [x] **Documentation**
   - API documentation (README.md)
@@ -105,7 +125,9 @@
 
 ### Critical (Must-Have)
 
-1. **Report Page API Integration** 🔴
+1. **Report Page API Integration** 🟡
+   - **Backend Status:** ✅ Complete with enhanced validation
+   - **Frontend Status:** 🔴 Still needs integration
    - **Status:** Form UI complete, but submits mock data
    - **Location:** `app/report/page.tsx` line 103-107
    - **Issue:** Uses `setTimeout` simulation instead of real API call
@@ -113,7 +135,7 @@
      ```typescript
      // Replace this:
      await new Promise((resolve) => setTimeout(resolve, 1500));
-     
+
      // With actual API call:
      const response = await fetch('/api/issues', {
        method: 'POST',
@@ -133,8 +155,9 @@
      });
      ```
 
-2. **Map Page Data Integration** 🔴
-   - **Status:** Shows mock data only
+2. **Map Page Data Integration** 🟡
+   - **Backend Status:** ✅ API ready with filtering
+   - **Frontend Status:** 🔴 Shows mock data only
    - **Location:** `app/map/page.tsx` line 37-78
    - **Issue:** Hard-coded `mockIssues` array
    - **Fix Needed:**
@@ -153,14 +176,21 @@
      - Handle automatic logout on token expiry
      - Protected route middleware
 
-4. **Photo Upload to Cloud Storage** 🔴
-   - **Status:** Photos only previewed locally
-   - **Issue:** No actual upload to Cloudinary/S3/Supabase Storage
-   - **Fix Needed:**
-     - Integrate Cloudinary or Supabase Storage
-     - Upload image and get URL
-     - Pass URL to API when creating issue
-     - Add file size/type validation
+4. **Photo Upload to Cloud Storage** ✅ → 🟡
+   - **Backend Status:** ✅ Complete with dual provider support
+   - **Frontend Status:** 🔴 Still needs integration
+   - **Implemented:**
+     - ✅ Cloudinary integration
+     - ✅ Supabase Storage integration
+     - ✅ Automatic provider fallback
+     - ✅ File size/type validation (10MB max, images only)
+     - ✅ Multiple file support (up to 5 files)
+     - ✅ Rate limiting on uploads
+     - ✅ Secure authentication
+   - **Frontend Fix Needed:**
+     - Wire report form to /api/upload
+     - Display upload progress
+     - Handle multiple files
 
 5. **Dashboard Real Data** 🟡
    - **Status:** Partially complete
@@ -455,6 +485,15 @@ These tasks can be completed quickly and don't depend on other features:
 ---
 
 ## 🛠️ Technical Debt & Refactoring
+
+### Recently Addressed ✅
+- [x] Added rate limiting middleware (`lib/rate-limit.ts`)
+- [x] Added audit logging system (`lib/audit-log.ts`)
+- [x] Enhanced input validation and sanitization
+- [x] Added health check endpoint for monitoring
+- [x] Improved error handling in upload endpoint
+- [x] Added security event tracking
+- [x] Token refresh mechanism implemented
 
 ### Code Quality Issues
 

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { issueDb, userDb } from "@/lib/db";
 import { IssueStatus, IssuePriority } from "@/lib/types";
+import { logAdminAction, getRequestMetadata } from "@/lib/audit-log";
 
 // GET /api/admin/issues - Get all issues with filters (admin only)
 export async function GET(request: NextRequest) {
@@ -14,6 +15,8 @@ export async function GET(request: NextRequest) {
         { status: authResult.error?.includes("Forbidden") ? 403 : 401 },
       );
     }
+
+    const { ipAddress, userAgent } = getRequestMetadata(request);
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
@@ -59,12 +62,47 @@ export async function GET(request: NextRequest) {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
+    // Log admin access
+    logAdminAction({
+      userId: authResult.user!.userId,
+      userEmail: authResult.user!.email,
+      userRole: authResult.user!.role,
+      action: "create",
+      resource: "admin",
+      ipAddress,
+      userAgent,
+      details: {
+        endpoint: "admin/issues",
+        method: "GET",
+        filters: { status, category, priority, ward, assignedTo },
+        resultCount: issues.length,
+      },
+      success: true,
+    });
+
     return NextResponse.json({
       success: true,
       data: issues,
     });
   } catch (error) {
     console.error("Admin get issues error:", error);
+
+    // Log failure
+    const { ipAddress, userAgent } = getRequestMetadata(request);
+    logAdminAction({
+      userId: "unknown",
+      userEmail: "unknown",
+      userRole: "admin",
+      action: "create",
+      resource: "admin",
+      ipAddress,
+      userAgent,
+      details: { endpoint: "admin/issues", method: "GET" },
+      success: false,
+      errorMessage:
+        error instanceof Error ? error.message : "Failed to fetch issues",
+    });
+
     return NextResponse.json(
       { success: false, error: "Failed to fetch issues" },
       { status: 500 },
@@ -82,6 +120,8 @@ export async function PATCH(request: NextRequest) {
         { status: authResult.error?.includes("Forbidden") ? 403 : 401 },
       );
     }
+
+    const { ipAddress, userAgent } = getRequestMetadata(request);
 
     const body = await request.json();
     const { issueIds, updates } = body;
@@ -112,6 +152,24 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
+    // Log bulk update action
+    logAdminAction({
+      userId: authResult.user!.userId,
+      userEmail: authResult.user!.email,
+      userRole: authResult.user!.role,
+      action: "bulk_update",
+      resource: "issue",
+      ipAddress,
+      userAgent,
+      details: {
+        issueIds,
+        updates,
+        updatedCount: updatedIssues.length,
+        errorCount: errors.length,
+      },
+      success: true,
+    });
+
     return NextResponse.json({
       success: true,
       data: {
@@ -123,6 +181,23 @@ export async function PATCH(request: NextRequest) {
     });
   } catch (error) {
     console.error("Admin bulk update error:", error);
+
+    // Log failure
+    const { ipAddress, userAgent } = getRequestMetadata(request);
+    logAdminAction({
+      userId: "unknown",
+      userEmail: "unknown",
+      userRole: "admin",
+      action: "bulk_update",
+      resource: "issue",
+      ipAddress,
+      userAgent,
+      details: { endpoint: "admin/issues", method: "PATCH" },
+      success: false,
+      errorMessage:
+        error instanceof Error ? error.message : "Failed to update issues",
+    });
+
     return NextResponse.json(
       { success: false, error: "Failed to update issues" },
       { status: 500 },

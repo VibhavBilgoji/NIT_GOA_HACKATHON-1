@@ -1,42 +1,26 @@
+// Token Refresh API - Refresh JWT tokens before expiry
 import { NextRequest, NextResponse } from "next/server";
+import { verifyToken, generateToken } from "@/lib/auth";
 import { userDb } from "@/lib/db";
-import {
-  comparePasswords,
-  validateEmail,
-  generateToken,
-  sanitizeUser,
-} from "@/lib/auth";
-import { LoginRequest, AuthResponse } from "@/lib/types";
-import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { AuthResponse } from "@/lib/types";
 import { logAuth, getRequestMetadata } from "@/lib/audit-log";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   const { ipAddress, userAgent } = getRequestMetadata(request);
   let userEmail = "";
 
   try {
-    // Apply rate limiting for login attempts
+    // Apply rate limiting
     const rateLimitResult = checkRateLimit(request, RATE_LIMITS.AUTH);
 
     if (!rateLimitResult.allowed) {
-      // Log rate limit exceeded event
-      logAuth({
-        userEmail: "unknown",
-        action: "login",
-        ipAddress,
-        userAgent,
-        success: false,
-        errorMessage: "Rate limit exceeded",
-      });
-
       return NextResponse.json(
         {
           success: false,
-          error:
-            rateLimitResult.error ||
-            "Too many login attempts. Please try again later.",
+          error: "Too many refresh attempts. Please try again later.",
           retryAfter: Math.ceil(
-            (rateLimitResult.resetTime - Date.now()) / 1000,
+            (rateLimitResult.resetTime - Date.now()) / 1000
           ),
         } as AuthResponse,
         {
@@ -45,105 +29,99 @@ export async function POST(request: NextRequest) {
             "X-RateLimit-Limit": RATE_LIMITS.AUTH.maxRequests.toString(),
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": rateLimitResult.resetTime.toString(),
-            "Retry-After": Math.ceil(
-              (rateLimitResult.resetTime - Date.now()) / 1000,
-            ).toString(),
           },
-        },
+        }
       );
     }
 
-    const body: LoginRequest = await request.json();
-    const { email, password } = body;
-    userEmail = email;
+    // Get token from Authorization header or cookie
+    const authHeader = request.headers.get("authorization");
+    const cookieToken = request.cookies.get("token")?.value;
+    const token = authHeader?.replace("Bearer ", "") || cookieToken;
 
-    // Validation
-    if (!email || !password) {
+    if (!token) {
       logAuth({
-        userEmail: email || "unknown",
+        userEmail: "unknown",
         action: "login",
         ipAddress,
         userAgent,
         success: false,
-        errorMessage: "Missing email or password",
+        errorMessage: "No token provided for refresh",
       });
 
       return NextResponse.json(
         {
           success: false,
-          error: "Email and password are required",
+          error: "No token provided",
         } as AuthResponse,
-        { status: 400 },
+        { status: 401 }
       );
     }
 
-    // Validate email format
-    if (!validateEmail(email)) {
+    // Verify the existing token
+    const decoded = verifyToken(token);
+
+    if (!decoded) {
       logAuth({
-        userEmail: email,
+        userEmail: "unknown",
         action: "login",
         ipAddress,
         userAgent,
         success: false,
-        errorMessage: "Invalid email format",
+        errorMessage: "Invalid or expired token for refresh",
       });
 
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid email address",
+          error: "Invalid or expired token",
         } as AuthResponse,
-        { status: 400 },
+        { status: 401 }
       );
     }
 
-    // Find user by email
-    const user = await userDb.findByEmail(email.toLowerCase());
+    userEmail = decoded.email;
+
+    // Verify user still exists and is active
+    const user = await userDb.findById(decoded.userId);
+
     if (!user) {
       logAuth({
-        userEmail: email,
+        userId: decoded.userId,
+        userEmail: decoded.email,
         action: "login",
         ipAddress,
         userAgent,
         success: false,
-        errorMessage: "User not found",
+        errorMessage: "User not found during token refresh",
       });
 
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid email or password",
+          error: "User not found",
         } as AuthResponse,
-        { status: 401 },
+        { status: 401 }
       );
     }
 
-    // Compare passwords
-    const isPasswordValid = await comparePasswords(password, user.password);
-    if (!isPasswordValid) {
+    // Check if user role has changed
+    if (user.role !== decoded.role) {
+      // User role has changed, include updated info in new token
       logAuth({
         userId: user.id,
         userEmail: user.email,
         action: "login",
         ipAddress,
         userAgent,
-        success: false,
-        errorMessage: "Invalid password",
+        success: true,
       });
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid email or password",
-        } as AuthResponse,
-        { status: 401 },
-      );
     }
 
-    // Generate token
-    const token = generateToken(user.id, user.email, user.role);
+    // Generate new token with potentially updated role
+    const newToken = generateToken(user.id, user.email, user.role);
 
-    // Log successful login
+    // Log successful token refresh
     logAuth({
       userId: user.id,
       userEmail: user.email,
@@ -153,13 +131,18 @@ export async function POST(request: NextRequest) {
       success: true,
     });
 
-    // Return success response with rate limit headers
     return NextResponse.json(
       {
         success: true,
-        message: "Login successful",
-        user: sanitizeUser(user),
-        token,
+        message: "Token refreshed successfully",
+        token: newToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          createdAt: user.createdAt,
+        },
       } as AuthResponse,
       {
         status: 200,
@@ -168,12 +151,11 @@ export async function POST(request: NextRequest) {
           "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
           "X-RateLimit-Reset": rateLimitResult.resetTime.toString(),
         },
-      },
+      }
     );
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Token refresh error:", error);
 
-    // Log error
     logAuth({
       userEmail: userEmail || "unknown",
       action: "login",
@@ -181,15 +163,15 @@ export async function POST(request: NextRequest) {
       userAgent,
       success: false,
       errorMessage:
-        error instanceof Error ? error.message : "Internal server error",
+        error instanceof Error ? error.message : "Token refresh failed",
     });
 
     return NextResponse.json(
       {
         success: false,
-        error: "Internal server error. Please try again later.",
+        error: "Failed to refresh token. Please login again.",
       } as AuthResponse,
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

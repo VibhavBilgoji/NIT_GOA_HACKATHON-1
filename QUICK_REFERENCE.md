@@ -1,4 +1,6 @@
-# CityPulse Quick Reference Card
+# CityPulse - Quick Reference Guide
+
+**Last Updated:** December 2024 - Backend Enhanced ✅
 
 > Quick copy-paste code snippets for common tasks
 
@@ -45,9 +47,15 @@ Citizen 2: jane@example.com    / Demo1234
 POST /api/auth/signup
 Body: { name, email, password, confirmPassword }
 
-// Login
+// Login (Rate Limited: 5 attempts / 15 min)
 POST /api/auth/login
 Body: { email, password }
+Headers: X-RateLimit-Limit, X-RateLimit-Remaining
+
+// Token Refresh (NEW)
+POST /api/auth/refresh
+Headers: { Authorization: "Bearer <token>" }
+Returns: { token: string, user: User }
 ```
 
 ### Issues (Public)
@@ -73,10 +81,16 @@ DELETE /api/issues/[id]
 
 ### Upload (Authenticated)
 ```typescript
-// Upload photos
+// Upload photos (Enhanced - supports Cloudinary + Supabase Storage)
 POST /api/upload
-Body: FormData with 'files' field
-Returns: { urls: string[], url: string }
+Body: FormData with 'files' field (max 5 files, 10MB each)
+Headers: { Authorization: "Bearer <token>" }
+Returns: { urls: string[], url: string, message: string }
+
+// Check upload configuration (NEW)
+GET /api/upload
+Headers: { Authorization: "Bearer <token>" }
+Returns: { provider: string, maxFileSize: number, allowedTypes: string[] }
 ```
 
 ### Admin (Requires Admin Role)
@@ -100,6 +114,26 @@ DELETE /api/admin/users?userId=<id>
 
 // Get statistics
 GET /api/admin/stats?ward=Panjim
+
+// Audit Logs (NEW)
+GET /api/admin/audit-logs?userId=xxx&action=login&success=true&limit=100
+Query params: userId, action, resource, success, startDate, endDate, limit, offset
+Special modes: ?stats=true | ?security=true | ?export=true
+Returns: { logs: AuditLogEntry[], total: number, hasMore: boolean }
+```
+
+### System Health (NEW)
+```typescript
+// Health check
+GET /api/health
+Returns: {
+  status: "healthy" | "degraded" | "unhealthy",
+  uptime: number,
+  checks: { database, storage, environment }
+}
+
+// Quick ping
+HEAD /api/health
 ```
 
 ---
