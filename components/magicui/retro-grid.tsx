@@ -44,7 +44,7 @@ export function RetroGrid({ className, angle = 65 }: RetroGridProps) {
         }
 
         .animate-grid {
-          animation: grid 50s ease-in-out infinite;
+          animation: grid 80s ease-in-out infinite;
         }
       `}</style>
     </div>
