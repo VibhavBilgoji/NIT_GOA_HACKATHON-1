@@ -35,7 +35,7 @@ export function Navigation() {
             <MapPin className="size-4" />
           </div>
           <span className="text-lg font-semibold text-black dark:text-white">
-            CityPulse
+            OurStreet
           </span>
         </Link>
 

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navigation } from "@/components/navigation";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -11,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CityPulse - Local Issue Reporting & Impact Tracker",
+  title: "OurStreet - Local Issue Reporting & Impact Tracker",
   description:
     "Report civic issues, track resolutions, and improve your local community with real-time tracking and transparent governance.",
 };
@@ -32,6 +33,7 @@ export default function RootLayout({
         >
           <Navigation />
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

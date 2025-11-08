@@ -1,291 +1,652 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useState } from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+} from "recharts";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group"
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TrendingUp, AlertTriangle, BarChart3, Activity } from "lucide-react";
 
-export const description = "An interactive area chart"
+const hotspotTrendData = [
+  {
+    month: "Jan",
+    potholes: 24,
+    streetlights: 15,
+    water: 9,
+    sanitation: 21,
+    predicted: 28,
+  },
+  {
+    month: "Feb",
+    potholes: 31,
+    streetlights: 18,
+    water: 12,
+    sanitation: 26,
+    predicted: 35,
+  },
+  {
+    month: "Mar",
+    potholes: 28,
+    streetlights: 22,
+    water: 15,
+    sanitation: 30,
+    predicted: 38,
+  },
+  {
+    month: "Apr",
+    potholes: 35,
+    streetlights: 26,
+    water: 18,
+    sanitation: 33,
+    predicted: 42,
+  },
+  {
+    month: "May",
+    potholes: 42,
+    streetlights: 31,
+    water: 22,
+    sanitation: 38,
+    predicted: 48,
+  },
+  {
+    month: "Jun",
+    potholes: 38,
+    streetlights: 28,
+    water: 25,
+    sanitation: 35,
+    predicted: 45,
+  },
+  {
+    month: "Jul",
+    potholes: 45,
+    streetlights: 33,
+    water: 28,
+    sanitation: 42,
+    predicted: 52,
+  },
+  {
+    month: "Aug",
+    potholes: 52,
+    streetlights: 38,
+    water: 32,
+    sanitation: 48,
+    predicted: 58,
+  },
+];
 
-const chartData = [
-  { date: "2024-04-01", desktop: 222, mobile: 150 },
-  { date: "2024-04-02", desktop: 97, mobile: 180 },
-  { date: "2024-04-03", desktop: 167, mobile: 120 },
-  { date: "2024-04-04", desktop: 242, mobile: 260 },
-  { date: "2024-04-05", desktop: 373, mobile: 290 },
-  { date: "2024-04-06", desktop: 301, mobile: 340 },
-  { date: "2024-04-07", desktop: 245, mobile: 180 },
-  { date: "2024-04-08", desktop: 409, mobile: 320 },
-  { date: "2024-04-09", desktop: 59, mobile: 110 },
-  { date: "2024-04-10", desktop: 261, mobile: 190 },
-  { date: "2024-04-11", desktop: 327, mobile: 350 },
-  { date: "2024-04-12", desktop: 292, mobile: 210 },
-  { date: "2024-04-13", desktop: 342, mobile: 380 },
-  { date: "2024-04-14", desktop: 137, mobile: 220 },
-  { date: "2024-04-15", desktop: 120, mobile: 170 },
-  { date: "2024-04-16", desktop: 138, mobile: 190 },
-  { date: "2024-04-17", desktop: 446, mobile: 360 },
-  { date: "2024-04-18", desktop: 364, mobile: 410 },
-  { date: "2024-04-19", desktop: 243, mobile: 180 },
-  { date: "2024-04-20", desktop: 89, mobile: 150 },
-  { date: "2024-04-21", desktop: 137, mobile: 200 },
-  { date: "2024-04-22", desktop: 224, mobile: 170 },
-  { date: "2024-04-23", desktop: 138, mobile: 230 },
-  { date: "2024-04-24", desktop: 387, mobile: 290 },
-  { date: "2024-04-25", desktop: 215, mobile: 250 },
-  { date: "2024-04-26", desktop: 75, mobile: 130 },
-  { date: "2024-04-27", desktop: 383, mobile: 420 },
-  { date: "2024-04-28", desktop: 122, mobile: 180 },
-  { date: "2024-04-29", desktop: 315, mobile: 240 },
-  { date: "2024-04-30", desktop: 454, mobile: 380 },
-  { date: "2024-05-01", desktop: 165, mobile: 220 },
-  { date: "2024-05-02", desktop: 293, mobile: 310 },
-  { date: "2024-05-03", desktop: 247, mobile: 190 },
-  { date: "2024-05-04", desktop: 385, mobile: 420 },
-  { date: "2024-05-05", desktop: 481, mobile: 390 },
-  { date: "2024-05-06", desktop: 498, mobile: 520 },
-  { date: "2024-05-07", desktop: 388, mobile: 300 },
-  { date: "2024-05-08", desktop: 149, mobile: 210 },
-  { date: "2024-05-09", desktop: 227, mobile: 180 },
-  { date: "2024-05-10", desktop: 293, mobile: 330 },
-  { date: "2024-05-11", desktop: 335, mobile: 270 },
-  { date: "2024-05-12", desktop: 197, mobile: 240 },
-  { date: "2024-05-13", desktop: 197, mobile: 160 },
-  { date: "2024-05-14", desktop: 448, mobile: 490 },
-  { date: "2024-05-15", desktop: 473, mobile: 380 },
-  { date: "2024-05-16", desktop: 338, mobile: 400 },
-  { date: "2024-05-17", desktop: 499, mobile: 420 },
-  { date: "2024-05-18", desktop: 315, mobile: 350 },
-  { date: "2024-05-19", desktop: 235, mobile: 180 },
-  { date: "2024-05-20", desktop: 177, mobile: 230 },
-  { date: "2024-05-21", desktop: 82, mobile: 140 },
-  { date: "2024-05-22", desktop: 81, mobile: 120 },
-  { date: "2024-05-23", desktop: 252, mobile: 290 },
-  { date: "2024-05-24", desktop: 294, mobile: 220 },
-  { date: "2024-05-25", desktop: 201, mobile: 250 },
-  { date: "2024-05-26", desktop: 213, mobile: 170 },
-  { date: "2024-05-27", desktop: 420, mobile: 460 },
-  { date: "2024-05-28", desktop: 233, mobile: 190 },
-  { date: "2024-05-29", desktop: 78, mobile: 130 },
-  { date: "2024-05-30", desktop: 340, mobile: 280 },
-  { date: "2024-05-31", desktop: 178, mobile: 230 },
-  { date: "2024-06-01", desktop: 178, mobile: 200 },
-  { date: "2024-06-02", desktop: 470, mobile: 410 },
-  { date: "2024-06-03", desktop: 103, mobile: 160 },
-  { date: "2024-06-04", desktop: 439, mobile: 380 },
-  { date: "2024-06-05", desktop: 88, mobile: 140 },
-  { date: "2024-06-06", desktop: 294, mobile: 250 },
-  { date: "2024-06-07", desktop: 323, mobile: 370 },
-  { date: "2024-06-08", desktop: 385, mobile: 320 },
-  { date: "2024-06-09", desktop: 438, mobile: 480 },
-  { date: "2024-06-10", desktop: 155, mobile: 200 },
-  { date: "2024-06-11", desktop: 92, mobile: 150 },
-  { date: "2024-06-12", desktop: 492, mobile: 420 },
-  { date: "2024-06-13", desktop: 81, mobile: 130 },
-  { date: "2024-06-14", desktop: 426, mobile: 380 },
-  { date: "2024-06-15", desktop: 307, mobile: 350 },
-  { date: "2024-06-16", desktop: 371, mobile: 310 },
-  { date: "2024-06-17", desktop: 475, mobile: 520 },
-  { date: "2024-06-18", desktop: 107, mobile: 170 },
-  { date: "2024-06-19", desktop: 341, mobile: 290 },
-  { date: "2024-06-20", desktop: 408, mobile: 450 },
-  { date: "2024-06-21", desktop: 169, mobile: 210 },
-  { date: "2024-06-22", desktop: 317, mobile: 270 },
-  { date: "2024-06-23", desktop: 480, mobile: 530 },
-  { date: "2024-06-24", desktop: 132, mobile: 180 },
-  { date: "2024-06-25", desktop: 141, mobile: 190 },
-  { date: "2024-06-26", desktop: 434, mobile: 380 },
-  { date: "2024-06-27", desktop: 448, mobile: 490 },
-  { date: "2024-06-28", desktop: 149, mobile: 200 },
-  { date: "2024-06-29", desktop: 103, mobile: 160 },
-  { date: "2024-06-30", desktop: 446, mobile: 400 },
-]
+const resourceDemandData = [
+  {
+    week: "Week 1",
+    maintenance: 72,
+    emergency: 85,
+    planned: 68,
+    capacity: 100,
+  },
+  {
+    week: "Week 2",
+    maintenance: 68,
+    emergency: 78,
+    planned: 74,
+    capacity: 100,
+  },
+  {
+    week: "Week 3",
+    maintenance: 82,
+    emergency: 88,
+    planned: 65,
+    capacity: 100,
+  },
+  {
+    week: "Week 4",
+    maintenance: 78,
+    emergency: 82,
+    planned: 72,
+    capacity: 100,
+  },
+  {
+    week: "Week 5",
+    maintenance: 86,
+    emergency: 92,
+    planned: 62,
+    capacity: 100,
+  },
+  {
+    week: "Week 6",
+    maintenance: 80,
+    emergency: 86,
+    planned: 70,
+    capacity: 100,
+  },
+];
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
+const departmentPerformanceData = [
+  {
+    department: "Water & Sewage",
+    resolved: 38,
+    total: 45,
+    slaCompliance: 84.4,
+    efficiency: 88,
   },
-  desktop: {
-    label: "Desktop",
-    color: "var(--primary)",
+  {
+    department: "Roads & Transport",
+    resolved: 46,
+    total: 52,
+    slaCompliance: 92.3,
+    efficiency: 91,
   },
-  mobile: {
-    label: "Mobile",
-    color: "var(--primary)",
+  {
+    department: "Sanitation",
+    resolved: 35,
+    total: 38,
+    slaCompliance: 94.7,
+    efficiency: 95,
   },
-} satisfies ChartConfig
+  {
+    department: "Electrical",
+    resolved: 19,
+    total: 21,
+    slaCompliance: 90.5,
+    efficiency: 87,
+  },
+];
+
+const predictionAccuracyData = [
+  {
+    month: "Jan",
+    predicted: 40,
+    actual: 42,
+    accuracy: 95,
+  },
+  {
+    month: "Feb",
+    predicted: 44,
+    actual: 46,
+    accuracy: 94,
+  },
+  {
+    month: "Mar",
+    predicted: 57,
+    actual: 55,
+    accuracy: 96,
+  },
+  {
+    month: "Apr",
+    predicted: 68,
+    actual: 71,
+    accuracy: 95,
+  },
+  {
+    month: "May",
+    predicted: 79,
+    actual: 77,
+    accuracy: 97,
+  },
+  {
+    month: "Jun",
+    predicted: 89,
+    actual: 91,
+    accuracy: 97,
+  },
+];
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-gray-800 p-3 border rounded-lg shadow-lg">
+        <p className="font-medium">{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} style={{ color: entry.color }} className="text-sm">
+            {entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 export function ChartAreaInteractive() {
-  const isMobile = useIsMobile()
-  const [timeRange, setTimeRange] = React.useState("90d")
-
-  React.useEffect(() => {
-    if (isMobile) {
-      setTimeRange("7d")
-    }
-  }, [isMobile])
-
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
-    let daysToSubtract = 90
-    if (timeRange === "30d") {
-      daysToSubtract = 30
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7
-    }
-    const startDate = new Date(referenceDate)
-    startDate.setDate(startDate.getDate() - daysToSubtract)
-    return date >= startDate
-  })
+  const [selectedTimeframe, setSelectedTimeframe] = useState("6months");
+  const [selectedChart, setSelectedChart] = useState("hotspot");
 
   return (
-    <Card className="@container/card">
-      <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
-        <CardDescription>
-          <span className="hidden @[540px]/card:block">
-            Total for the last 3 months
-          </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
-        </CardDescription>
-        <CardAction>
-          <ToggleGroup
-            type="single"
-            value={timeRange}
-            onValueChange={setTimeRange}
-            variant="outline"
-            className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
+    <div className="space-y-6">
+      {/* Header Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Predictive Issue Management Analytics
+          </h2>
+          <p className="text-muted-foreground">
+            AI-powered insights and trend projections for civic issue management
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Select
+            value={selectedTimeframe}
+            onValueChange={setSelectedTimeframe}
           >
-            <ToggleGroupItem value="90d">Last 3 months</ToggleGroupItem>
-            <ToggleGroupItem value="30d">Last 30 days</ToggleGroupItem>
-            <ToggleGroupItem value="7d">Last 7 days</ToggleGroupItem>
-          </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
-              size="sm"
-              aria-label="Select a value"
-            >
-              <SelectValue placeholder="Last 3 months" />
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
             </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="90d" className="rounded-lg">
-                Last 3 months
-              </SelectItem>
-              <SelectItem value="30d" className="rounded-lg">
-                Last 30 days
-              </SelectItem>
-              <SelectItem value="7d" className="rounded-lg">
-                Last 7 days
-              </SelectItem>
+            <SelectContent>
+              <SelectItem value="3months">3 Months</SelectItem>
+              <SelectItem value="6months">6 Months</SelectItem>
+              <SelectItem value="1year">1 Year</SelectItem>
             </SelectContent>
           </Select>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
-        >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value)
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              }}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
-              stackId="a"
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  )
+          <Badge variant="outline" className="ml-2">
+            <Activity className="h-3 w-3 mr-1" />
+            Live Data
+          </Badge>
+        </div>
+      </div>
+
+      {/* Main Analytics Tabs */}
+      <Tabs
+        value={selectedChart}
+        onValueChange={setSelectedChart}
+        className="space-y-4"
+      >
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="hotspot">Hotspot Trends</TabsTrigger>
+          <TabsTrigger value="resource">Resource Demand</TabsTrigger>
+          <TabsTrigger value="performance">Department Performance</TabsTrigger>
+          <TabsTrigger value="prediction">Prediction Accuracy</TabsTrigger>
+        </TabsList>
+
+        {/* Hotspot Trend Projection */}
+        <TabsContent value="hotspot">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-blue-500" />
+                Hotspot Trend Projection
+              </CardTitle>
+              <CardDescription>
+                AI-predicted issue trends by category with 94% accuracy
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={hotspotTrendData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      className="opacity-30"
+                    />
+                    <XAxis
+                      dataKey="month"
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                    />
+                    <YAxis tick={{ fontSize: 12 }} axisLine={false} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                    <Area
+                      type="monotone"
+                      dataKey="potholes"
+                      stackId="1"
+                      stroke="#ef4444"
+                      fill="#ef4444"
+                      fillOpacity={0.6}
+                      name="Potholes"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="streetlights"
+                      stackId="1"
+                      stroke="#f59e0b"
+                      fill="#f59e0b"
+                      fillOpacity={0.6}
+                      name="Street Lights"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="water"
+                      stackId="1"
+                      stroke="#3b82f6"
+                      fill="#3b82f6"
+                      fillOpacity={0.6}
+                      name="Water Issues"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="sanitation"
+                      stackId="1"
+                      stroke="#10b981"
+                      fill="#10b981"
+                      fillOpacity={0.6}
+                      name="Sanitation"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="predicted"
+                      stroke="#8b5cf6"
+                      strokeWidth={3}
+                      strokeDasharray="5 5"
+                      name="AI Prediction"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span>Potholes: +18% trend</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                  <span>Lighting: +12% trend</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span>Water: +15% trend</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span>Sanitation: +8% trend</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Resource Demand Forecasting */}
+        <TabsContent value="resource">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-green-500" />
+                Resource Demand Forecasting
+              </CardTitle>
+              <CardDescription>
+                Team capacity utilization and demand predictions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={resourceDemandData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      className="opacity-30"
+                    />
+                    <XAxis
+                      dataKey="week"
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                      domain={[0, 100]}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                    <Bar
+                      dataKey="maintenance"
+                      fill="#3b82f6"
+                      name="Maintenance Teams"
+                      radius={[2, 2, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="emergency"
+                      fill="#ef4444"
+                      name="Emergency Response"
+                      radius={[2, 2, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="planned"
+                      fill="#10b981"
+                      name="Planned Projects"
+                      radius={[2, 2, 0, 0]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="capacity"
+                      stroke="#6b7280"
+                      strokeWidth={2}
+                      strokeDasharray="3 3"
+                      name="Team Capacity"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-3 border rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                    <span className="font-medium text-sm">Capacity Alert</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Week 3 & 5 showing 95%+ utilization
+                  </p>
+                </div>
+                <div className="p-3 border rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <TrendingUp className="h-4 w-4 text-blue-500" />
+                    <span className="font-medium text-sm">Peak Demand</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Emergency response peaks mid-month
+                  </p>
+                </div>
+                <div className="p-3 border rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <BarChart3 className="h-4 w-4 text-green-500" />
+                    <span className="font-medium text-sm">Efficiency</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Average 89% resource utilization
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Department Performance */}
+        <TabsContent value="performance">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-purple-500" />
+                Department Performance Analytics
+              </CardTitle>
+              <CardDescription>
+                SLA compliance and efficiency metrics by department
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={departmentPerformanceData}
+                    layout="horizontal"
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      className="opacity-30"
+                    />
+                    <XAxis
+                      type="number"
+                      domain={[0, 100]}
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="department"
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                      width={120}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                    <Bar
+                      dataKey="slaCompliance"
+                      fill="#10b981"
+                      name="SLA Compliance %"
+                      radius={[0, 4, 4, 0]}
+                    />
+                    <Bar
+                      dataKey="efficiency"
+                      fill="#3b82f6"
+                      name="Efficiency %"
+                      radius={[0, 4, 4, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                {departmentPerformanceData.map((dept, index) => (
+                  <div key={index} className="p-3 border rounded-lg">
+                    <h4 className="font-medium text-sm mb-2">
+                      {dept.department}
+                    </h4>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span>Resolved:</span>
+                        <span className="font-medium">
+                          {dept.resolved}/{dept.total}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>SLA:</span>
+                        <span
+                          className={`font-medium ${dept.slaCompliance > 90 ? "text-green-600" : "text-orange-600"}`}
+                        >
+                          {dept.slaCompliance}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Prediction Accuracy */}
+        <TabsContent value="prediction">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-indigo-500" />
+                AI Prediction Accuracy
+              </CardTitle>
+              <CardDescription>
+                Model performance and prediction vs actual issue trends
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={predictionAccuracyData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      className="opacity-30"
+                    />
+                    <XAxis
+                      dataKey="month"
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                    />
+                    <YAxis tick={{ fontSize: 12 }} axisLine={false} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="predicted"
+                      stroke="#8b5cf6"
+                      strokeWidth={3}
+                      strokeDasharray="5 5"
+                      name="AI Predicted"
+                      dot={{ fill: "#8b5cf6", strokeWidth: 2, r: 4 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="actual"
+                      stroke="#10b981"
+                      strokeWidth={3}
+                      name="Actual Issues"
+                      dot={{ fill: "#10b981", strokeWidth: 2, r: 4 }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="accuracy"
+                      stroke="#3b82f6"
+                      fill="#3b82f6"
+                      fillOpacity={0.1}
+                      name="Accuracy %"
+                      yAxisId="right"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 border rounded-lg text-center">
+                  <div className="text-2xl font-bold text-green-600">96.2%</div>
+                  <div className="text-sm text-muted-foreground">
+                    Average Accuracy
+                  </div>
+                </div>
+                <div className="p-4 border rounded-lg text-center">
+                  <div className="text-2xl font-bold text-blue-600">±2.1</div>
+                  <div className="text-sm text-muted-foreground">
+                    Average Deviation
+                  </div>
+                </div>
+                <div className="p-4 border rounded-lg text-center">
+                  <div className="text-2xl font-bold text-purple-600">
+                    7 days
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Prediction Window
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }

@@ -340,7 +340,7 @@ export default function MapPage() {
               </CardHeader>
               <CardContent>
                 <InteractiveMap
-                  center={[81.81298, 15.215]}
+                  center={[73.8278, 15.4909]}
                   zoom={12}
                   markers={mockIssues.map((issue) => ({
                     id: issue.id,

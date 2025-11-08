@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface MapProps {
   center?: [number, number];
@@ -16,13 +16,16 @@ interface MapProps {
 }
 
 export function InteractiveMap({
-  center = [15.215, 81.81298],
+  center = [73.8278, 15.4909],
   zoom = 12,
   markers = [],
   onMarkerClick,
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Only run on client side
@@ -30,39 +33,87 @@ export function InteractiveMap({
 
     // Load MapTiler SDK dynamically
     const loadMapTiler = async () => {
-      const maptilersdk = await import("@maptiler/sdk");
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      if (!mapContainerRef.current || mapRef.current) return;
+        const maptilersdk = await import("@maptiler/sdk");
 
-      // Initialize map
-      mapRef.current = new maptilersdk.Map({
-        container: mapContainerRef.current,
-        style: maptilersdk.MapStyle.STREETS,
-        center: center,
-        zoom: zoom,
-        apiKey: "dA7RH7aBOA9zMomjXvTC",
-      });
+        // Load MapTiler CSS
+        if (!document.querySelector('link[href*="maptiler-sdk.css"]')) {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = "/maptiler-sdk.css";
+          document.head.appendChild(link);
+        }
 
-      // Add navigation controls
-      mapRef.current.addControl(
-        new maptilersdk.NavigationControl(),
-        "top-right",
-      );
+        if (!mapContainerRef.current || mapRef.current) return;
 
-      // Add geolocate control
-      mapRef.current.addControl(
-        new maptilersdk.GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: true,
-          },
-          trackUserLocation: true,
-        }),
-        "top-right",
-      );
+        // Initialize map
+        mapRef.current = new maptilersdk.Map({
+          container: mapContainerRef.current,
+          style: maptilersdk.MapStyle.STREETS,
+          center: [center[0], center[1]],
+          zoom: zoom,
+          apiKey: "dA7RH7aBOA9zMomjXvTC",
+        });
 
-      // Wait for map to load before adding markers
-      mapRef.current.on("load", () => {
-        // Add markers
+        // Add navigation controls
+        mapRef.current.addControl(
+          new maptilersdk.NavigationControl(),
+          "top-right",
+        );
+
+        // Add geolocate control
+        mapRef.current.addControl(
+          new maptilersdk.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true,
+            },
+            trackUserLocation: true,
+          }),
+          "top-right",
+        );
+
+        // Wait for map to load before adding markers
+        mapRef.current.on("load", () => {
+          setIsLoading(false);
+        });
+
+        mapRef.current.on("error", (e: any) => {
+          console.error("Map error:", e);
+          setError("Failed to load map");
+          setIsLoading(false);
+        });
+      } catch (error) {
+        console.error("Error loading MapTiler:", error);
+        setError("Failed to load map SDK");
+        setIsLoading(false);
+      }
+    };
+
+    loadMapTiler();
+
+    // Cleanup
+    return () => {
+      if (mapRef.current) {
+        markersRef.current.forEach((marker) => marker.remove());
+        markersRef.current = [];
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, [center, zoom]);
+
+  // Update markers when they change
+  useEffect(() => {
+    if (mapRef.current && !isLoading) {
+      import("@maptiler/sdk").then((maptilersdk) => {
+        // Clear existing markers
+        markersRef.current.forEach((marker) => marker.remove());
+        markersRef.current = [];
+
+        // Add new markers
         markers.forEach((marker) => {
           const el = document.createElement("div");
           el.className = "custom-marker";
@@ -72,6 +123,15 @@ export function InteractiveMap({
           el.style.cursor = "pointer";
           el.style.border = "3px solid white";
           el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
+          el.style.transition = "transform 0.2s ease";
+
+          // Hover effect
+          el.addEventListener("mouseenter", () => {
+            el.style.transform = "scale(1.1)";
+          });
+          el.addEventListener("mouseleave", () => {
+            el.style.transform = "scale(1)";
+          });
 
           // Color based on status
           if (marker.status === "open") {
@@ -91,39 +151,59 @@ export function InteractiveMap({
 
           // Create popup
           const popup = new maptilersdk.Popup({ offset: 25 }).setHTML(
-            `<div style="padding: 8px; color: black;">
-              <h4 style="margin: 0 0 4px 0; font-weight: 600;">${marker.title}</h4>
-              <p style="margin: 0; font-size: 12px; text-transform: capitalize;">${marker.status.replace("-", " ")}</p>
+            `<div style="padding: 12px; color: black; min-width: 200px;">
+              <h4 style="margin: 0 0 8px 0; font-weight: 600; font-size: 14px;">${marker.title}</h4>
+              <p style="margin: 0; font-size: 12px; text-transform: capitalize; color: #666;">
+                Status: ${marker.status.replace("-", " ")}
+              </p>
             </div>`,
           );
 
           // Add marker to map
-          new maptilersdk.Marker({ element: el })
-            .setLngLat(marker.position)
+          const mapMarker = new maptilersdk.Marker({ element: el })
+            .setLngLat([marker.position[0], marker.position[1]])
             .setPopup(popup)
             .addTo(mapRef.current);
+
+          markersRef.current.push(mapMarker);
         });
       });
-    };
-
-    loadMapTiler().catch((error) => {
-      console.error("Error loading MapTiler:", error);
-    });
-
-    // Cleanup
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-    };
-  }, [center, zoom, markers, onMarkerClick]);
+    }
+  }, [markers, onMarkerClick, isLoading]);
 
   return (
     <div
-      ref={mapContainerRef}
-      className="w-full h-full rounded-lg overflow-hidden"
-      style={{ minHeight: "500px" }}
-    />
+      className="w-full rounded-lg overflow-hidden relative"
+      style={{ height: "500px", maxHeight: "500px" }}
+    >
+      <div ref={mapContainerRef} className="w-full h-full" />
+
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-lg">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black dark:border-white mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Loading map...
+            </p>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-lg">
+          <div className="text-center p-4">
+            <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+              {error}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-xs bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded hover:opacity-80"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
