@@ -52,7 +52,7 @@ export function NeonGradientCard({
     <div
       ref={containerRef}
       className={cn(
-        "relative overflow-hidden rounded-[var(--border-radius)] p-[var(--border-size)]",
+        "relative h-full w-full rounded-(--border-radius) p-(--border-size)",
         className,
       )}
       style={
@@ -68,7 +68,7 @@ export function NeonGradientCard({
     >
       {/* Animated gradient border */}
       <div
-        className="pointer-events-none absolute inset-0 z-[1] opacity-100"
+        className="pointer-events-none absolute inset-0 z-1 opacity-100"
         style={{
           background: `
             radial-gradient(
@@ -80,7 +80,7 @@ export function NeonGradientCard({
         }}
       />
       <div
-        className="pointer-events-none absolute inset-0 z-[1] opacity-100"
+        className="pointer-events-none absolute inset-0 z-1 opacity-100"
         style={{
           background: `
             radial-gradient(
@@ -94,7 +94,7 @@ export function NeonGradientCard({
 
       {/* Rotating gradient effect */}
       <div
-        className="absolute inset-0 z-[0] animate-spin-slow opacity-80"
+        className="absolute inset-0 z-0 animate-spin-slow opacity-80"
         style={{
           background: `
             conic-gradient(
@@ -111,7 +111,7 @@ export function NeonGradientCard({
 
       {/* Card content with black background */}
       <div
-        className="relative z-[2] flex h-full w-full flex-col rounded-[calc(var(--border-radius)-var(--border-size))] bg-black p-6"
+        className="relative z-2 flex h-full w-full flex-col rounded-[calc(var(--border-radius)-var(--border-size))] bg-black p-6"
         style={{
           borderRadius: `calc(${borderRadius}px - ${borderSize}px)`,
         }}

@@ -226,7 +226,7 @@ export default function IssueDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-black dark:to-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-black dark:to-gray-950 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-gray-400" />
           <p className="text-gray-600 dark:text-gray-400">
@@ -239,7 +239,7 @@ export default function IssueDetailPage() {
 
   if (!issue) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-black dark:to-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-black dark:to-gray-950 flex items-center justify-center">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle>Issue Not Found</CardTitle>
@@ -260,7 +260,7 @@ export default function IssueDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-black dark:to-gray-950">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-black dark:to-gray-950">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="mb-6">
           <Link href="/map">

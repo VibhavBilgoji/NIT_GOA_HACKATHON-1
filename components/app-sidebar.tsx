@@ -110,14 +110,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               asChild
               size="lg"
-              className="data-[slot=sidebar-menu-button]:!p-2"
+              className="data-[slot=sidebar-menu-button]:p-2!"
             >
               <Link href="/" className="flex items-center gap-2">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <IconMapPin className="!size-5" />
+                  <IconMapPin className="size-5!" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">CityPulse</span>
+                  <span className="font-semibold">OurStreet</span>
                   <span className="text-xs text-sidebar-foreground/70">
                     Civic Reporting
                   </span>

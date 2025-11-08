@@ -88,7 +88,7 @@ export default function Home() {
                 </div>
               </NeonGradientCard>
               {/* Gradient fade effect */}
-              <div className="absolute inset-x-0 -bottom-20 h-40 bg-gradient-to-t from-white dark:from-black to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 -bottom-20 h-40 bg-linear-to-t from-white dark:from-black to-transparent pointer-events-none" />
             </div>
           </div>
         </section>

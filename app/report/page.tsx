@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Camera,
   MapPin,
@@ -263,7 +264,7 @@ export default function ReportIssuePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-black dark:to-gray-950">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-black dark:to-gray-950">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
@@ -391,9 +392,11 @@ export default function ReportIssuePage() {
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
                     {selectedFiles.map((filePreview, index) => (
                       <div key={index} className="relative group">
-                        <img
+                        <Image
                           src={filePreview.preview}
                           alt={`Preview ${index + 1}`}
+                          width={200}
+                          height={128}
                           className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-800"
                         />
                         <Button

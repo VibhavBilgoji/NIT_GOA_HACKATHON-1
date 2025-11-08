@@ -1,27 +1,18 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useId } from "react";
 
 interface BorderBeamProps {
   className?: string;
-  size?: number;
   duration?: number;
   delay?: number;
-  colorFrom?: string;
-  colorTo?: string;
 }
 
 export function BorderBeam({
   className,
-  size = 200,
   duration = 3,
   delay = 0,
-  colorFrom = "#ff00ff",
-  colorTo = "#00ffff",
 }: BorderBeamProps) {
-  const id = useId();
-
   return (
     <>
       <div
@@ -70,7 +61,7 @@ export function BorderBeam({
         {/* Lightning bolts */}
         <div className="absolute inset-0 pointer-events-none">
           <div
-            className="absolute w-[2px] h-full opacity-0"
+            className="absolute w-0.5 h-full opacity-0"
             style={{
               left: "20%",
               background:
@@ -80,7 +71,7 @@ export function BorderBeam({
             }}
           />
           <div
-            className="absolute w-[2px] h-full opacity-0"
+            className="absolute w-0.5 h-full opacity-0"
             style={{
               left: "50%",
               background:
@@ -90,7 +81,7 @@ export function BorderBeam({
             }}
           />
           <div
-            className="absolute w-[2px] h-full opacity-0"
+            className="absolute w-0.5 h-full opacity-0"
             style={{
               left: "80%",
               background:

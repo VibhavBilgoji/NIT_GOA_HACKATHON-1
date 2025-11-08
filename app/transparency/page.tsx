@@ -121,7 +121,7 @@ export default function TransparencyPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="container mx-auto px-4 py-16">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
@@ -138,7 +138,7 @@ export default function TransparencyPage() {
 
   if (!stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
             <p className="text-muted-foreground">
@@ -151,16 +151,16 @@ export default function TransparencyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl">
             <Badge className="bg-white/20 text-white mb-4">
               Public Dashboard
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              CityPulse Transparency Portal
+              OurStreet Transparency Portal
             </h1>
             <p className="text-lg text-blue-100 mb-6">
               Track our community&apos;s progress in resolving civic issues.
@@ -356,7 +356,7 @@ export default function TransparencyPage() {
                         </div>
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all"
+                            className="bg-linear-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
@@ -424,10 +424,10 @@ export default function TransparencyPage() {
         </Card>
 
         {/* Community Impact Statement */}
-        <Card className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-none">
+        <Card className="mt-8 bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-none">
           <CardContent className="pt-6">
             <div className="flex items-start gap-4">
-              <Users className="h-12 w-12 text-primary flex-shrink-0" />
+              <Users className="h-12 w-12 text-primary shrink-0" />
               <div>
                 <h3 className="text-xl font-bold mb-2">Community Impact</h3>
                 <p className="text-muted-foreground mb-4">
@@ -473,9 +473,9 @@ export default function TransparencyPage() {
           <Link href="/signup">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600"
+              className="bg-linear-to-r from-blue-600 to-purple-600"
             >
-              Join CityPulse Today
+              Join OurStreet Today
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
