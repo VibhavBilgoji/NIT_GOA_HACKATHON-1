@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { userDb, issueDb } from "@/lib/db";
 import { getUserFromRequest, sanitizeUser } from "@/lib/auth";
-import { ApiResponse } from "@/lib/types";
+import { ApiResponse, User } from "@/lib/types";
 
 // GET /api/user - Get current user profile
 export async function GET(request: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Unauthorized - Please login",
         } as ApiResponse,
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "User not found",
         } as ApiResponse,
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
           stats,
         },
       } as ApiResponse,
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch user profile",
       } as ApiResponse,
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -73,7 +73,7 @@ export async function PUT(request: NextRequest) {
           success: false,
           error: "Unauthorized - Please login",
         } as ApiResponse,
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -87,12 +87,12 @@ export async function PUT(request: NextRequest) {
           success: false,
           error: "Name must be at least 2 characters long",
         } as ApiResponse,
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Update user
-    const updates: any = {};
+    const updates: Partial<User> = {};
     if (name) updates.name = name.trim();
     if (avatar !== undefined) updates.avatar = avatar;
 
@@ -104,7 +104,7 @@ export async function PUT(request: NextRequest) {
           success: false,
           error: "Failed to update user profile",
         } as ApiResponse,
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -114,7 +114,7 @@ export async function PUT(request: NextRequest) {
         message: "Profile updated successfully",
         data: sanitizeUser(updatedUser),
       } as ApiResponse,
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error updating user profile:", error);
@@ -123,7 +123,7 @@ export async function PUT(request: NextRequest) {
         success: false,
         error: "Failed to update user profile",
       } as ApiResponse,
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -138,7 +138,7 @@ export async function DELETE(request: NextRequest) {
           success: false,
           error: "Unauthorized - Please login",
         } as ApiResponse,
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -157,7 +157,7 @@ export async function DELETE(request: NextRequest) {
           success: false,
           error: "Failed to delete user account",
         } as ApiResponse,
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -166,7 +166,7 @@ export async function DELETE(request: NextRequest) {
         success: true,
         message: "Account deleted successfully",
       } as ApiResponse,
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error deleting user account:", error);
@@ -175,7 +175,7 @@ export async function DELETE(request: NextRequest) {
         success: false,
         error: "Failed to delete user account",
       } as ApiResponse,
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

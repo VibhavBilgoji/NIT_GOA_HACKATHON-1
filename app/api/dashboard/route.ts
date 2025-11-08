@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { issueDb, userDb } from "@/lib/db";
+import { issueDb } from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
-import { ApiResponse, DashboardStats } from "@/lib/types";
+import { ApiResponse, DashboardStats, IssueCategory } from "@/lib/types";
 
 // GET /api/dashboard - Get dashboard statistics
 export async function GET(request: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Unauthorized - Please login",
         } as ApiResponse,
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -23,15 +23,15 @@ export async function GET(request: NextRequest) {
     const totalIssues = allIssues.length;
     const openIssues = allIssues.filter((i) => i.status === "open").length;
     const inProgressIssues = allIssues.filter(
-      (i) => i.status === "in-progress"
+      (i) => i.status === "in-progress",
     ).length;
     const resolvedIssues = allIssues.filter(
-      (i) => i.status === "resolved"
+      (i) => i.status === "resolved",
     ).length;
 
     // Calculate average resolution time
     const resolvedIssuesWithTime = allIssues.filter(
-      (i) => i.status === "resolved" && i.resolvedAt
+      (i) => i.status === "resolved" && i.resolvedAt,
     );
     let averageResolutionTime = 0;
     if (resolvedIssuesWithTime.length > 0) {
@@ -53,9 +53,9 @@ export async function GET(request: NextRequest) {
 
     const categoryBreakdown = Array.from(categoryMap.entries()).map(
       ([category, count]) => ({
-        category: category as any,
+        category: category as IssueCategory,
         count,
-      })
+      }),
     );
 
     // Recent activity (last 30 days)
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const recentIssues = allIssues.filter(
-      (i) => new Date(i.createdAt) >= thirtyDaysAgo
+      (i) => new Date(i.createdAt) >= thirtyDaysAgo,
     );
 
     // Group by date
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
         success: true,
         data: stats,
       } as ApiResponse<DashboardStats>,
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching dashboard stats:", error);
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch dashboard statistics",
       } as ApiResponse,
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

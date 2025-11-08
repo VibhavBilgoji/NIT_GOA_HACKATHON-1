@@ -270,7 +270,7 @@ export async function seedDatabase() {
     userId: user2.id,
   });
 
-  const issue3 = issueDb.create({
+  const _issue3 = issueDb.create({
     title: "Overflowing Garbage Bin",
     description: "Garbage bin overflowing for 3 days, creating health hazards",
     category: "garbage",
@@ -293,7 +293,7 @@ export async function seedDatabase() {
     userId: user2.id,
   });
 
-  const issue5 = issueDb.create({
+  const _issue5 = issueDb.create({
     title: "Damaged Road",
     description: "Road surface damaged after recent rains",
     category: "road",

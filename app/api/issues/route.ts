@@ -15,13 +15,18 @@ export async function GET(request: NextRequest) {
 
     // Extract filters from query params
     const filters: IssueFilters = {
-      status: searchParams.get("status") as any,
-      category: searchParams.get("category") as any,
-      priority: searchParams.get("priority") as any,
+      status:
+        (searchParams.get("status") as IssueFilters["status"]) || undefined,
+      category:
+        (searchParams.get("category") as IssueFilters["category"]) || undefined,
+      priority:
+        (searchParams.get("priority") as IssueFilters["priority"]) || undefined,
       userId: searchParams.get("userId") || undefined,
       search: searchParams.get("search") || undefined,
-      sortBy: (searchParams.get("sortBy") as any) || "createdAt",
-      sortOrder: (searchParams.get("sortOrder") as any) || "desc",
+      sortBy:
+        (searchParams.get("sortBy") as IssueFilters["sortBy"]) || "createdAt",
+      sortOrder:
+        (searchParams.get("sortOrder") as IssueFilters["sortOrder"]) || "desc",
       limit: parseInt(searchParams.get("limit") || "100"),
       offset: parseInt(searchParams.get("offset") || "0"),
     };
@@ -58,8 +63,8 @@ export async function GET(request: NextRequest) {
     // Sort issues
     issues.sort((a, b) => {
       const sortBy = filters.sortBy || "createdAt";
-      let aVal: any = a[sortBy];
-      let bVal: any = b[sortBy];
+      let aVal: string | number = a[sortBy as keyof Issue] as string | number;
+      let bVal: string | number = b[sortBy as keyof Issue] as string | number;
 
       if (sortBy === "createdAt") {
         aVal = new Date(aVal).getTime();

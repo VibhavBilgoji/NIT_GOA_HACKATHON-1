@@ -107,7 +107,7 @@ export function validatePassword(password: string): {
 
 // Sanitize user (remove password)
 export function sanitizeUser(user: User): Omit<User, "password"> {
-  const { password, ...sanitizedUser } = user;
+  const { password: _password, ...sanitizedUser } = user;
   return sanitizedUser;
 }
 
