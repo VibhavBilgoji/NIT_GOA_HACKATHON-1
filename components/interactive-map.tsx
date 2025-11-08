@@ -105,8 +105,8 @@ export function InteractiveMap({
                   }
                 },
                 (error) => {
-                  console.error(
-                    "Error getting user location:",
+                  console.warn(
+                    "Geolocation access denied or unavailable:",
                     error.message || "Unknown error",
                   );
                 },
