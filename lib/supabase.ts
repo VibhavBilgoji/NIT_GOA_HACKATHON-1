@@ -1,21 +1,30 @@
 // Supabase client configuration for CityPulse
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 // Get Supabase credentials from environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Supabase credentials not found. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment variables.');
+  console.warn(
+    "⚠️ Supabase credentials not found. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment variables.",
+  );
 }
 
-// Create Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false, // We're using JWT tokens instead
-    autoRefreshToken: false,
-  },
-});
+// Helper to check if Supabase is configured
+export function isSupabaseConfigured(): boolean {
+  return Boolean(supabaseUrl && supabaseAnonKey);
+}
+
+// Create Supabase client only if configured
+export const supabase: SupabaseClient | null = isSupabaseConfigured()
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false, // We're using JWT tokens instead
+        autoRefreshToken: false,
+      },
+    })
+  : null;
 
 // Database types for TypeScript
 export type Database = {
@@ -164,8 +173,3 @@ export type Database = {
     };
   };
 };
-
-// Helper to check if Supabase is configured
-export function isSupabaseConfigured(): boolean {
-  return Boolean(supabaseUrl && supabaseAnonKey);
-}

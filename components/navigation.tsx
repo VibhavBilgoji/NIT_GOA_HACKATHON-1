@@ -40,7 +40,7 @@ export function Navigation() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-gray-800/50 bg-white/80 dark:bg-black/80 backdrop-blur-md supports-backdrop-filter:bg-white/60 supports-backdrop-filter:dark:bg-black/60">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200/30 dark:border-gray-800/30 bg-white/40 dark:bg-black/40 backdrop-blur-md supports-backdrop-filter:bg-white/30 supports-backdrop-filter:dark:bg-black/30">
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
         {/* Logo - Left */}
         <Link href="/" className="flex items-center gap-2 group">

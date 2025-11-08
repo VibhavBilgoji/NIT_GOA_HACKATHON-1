@@ -4,6 +4,16 @@
 import { supabase } from "./supabase";
 import { User, Issue, Comment, Vote } from "./types";
 
+// Safety check helper
+function getSupabase() {
+  if (!supabase) {
+    throw new Error(
+      "Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+    );
+  }
+  return supabase;
+}
+
 // Helper function to generate unique IDs (Supabase uses UUIDs)
 export function generateId(): string {
   return crypto.randomUUID();
@@ -14,7 +24,7 @@ export const userDb = {
   async create(
     user: Omit<User, "id" | "createdAt" | "updatedAt">,
   ): Promise<User | null> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("users")
       .insert({
         name: user.name,
@@ -44,7 +54,7 @@ export const userDb = {
   },
 
   async findById(id: string): Promise<User | undefined> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("users")
       .select("*")
       .eq("id", id)
@@ -67,7 +77,7 @@ export const userDb = {
   },
 
   async findByEmail(email: string): Promise<User | undefined> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("users")
       .select("*")
       .eq("email", email)
@@ -97,7 +107,7 @@ export const userDb = {
     if (updates.role !== undefined) updateData.role = updates.role;
     if (updates.avatar !== undefined) updateData.avatar = updates.avatar;
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("users")
       .update(updateData)
       .eq("id", id)
@@ -122,12 +132,12 @@ export const userDb = {
   },
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await supabase.from("users").delete().eq("id", id);
+    const { error } = await getSupabase().from("users").delete().eq("id", id);
     return !error;
   },
 
   async getAll(): Promise<User[]> {
-    const { data, error } = await supabase.from("users").select("*");
+    const { data, error } = await getSupabase().from("users").select("*");
 
     if (error || !data) {
       return [];
@@ -151,7 +161,7 @@ export const issueDb = {
   async create(
     issue: Omit<Issue, "id" | "createdAt" | "updatedAt" | "votes" | "comments">,
   ): Promise<Issue | null> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .insert({
         title: issue.title,
@@ -196,7 +206,7 @@ export const issueDb = {
   },
 
   async findById(id: string): Promise<Issue | undefined> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .select("*")
       .eq("id", id)
@@ -246,7 +256,7 @@ export const issueDb = {
     if (updates.status !== undefined) updateData.status = updates.status;
     if (updates.priority !== undefined) updateData.priority = updates.priority;
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .update(updateData)
       .eq("id", id)
@@ -281,12 +291,12 @@ export const issueDb = {
   },
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await supabase.from("issues").delete().eq("id", id);
+    const { error } = await getSupabase().from("issues").delete().eq("id", id);
     return !error;
   },
 
   async getAll(): Promise<Issue[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .select("*")
       .order("created_at", { ascending: false });
@@ -323,7 +333,7 @@ export const issueDb = {
   },
 
   async findByUserId(userId: string): Promise<Issue[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .select("*")
       .eq("user_id", userId)
@@ -360,7 +370,7 @@ export const issueDb = {
   },
 
   async findByStatus(status: string): Promise<Issue[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .select("*")
       .eq("status", status)
@@ -397,7 +407,7 @@ export const issueDb = {
   },
 
   async findByCategory(category: string): Promise<Issue[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .select("*")
       .eq("category", category)
@@ -438,7 +448,7 @@ export const issueDb = {
     const current = await this.findById(id);
     if (!current) return undefined;
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .update({ votes: (current.votes || 0) + 1 })
       .eq("id", id)
@@ -475,7 +485,7 @@ export const issueDb = {
     const current = await this.findById(id);
     if (!current) return undefined;
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("issues")
       .update({ votes: Math.max((current.votes || 0) - 1, 0) })
       .eq("id", id)
@@ -513,7 +523,7 @@ export const commentDb = {
   async create(
     comment: Omit<Comment, "id" | "createdAt">,
   ): Promise<Comment | null> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("comments")
       .insert({
         issue_id: comment.issueId,
@@ -540,7 +550,7 @@ export const commentDb = {
   },
 
   async findById(id: string): Promise<Comment | undefined> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("comments")
       .select("*")
       .eq("id", id)
@@ -561,7 +571,7 @@ export const commentDb = {
   },
 
   async findByIssueId(issueId: string): Promise<Comment[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("comments")
       .select("*")
       .eq("issue_id", issueId)
@@ -582,7 +592,10 @@ export const commentDb = {
   },
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await supabase.from("comments").delete().eq("id", id);
+    const { error } = await getSupabase()
+      .from("comments")
+      .delete()
+      .eq("id", id);
     return !error;
   },
 };
@@ -590,7 +603,7 @@ export const commentDb = {
 // Vote operations
 export const voteDb = {
   async create(vote: Omit<Vote, "id" | "createdAt">): Promise<Vote | null> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("votes")
       .insert({
         issue_id: vote.issueId,
@@ -616,7 +629,7 @@ export const voteDb = {
     userId: string,
     issueId: string,
   ): Promise<Vote | undefined> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("votes")
       .select("*")
       .eq("user_id", userId)
@@ -636,12 +649,12 @@ export const voteDb = {
   },
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await supabase.from("votes").delete().eq("id", id);
+    const { error } = await getSupabase().from("votes").delete().eq("id", id);
     return !error;
   },
 
   async findByIssueId(issueId: string): Promise<Vote[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("votes")
       .select("*")
       .eq("issue_id", issueId);

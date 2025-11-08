@@ -47,7 +47,12 @@ export function ShuffleText({
   onShuffleComplete,
 }: ShuffleProps) {
   const ref = useRef<HTMLElement>(null);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [fontsLoaded, setFontsLoaded] = useState(() => {
+    if (typeof document !== "undefined" && "fonts" in document) {
+      return document.fonts.status === "loaded";
+    }
+    return true;
+  });
   const [ready, setReady] = useState(false);
 
   const wrappersRef = useRef<HTMLElement[]>([]);
@@ -56,10 +61,13 @@ export function ShuffleText({
   const hoverHandlerRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    if ("fonts" in document) {
-      if (document.fonts.status === "loaded") setFontsLoaded(true);
-      else document.fonts.ready.then(() => setFontsLoaded(true));
-    } else setFontsLoaded(true);
+    if (
+      typeof document !== "undefined" &&
+      "fonts" in document &&
+      document.fonts.status !== "loaded"
+    ) {
+      document.fonts.ready.then(() => setFontsLoaded(true));
+    }
   }, []);
 
   useGSAP(
@@ -334,7 +342,6 @@ export function ShuffleText({
       scope: ref,
     },
   );
-
   const commonStyle: React.CSSProperties = {
     textAlign,
     display: "inline-block",
@@ -345,7 +352,85 @@ export function ShuffleText({
   };
 
   const classes = `shuffle-parent ${ready ? "is-ready" : ""} ${className}`;
-  const Tag = tag as any;
 
-  return <Tag ref={ref} className={classes} style={commonStyle} />;
+  if (tag === "h1")
+    return (
+      <h1
+        ref={ref as React.RefObject<HTMLHeadingElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+  if (tag === "h2")
+    return (
+      <h2
+        ref={ref as React.RefObject<HTMLHeadingElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+  if (tag === "h3")
+    return (
+      <h3
+        ref={ref as React.RefObject<HTMLHeadingElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+  if (tag === "h4")
+    return (
+      <h4
+        ref={ref as React.RefObject<HTMLHeadingElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+  if (tag === "h5")
+    return (
+      <h5
+        ref={ref as React.RefObject<HTMLHeadingElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+  if (tag === "h6")
+    return (
+      <h6
+        ref={ref as React.RefObject<HTMLHeadingElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+  if (tag === "p")
+    return (
+      <p
+        ref={ref as React.RefObject<HTMLParagraphElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+  if (tag === "span")
+    return (
+      <span
+        ref={ref as React.RefObject<HTMLSpanElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+  if (tag === "div")
+    return (
+      <div
+        ref={ref as React.RefObject<HTMLDivElement>}
+        className={classes}
+        style={commonStyle}
+      />
+    );
+
+  return (
+    <h1
+      ref={ref as React.RefObject<HTMLHeadingElement>}
+      className={classes}
+      style={commonStyle}
+    />
+  );
 }
