@@ -10,13 +10,14 @@ import {
   IconMap,
   IconMapPin,
   IconPlus,
-  IconSearch,
   IconSettings,
   IconUsers,
   IconHistory,
+  IconFileText,
+  IconTrendingUp,
+  IconHome,
 } from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
@@ -31,8 +32,13 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/auth-context";
 
-const data = {
-  navMain: [
+const navData = {
+  main: [
+    {
+      title: "Home",
+      url: "/",
+      icon: IconHome,
+    },
     {
       title: "Dashboard",
       url: "/dashboard",
@@ -40,7 +46,7 @@ const data = {
     },
     {
       title: "Report Issue",
-      url: "#",
+      url: "/report",
       icon: IconPlus,
     },
     {
@@ -49,107 +55,26 @@ const data = {
       icon: IconMap,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
       title: "My Reports",
-      url: "#",
+      url: "/dashboard",
       icon: IconHistory,
     },
   ],
-  navClouds: [
+  secondary: [
     {
-      title: "Issue Categories",
-      icon: IconAlertTriangle,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Potholes",
-          url: "#",
-        },
-        {
-          title: "Street Lights",
-          url: "#",
-        },
-        {
-          title: "Water Supply",
-          url: "#",
-        },
-        {
-          title: "Sanitation",
-          url: "#",
-        },
-      ],
+      title: "Team",
+      url: "/team",
+      icon: IconUsers,
     },
-    {
-      title: "Hotspots",
-      icon: IconMapPin,
-      url: "#",
-      items: [
-        {
-          title: "Panjim City Center",
-          url: "#",
-        },
-        {
-          title: "Margao Station",
-          url: "#",
-        },
-        {
-          title: "Mapusa Market",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Alerts & Notifications",
-      icon: IconBell,
-      url: "#",
-      items: [
-        {
-          title: "Critical Issues",
-          url: "#",
-        },
-        {
-          title: "SLA Warnings",
-          url: "#",
-        },
-        {
-          title: "Resolved",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
     {
       title: "Settings",
       url: "/settings",
       icon: IconSettings,
     },
     {
-      title: "Get Help",
+      title: "Help & Support",
       url: "#",
       icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Community",
-      url: "#",
-      icon: IconUsers,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconChartBar,
     },
   ],
 };
@@ -161,37 +86,46 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ? {
         name: user.name,
         email: user.email,
-        avatar: user.avatar || "/avatars/admin.jpg",
+        avatar: user.avatar || "/avatars/default.jpg",
       }
     : {
-        name: "Guest",
-        email: "guest@ourstreet.gov",
-        avatar: "/avatars/admin.jpg",
+        name: "Guest User",
+        email: "guest@citypulse.app",
+        avatar: "/avatars/default.jpg",
       };
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+    <Sidebar collapsible="icon" variant="sidebar" {...props}>
+      <SidebarHeader className="border-b border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              size="lg"
+              className="data-[slot=sidebar-menu-button]:!p-2"
             >
-              <a href="/dashboard">
-                <IconMapPin className="!size-5 text-blue-600" />
-                <span className="text-base font-semibold">OurStreet</span>
+              <a href="/" className="flex items-center gap-2">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <IconMapPin className="!size-5" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-semibold">CityPulse</span>
+                  <span className="text-xs text-sidebar-foreground/70">
+                    Civic Reporting
+                  </span>
+                </div>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+      <SidebarContent className="gap-0">
+        <NavMain items={navData.main} />
+        <div className="mt-auto">
+          <NavSecondary items={navData.secondary} />
+        </div>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border">
         <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
