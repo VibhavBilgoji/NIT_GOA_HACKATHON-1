@@ -57,23 +57,19 @@ export default function SettingsPage() {
   // Load user data when component mounts
   useEffect(() => {
     if (user) {
-      setFormData({
+      setFormData((prevData) => ({
+        ...prevData,
         fullName: user.name || "",
         email: user.email || "",
-        phone: "",
-        address: "",
-        city: "",
-        state: "",
-        pincode: "",
         role: user.role || "Citizen",
-        department: "",
-        bio: "",
-      });
+      }));
       if (user.avatar) {
         setProfileImage(user.avatar);
       }
     }
-  }, [user]);
+    // Only run once on mount or when user changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.name, user?.email, user?.role, user?.avatar]);
 
   const [notificationSettings, setNotificationSettings] = useState({
     emailNotifications: true,

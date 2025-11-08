@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MapPin,
   Camera,
@@ -32,50 +32,21 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InteractiveMap } from "@/components/interactive-map";
+import { Issue } from "@/lib/types";
+import toast from "react-hot-toast";
 
-// Mock issues data
-const mockIssues = [
-  {
-    id: 1,
-    title: "Pothole on Main Street",
-    description: "Large pothole causing traffic issues",
-    category: "Road",
-    status: "open" as const,
-    location: { lat: 15.4909, lng: 73.8278 },
-    address: "Main Street, Panjim",
-    date: "2024-01-15",
-  },
-  {
-    id: 2,
-    title: "Broken Streetlight",
-    description: "Streetlight not working since last week",
-    category: "Lighting",
-    status: "in-progress" as const,
-    location: { lat: 15.4989, lng: 73.8345 },
-    address: "Church Square, Panjim",
-    date: "2024-01-14",
-  },
-  {
-    id: 3,
-    title: "Overflowing Garbage Bin",
-    description: "Garbage bin overflowing for 3 days",
-    category: "Sanitation",
-    status: "resolved" as const,
-    location: { lat: 15.485, lng: 73.825 },
-    address: "Market Area, Panjim",
-    date: "2024-01-13",
-  },
-  {
-    id: 4,
-    title: "Water Leak",
-    description: "Continuous water leak from pipe",
-    category: "Water",
-    status: "open" as const,
-    location: { lat: 15.495, lng: 73.83 },
-    address: "Residency Road, Panjim",
-    date: "2024-01-12",
-  },
-];
+// Type for map-compatible issues
+interface MapIssue {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  status: "open" | "in-progress" | "resolved" | "closed";
+  location: { lat: number; lng: number };
+  address: string;
+  date: string;
+  photoUrl?: string;
+}
 
 const statusColors = {
   open: "bg-black dark:bg-white text-white dark:text-black",
@@ -90,11 +61,73 @@ const statusIcons = {
 };
 
 export default function MapPage() {
-  const [selectedIssue, setSelectedIssue] = useState<number | null>(null);
+  const [issues, setIssues] = useState<MapIssue[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
     null,
   );
+
+  // Fetch issues from API
+  useEffect(() => {
+    const fetchIssues = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          "/api/issues?limit=100&sortBy=createdAt&sortOrder=desc",
+        );
+        const data = await response.json();
+
+        if (data.success && data.data?.issues) {
+          // Transform API issues to map format
+          const transformedIssues: MapIssue[] = data.data.issues.map(
+            (issue: Issue) => ({
+              id: issue.id,
+              title: issue.title,
+              description: issue.description,
+              category: formatCategory(issue.category),
+              status: issue.status,
+              location: {
+                lat: issue.coordinates.lat,
+                lng: issue.coordinates.lng,
+              },
+              address: issue.location,
+              date: new Date(issue.createdAt).toLocaleDateString(),
+              photoUrl: issue.photoUrl,
+            }),
+          );
+          setIssues(transformedIssues);
+        } else {
+          toast.error("Failed to load issues");
+        }
+      } catch (error) {
+        console.error("Error fetching issues:", error);
+        toast.error("Error loading issues. Please refresh the page.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchIssues();
+  }, []);
+
+  // Format category for display
+  const formatCategory = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      pothole: "Road",
+      streetlight: "Lighting",
+      garbage: "Sanitation",
+      water_leak: "Water",
+      road: "Road",
+      sanitation: "Sanitation",
+      drainage: "Drainage",
+      electricity: "Electricity",
+      traffic: "Traffic",
+      other: "Other",
+    };
+    return categoryMap[category] || category;
+  };
 
   const getLocation = () => {
     if (navigator.geolocation) {
@@ -277,7 +310,7 @@ export default function MapPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-black dark:text-white">
-                  {mockIssues.length}
+                  {isLoading ? "..." : issues.length}
                 </div>
               </CardContent>
             </Card>
@@ -289,7 +322,9 @@ export default function MapPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-black dark:text-white">
-                  {mockIssues.filter((i) => i.status === "open").length}
+                  {isLoading
+                    ? "..."
+                    : issues.filter((i) => i.status === "open").length}
                 </div>
               </CardContent>
             </Card>
@@ -301,7 +336,9 @@ export default function MapPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-black dark:text-white">
-                  {mockIssues.filter((i) => i.status === "in-progress").length}
+                  {isLoading
+                    ? "..."
+                    : issues.filter((i) => i.status === "in-progress").length}
                 </div>
               </CardContent>
             </Card>
@@ -313,7 +350,9 @@ export default function MapPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-black dark:text-white">
-                  {mockIssues.filter((i) => i.status === "resolved").length}
+                  {isLoading
+                    ? "..."
+                    : issues.filter((i) => i.status === "resolved").length}
                 </div>
               </CardContent>
             </Card>
@@ -342,13 +381,13 @@ export default function MapPage() {
                 <InteractiveMap
                   center={[73.8278, 15.4909]}
                   zoom={12}
-                  markers={mockIssues.map((issue) => ({
+                  markers={issues.map((issue) => ({
                     id: issue.id,
                     position: [issue.location.lng, issue.location.lat],
                     title: issue.title,
                     status: issue.status,
                   }))}
-                  onMarkerClick={(id) => setSelectedIssue(id)}
+                  onMarkerClick={(id) => setSelectedIssue(String(id))}
                 />
               </CardContent>
             </Card>
@@ -362,54 +401,64 @@ export default function MapPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                  {mockIssues.map((issue) => {
-                    const StatusIcon =
-                      statusIcons[issue.status as keyof typeof statusIcons];
-                    return (
-                      <div
-                        key={issue.id}
-                        className={`p-4 rounded-lg border transition-all cursor-pointer ${
-                          selectedIssue === issue.id
-                            ? "border-black dark:border-white bg-gray-50 dark:bg-gray-900"
-                            : "border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600"
-                        }`}
-                        onClick={() => setSelectedIssue(issue.id)}
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-start gap-3">
-                            <StatusIcon className="size-5 mt-0.5 text-black dark:text-white" />
-                            <div>
-                              <h4 className="font-semibold text-black dark:text-white">
-                                {issue.title}
-                              </h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                {issue.description}
-                              </p>
+                  {isLoading ? (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      Loading issues...
+                    </div>
+                  ) : issues.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      No issues reported yet. Be the first to report!
+                    </div>
+                  ) : (
+                    issues.map((issue) => {
+                      const StatusIcon =
+                        statusIcons[issue.status as keyof typeof statusIcons];
+                      return (
+                        <div
+                          key={issue.id}
+                          className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                            selectedIssue === issue.id
+                              ? "border-black dark:border-white bg-gray-50 dark:bg-gray-900"
+                              : "border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600"
+                          }`}
+                          onClick={() => setSelectedIssue(issue.id)}
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-start gap-3">
+                              <StatusIcon className="size-5 mt-0.5 text-black dark:text-white" />
+                              <div>
+                                <h4 className="font-semibold text-black dark:text-white">
+                                  {issue.title}
+                                </h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                  {issue.description}
+                                </p>
+                              </div>
                             </div>
+                            <Badge
+                              className={
+                                statusColors[
+                                  issue.status as keyof typeof statusColors
+                                ]
+                              }
+                            >
+                              {issue.status.replace("-", " ")}
+                            </Badge>
                           </div>
-                          <Badge
-                            className={
-                              statusColors[
-                                issue.status as keyof typeof statusColors
-                              ]
-                            }
-                          >
-                            {issue.status.replace("-", " ")}
-                          </Badge>
+                          <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <MapPin className="size-3" />
+                              {issue.address}
+                            </span>
+                            <span>{issue.date}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {issue.category}
+                            </Badge>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="size-3" />
-                            {issue.address}
-                          </span>
-                          <span>{issue.date}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {issue.category}
-                          </Badge>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </div>
               </CardContent>
             </Card>

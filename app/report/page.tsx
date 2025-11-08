@@ -31,12 +31,17 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import toast from "react-hot-toast";
+<<<<<<< Updated upstream
 import { WARDS } from "@/lib/types";
 
 interface FilePreview {
   file: File;
   preview: string;
 }
+=======
+import { getAuthToken } from "@/lib/api-client";
+import { IssueCategory } from "@/lib/types";
+>>>>>>> Stashed changes
 
 export default function ReportIssuePage() {
   const router = useRouter();
@@ -116,6 +121,7 @@ export default function ReportIssuePage() {
     }
   };
 
+<<<<<<< Updated upstream
   const removeFile = (index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
@@ -152,6 +158,21 @@ export default function ReportIssuePage() {
     } finally {
       setIsUploading(false);
     }
+=======
+  // Map UI categories to API categories
+  const mapCategoryToAPI = (uiCategory: string): IssueCategory => {
+    const categoryMap: Record<string, IssueCategory> = {
+      road: "road",
+      lighting: "streetlight",
+      sanitation: "sanitation",
+      water: "water_leak",
+      drainage: "drainage",
+      parks: "other",
+      traffic: "traffic",
+      other: "other",
+    };
+    return categoryMap[uiCategory] || "other";
+>>>>>>> Stashed changes
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -168,13 +189,30 @@ export default function ReportIssuePage() {
     }
 
     if (formData.description.length < 20) {
+<<<<<<< Updated upstream
       toast.error("Description must be at least 20 characters");
       return;
     }
 
+=======
+      toast.error("Description must be at least 20 characters long");
+      return;
+    }
+
+    // Check authentication (optional - will use guest mode if not logged in)
+    const token = getAuthToken();
+    if (!token) {
+      toast("Reporting as guest - Login for full features", {
+        icon: "ℹ️",
+      });
+    }
+
+>>>>>>> Stashed changes
     setIsSubmitting(true);
+    let photoUrl: string | undefined;
 
     try {
+<<<<<<< Updated upstream
       // Upload photos first
       let photoUrls: string[] = [];
       if (selectedFiles.length > 0) {
@@ -198,10 +236,55 @@ export default function ReportIssuePage() {
         category: formData.category,
         description: formData.description,
         location: `${location.lat}, ${location.lng}`,
+=======
+      // Step 1: Upload photo if provided
+      if (formData.photo) {
+        const uploadToast = toast.loading("Uploading photo...");
+
+        const uploadFormData = new FormData();
+        uploadFormData.append("files", formData.photo);
+
+        const headers: HeadersInit = {};
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers,
+          body: uploadFormData,
+        });
+
+        const uploadResult = await uploadResponse.json();
+        toast.dismiss(uploadToast);
+
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || "Failed to upload photo");
+        }
+
+        photoUrl = uploadResult.url || uploadResult.urls?.[0];
+        toast.success("Photo uploaded successfully!");
+      }
+
+      // Step 2: Create the issue
+      const submitToast = toast.loading("Submitting report...");
+
+      const mappedCategory = mapCategoryToAPI(formData.category);
+
+      // Generate location string from coordinates
+      const locationString = `Location: ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`;
+
+      const issueData = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        category: mappedCategory,
+        location: locationString,
+>>>>>>> Stashed changes
         coordinates: {
           lat: location.lat,
           lng: location.lng,
         },
+<<<<<<< Updated upstream
         beforePhotoUrls: photoUrls,
         ward: formData.ward || undefined,
       };
@@ -237,6 +320,54 @@ export default function ReportIssuePage() {
           ? error.message
           : "Failed to report issue. Please try again.",
       );
+=======
+        photoUrl: photoUrl,
+      };
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const issueResponse = await fetch("/api/issues", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(issueData),
+      });
+
+      const issueResult = await issueResponse.json();
+      toast.dismiss(submitToast);
+
+      if (!issueResult.success) {
+        throw new Error(issueResult.error || "Failed to create issue");
+      }
+
+      toast.success("Issue reported successfully!");
+
+      // Reset form
+      setFormData({
+        title: "",
+        category: "",
+        description: "",
+        photo: null,
+      });
+      setSelectedImage(null);
+      setLocation(null);
+
+      // Redirect to map page with a delay to show success message
+      setTimeout(() => {
+        router.push("/map");
+      }, 1500);
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to report issue. Please try again.";
+      toast.error(errorMessage);
+>>>>>>> Stashed changes
     } finally {
       setIsSubmitting(false);
     }

@@ -127,24 +127,18 @@ async function uploadToSupabase(file: File, userId: string): Promise<string> {
 // Main upload handler
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
+    // Verify authentication (allow guest uploads for demo)
     const authHeader = request.headers.get("authorization");
     const cookieToken = request.cookies.get("token")?.value;
     const token = authHeader?.replace("Bearer ", "") || cookieToken;
 
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized - No token provided" },
-        { status: 401 },
-      );
-    }
+    let userId = "guest-" + Date.now();
 
-    const decoded = verifyToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized - Invalid token" },
-        { status: 401 },
-      );
+    if (token) {
+      const decoded = verifyToken(token);
+      if (decoded) {
+        userId = decoded.userId;
+      }
     }
 
     // Parse form data
@@ -195,7 +189,7 @@ export async function POST(request: NextRequest) {
         if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_UPLOAD_PRESET) {
           uploadedUrl = await uploadToCloudinary(file);
         } else if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-          uploadedUrl = await uploadToSupabase(file, decoded.userId);
+          uploadedUrl = await uploadToSupabase(file, userId);
         } else {
           throw new Error(
             "No storage provider configured. Please set up Cloudinary or Supabase Storage.",
