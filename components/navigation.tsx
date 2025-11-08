@@ -35,10 +35,10 @@ export function Navigation() {
 
   const centerNavItems = [
     { href: "/", label: "Home", icon: Home },
+    { href: "/report", label: "Report Issue", icon: PlusCircle },
     { href: "/map", label: "Map", icon: Map },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/team", label: "Team", icon: Users },
-    { href: "/report", label: "Report Issue", icon: PlusCircle },
   ];
 
   const authItems = [
