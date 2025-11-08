@@ -74,22 +74,9 @@ export default function MapPage() {
     lng: number;
   } | null>(null);
 
-  // Get user location on mount with fallback
+  // Get user location on mount
   useEffect(() => {
-    const getLocationWithFallback = async () => {
-      if (!navigator.geolocation) {
-        // Fallback to default location (Goa, India)
-        setUserLocation({
-          lat: 15.2993,
-          lng: 74.124,
-        });
-        toast.info(
-          "Using default location. Enable GPS for accurate positioning.",
-        );
-        return;
-      }
-
-      // Try with high accuracy first
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation({
@@ -99,55 +86,32 @@ export default function MapPage() {
           toast.success("Your location has been detected!");
         },
         (error) => {
-          // If high accuracy fails, try without it
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              setUserLocation({
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              });
-              toast.success("Location detected (approximate)");
-            },
-            (fallbackError) => {
-              // Final fallback to default location
-              setUserLocation({
-                lat: 15.2993,
-                lng: 74.124,
-              });
-              let errorMessage = "Using default location. ";
-              switch (fallbackError.code) {
-                case fallbackError.PERMISSION_DENIED:
-                  errorMessage +=
-                    "Enable location access in browser settings for accurate positioning.";
-                  break;
-                case fallbackError.POSITION_UNAVAILABLE:
-                  errorMessage +=
-                    "GPS unavailable. Check your device settings or try outdoors.";
-                  break;
-                case fallbackError.TIMEOUT:
-                  errorMessage += "Location request timed out.";
-                  break;
-                default:
-                  errorMessage += "Could not determine your location.";
-              }
-              toast.warning(errorMessage);
-            },
-            {
-              enableHighAccuracy: false,
-              timeout: 15000,
-              maximumAge: 300000,
-            },
-          );
+          let errorMessage = "Unable to get your location. ";
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage +=
+                "Please enable location access in your browser settings.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += "Location information is unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage += "Location request timed out. Please try again.";
+              break;
+            default:
+              errorMessage += "An unknown error occurred.";
+          }
+          toast.error(errorMessage);
         },
         {
           enableHighAccuracy: true,
-          timeout: 5000,
+          timeout: 10000,
           maximumAge: 0,
         },
       );
-    };
-
-    getLocationWithFallback();
+    } else {
+      toast.error("Geolocation is not supported by your browser.");
+    }
   }, []);
 
   // Fetch issues from API
@@ -211,9 +175,6 @@ export default function MapPage() {
   };
 
   const getLocation = () => {
-<<<<<<< Updated upstream
-    if (!navigator.geolocation) {
-=======
     if (navigator.geolocation) {
       toast.loading("Getting your location...", { id: "location-loading" });
 
@@ -252,71 +213,8 @@ export default function MapPage() {
         },
       );
     } else {
->>>>>>> Stashed changes
       toast.error("Geolocation is not supported by your browser.");
-      return;
     }
-
-    setLocationCaptured(false);
-    toast.loading("Getting your location...", { id: "location-loading" });
-
-    // Try high accuracy first
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-        setLocationCaptured(true);
-        toast.dismiss("location-loading");
-        toast.success("Location captured successfully!");
-      },
-      (error) => {
-        // Fallback: Try without high accuracy
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-            setLocationCaptured(true);
-            toast.dismiss("location-loading");
-            toast.success("Location captured (approximate)");
-          },
-          (fallbackError) => {
-            toast.dismiss("location-loading");
-            setLocationCaptured(false);
-            let errorMessage = "Unable to get your location. ";
-            switch (fallbackError.code) {
-              case fallbackError.PERMISSION_DENIED:
-                errorMessage +=
-                  "Please enable location access in your browser settings.";
-                break;
-              case fallbackError.POSITION_UNAVAILABLE:
-                errorMessage +=
-                  "GPS unavailable. Check device settings or try outdoors.";
-                break;
-              case fallbackError.TIMEOUT:
-                errorMessage += "Request timed out. Please try again.";
-                break;
-              default:
-                errorMessage += "An unknown error occurred.";
-            }
-            toast.error(errorMessage);
-          },
-          {
-            enableHighAccuracy: false,
-            timeout: 15000,
-            maximumAge: 300000,
-          },
-        );
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      },
-    );
   };
 
   return (
@@ -348,119 +246,86 @@ export default function MapPage() {
                   Report New Issue
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl">
-                    Report Civic Issue
-                  </DialogTitle>
+                  <DialogTitle>Report a New Issue</DialogTitle>
                   <DialogDescription>
-                    Fill in the details below to report a civic issue with
-                    description, photo, and live location
+                    Fill out the form below to report a civic issue. Your
+                    location will be automatically captured.
                   </DialogDescription>
                 </DialogHeader>
-                <form className="space-y-6">
-                  <div>
-                    <Label htmlFor="issue-title">Issue Title *</Label>
-                    <Input
-                      id="issue-title"
-                      placeholder="e.g., Pothole on Main Street"
-                      required
+                <form className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Issue Title</Label>
+                    <Input id="title" placeholder="Brief description" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Detailed description of the issue"
+                      rows={4}
                     />
                   </div>
-
-                  <div>
-                    <Label htmlFor="category">Category *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
                     <Select>
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="road">Road</SelectItem>
-                        <SelectItem value="lighting">Lighting</SelectItem>
-                        <SelectItem value="sanitation">Sanitation</SelectItem>
-                        <SelectItem value="water">Water</SelectItem>
-                        <SelectItem value="drainage">Drainage</SelectItem>
+                        <SelectItem value="pothole">Pothole</SelectItem>
+                        <SelectItem value="streetlight">
+                          Street Light
+                        </SelectItem>
+                        <SelectItem value="garbage">Garbage</SelectItem>
+                        <SelectItem value="water_leak">Water Leak</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-
-                  <div>
-                    <Label htmlFor="description">Description *</Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Describe the issue in detail..."
-                      rows={4}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="photo">Upload Photo</Label>
-                    <div className="mt-2">
-                      <div className="flex items-center justify-center w-full">
-                        <label
-                          htmlFor="photo"
-                          className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
-                        >
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Camera className="w-8 h-8 mb-2 text-gray-500 dark:text-gray-400" />
-                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                              <span className="font-semibold">
-                                Click to upload
-                              </span>{" "}
-                              or drag and drop
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              PNG, JPG or JPEG (MAX. 5MB)
-                            </p>
-                          </div>
-                          <input
-                            id="photo"
-                            type="file"
-                            className="hidden"
-                            accept="image/*"
-                          />
-                        </label>
-                      </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="photo">Photo (Optional)</Label>
+                    <div className="flex items-center gap-2">
+                      <Input id="photo" type="file" accept="image/*" />
+                      <Button type="button" variant="outline" size="icon">
+                        <Camera className="size-4" />
+                      </Button>
                     </div>
                   </div>
-
-                  <div>
-                    <Label>Live Location *</Label>
-                    <div className="mt-2 space-y-2">
+                  <div className="space-y-2">
+                    <Label>Location</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        readOnly
+                        value={
+                          location
+                            ? `${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`
+                            : "Not captured yet"
+                        }
+                        placeholder="Click button to capture location"
+                      />
                       <Button
                         type="button"
-                        variant="outline"
-                        className="w-full"
                         onClick={getLocation}
+                        variant="outline"
+                        size="icon"
                       >
-                        <MapPin className="mr-2 size-4" />
-                        {location
-                          ? `Location Captured: ${location.lat.toFixed(
-                              4,
-                            )}, ${location.lng.toFixed(4)}`
-                          : "Capture Current Location"}
+                        <MapPin className="size-4" />
                       </Button>
-                      {location && (
-                        <Alert>
-                          <MapPin className="h-4 w-4" />
-                          <AlertDescription>
-                            Location captured successfully! Your GPS coordinates
-                            will be attached to the report.
-                          </AlertDescription>
-                        </Alert>
-                      )}
                     </div>
+                    {location && (
+                      <Alert>
+                        <AlertCircle className="size-4" />
+                        <AlertDescription>
+                          Location captured successfully! Latitude:{" "}
+                          {location.lat.toFixed(6)}, Longitude:{" "}
+                          {location.lng.toFixed(6)}
+                        </AlertDescription>
+                      </Alert>
+                    )}
                   </div>
-
-                  <div className="flex gap-3">
-                    <Button
-                      type="submit"
-                      className="flex-1 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-                    >
-                      Submit Report
-                    </Button>
+                  <div className="flex justify-end gap-2 pt-4">
                     <Button
                       type="button"
                       variant="outline"
@@ -468,93 +333,78 @@ export default function MapPage() {
                     >
                       Cancel
                     </Button>
+                    <Button
+                      type="submit"
+                      className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                    >
+                      Submit Report
+                    </Button>
                   </div>
                 </form>
               </DialogContent>
             </Dialog>
           </div>
 
-          {/* Stats */}
-          <div className="grid gap-4 md:grid-cols-4 mb-8">
-            <Card className="bg-white dark:bg-black border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-in-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer group">
-              <BorderBeam duration={6} delay={0} />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="relative overflow-hidden">
+              <BorderBeam duration={8} delay={0} />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
                   Total Issues
                 </CardTitle>
+                <MapPin className="size-4 text-gray-500 dark:text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
-                  {isLoading ? "..." : issues.length}
+                <div className="text-2xl font-bold text-black dark:text-white">
+                  {issues.length}
                 </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Reported by citizens
+                </p>
               </CardContent>
             </Card>
-            <Card className="bg-white dark:bg-black border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-in-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer group">
-              <BorderBeam duration={6} delay={1} />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            <Card className="relative overflow-hidden">
+              <BorderBeam duration={8} delay={2} />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
                   Open Issues
                 </CardTitle>
+                <AlertCircle className="size-4 text-gray-500 dark:text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
-                  {isLoading
-                    ? "..."
-                    : issues.filter((i) => i.status === "open").length}
+                <div className="text-2xl font-bold text-black dark:text-white">
+                  {issues.filter((issue) => issue.status === "open").length}
                 </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Awaiting resolution
+                </p>
               </CardContent>
             </Card>
-            <Card className="bg-white dark:bg-black border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-in-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer group">
-              <BorderBeam duration={6} delay={2} />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  In Progress
-                </CardTitle>
+            <Card className="relative overflow-hidden">
+              <BorderBeam duration={8} delay={4} />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Resolved</CardTitle>
+                <CheckCircle className="size-4 text-gray-500 dark:text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
-                  {isLoading
-                    ? "..."
-                    : issues.filter((i) => i.status === "in-progress").length}
+                <div className="text-2xl font-bold text-black dark:text-white">
+                  {issues.filter((issue) => issue.status === "resolved").length}
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-white dark:bg-black border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-in-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl cursor-pointer group">
-              <BorderBeam duration={6} delay={3} />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Resolved
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
-                  {isLoading
-                    ? "..."
-                    : issues.filter((i) => i.status === "resolved").length}
-                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Successfully fixed
+                </p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Map - Full Width and Larger */}
-          <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg mb-6">
-            <BorderBeam duration={6} delay={0} />
+          {/* Map Section */}
+          <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="text-black dark:text-white">
-                Interactive City Map
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="size-5" />
+                Live Issue Map
               </CardTitle>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Click on markers to view issue details. Your location is shown
-                in blue 📍
-              </p>
-              <div className="flex flex-wrap gap-2 mt-2">
-                <Badge className="bg-blue-500 text-white">
-                  ● Your Location
-                </Badge>
-                <Badge className="bg-red-500 text-white">● Open</Badge>
-                <Badge className="bg-amber-500 text-white">● In Progress</Badge>
-                <Badge className="bg-green-500 text-white">● Resolved</Badge>
-              </div>
             </CardHeader>
             <CardContent>
               <InteractiveMap
@@ -570,7 +420,7 @@ export default function MapPage() {
                   title: issue.title,
                   status: issue.status,
                 }))}
-                onMarkerClick={(id) => setSelectedIssue(String(id))}
+                onMarkerClick={(id) => setSelectedIssue(id.toString())}
                 height="calc(100vh - 500px)"
                 showUserLocation={true}
                 userLocation={
@@ -580,133 +430,80 @@ export default function MapPage() {
             </CardContent>
           </Card>
 
-          {/* Issues List - Below Map */}
-          <div className="grid gap-6 lg:grid-cols-1">
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
-              <BorderBeam duration={6} delay={1} />
-              <CardHeader>
-                <CardTitle className="text-black dark:text-white">
-                  Reported Issues
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                  {isLoading ? (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      Loading issues...
-                    </div>
-                  ) : issues.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      No issues reported yet. Be the first to report!
-                    </div>
-                  ) : (
-                    issues.map((issue) => {
-                      const StatusIcon =
-                        statusIcons[issue.status as keyof typeof statusIcons];
-                      return (
-                        <div
-                          key={issue.id}
-                          className={`p-4 rounded-lg border transition-all duration-300 ease-out cursor-pointer hover:scale-[1.02] hover:-translate-y-1 hover:shadow-lg ${
-                            selectedIssue === issue.id
-                              ? "border-black dark:border-white bg-gray-50 dark:bg-gray-900 shadow-md"
-                              : "border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600"
-                          }`}
-                          onClick={() => setSelectedIssue(issue.id)}
-                        >
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-start gap-3">
-                              <StatusIcon className="size-5 mt-0.5 text-black dark:text-white" />
-                              <div>
-                                <h4 className="font-semibold text-black dark:text-white">
-                                  {issue.title}
-                                </h4>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                  {issue.description}
-                                </p>
-                              </div>
-                            </div>
-                            <Badge
-                              className={
-                                statusColors[
-                                  issue.status as keyof typeof statusColors
-                                ]
-                              }
-                            >
-                              {issue.status.replace("-", " ")}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-500">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="size-3" />
-                              {issue.address}
-                            </span>
-                            <span>{issue.date}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {issue.category}
-                            </Badge>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Legend */}
-          <Card className="mt-6 border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
-            <BorderBeam duration={6} delay={2} />
+          {/* Issue List */}
+          <Card>
             <CardHeader>
-              <CardTitle className="text-black dark:text-white">
-                How It Works
-              </CardTitle>
+              <CardTitle>Recent Issues</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="flex gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
-                    1
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-black dark:text-white mb-1">
-                      Report Issue
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Submit civic issues with description, photo, and live GPS
-                      location
-                    </p>
-                  </div>
+              {isLoading ? (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  Loading issues...
                 </div>
-                <div className="flex gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
-                    2
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-black dark:text-white mb-1">
-                      Track Progress
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Monitor your reported issues as they move through stages:
-                      Open → In Progress → Resolved
-                    </p>
-                  </div>
+              ) : issues.length === 0 ? (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  No issues reported yet.
                 </div>
-                <div className="flex gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
-                    3
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-black dark:text-white mb-1">
-                      Get Updates
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Receive real-time notifications and updates on issue
-                      resolution
-                    </p>
-                  </div>
+              ) : (
+                <div className="space-y-4">
+                  {issues.map((issue) => {
+                    const StatusIcon =
+                      statusIcons[issue.status as keyof typeof statusIcons] ||
+                      AlertCircle;
+                    return (
+                      <div
+                        key={issue.id}
+                        className={`p-4 rounded-lg border border-gray-200 dark:border-gray-800 transition-colors cursor-pointer hover:border-gray-300 dark:hover:border-gray-700 ${
+                          selectedIssue === issue.id
+                            ? "bg-gray-50 dark:bg-gray-900"
+                            : ""
+                        }`}
+                        onClick={() => setSelectedIssue(issue.id)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="font-semibold text-black dark:text-white">
+                                {issue.title}
+                              </h3>
+                              <Badge
+                                className={
+                                  statusColors[
+                                    issue.status as keyof typeof statusColors
+                                  ] || statusColors.open
+                                }
+                              >
+                                <StatusIcon className="size-3 mr-1" />
+                                {issue.status.replace("-", " ")}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                              {issue.description}
+                            </p>
+                            <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-500">
+                              <span className="flex items-center gap-1">
+                                <MapPin className="size-3" />
+                                {issue.address}
+                              </span>
+                              <span>{issue.category}</span>
+                              <span>{issue.date}</span>
+                            </div>
+                          </div>
+                          {issue.photoUrl && (
+                            <div className="ml-4">
+                              <img
+                                src={issue.photoUrl}
+                                alt={issue.title}
+                                className="w-20 h-20 object-cover rounded"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>
