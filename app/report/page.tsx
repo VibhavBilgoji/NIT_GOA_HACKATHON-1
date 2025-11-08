@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -12,6 +12,7 @@ import {
   X,
   Sparkles,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { WARDS, IssueCategory } from "@/lib/types";
+import { InteractiveMap } from "@/components/interactive-map";
 
 interface FilePreview {
   file: File;
@@ -65,6 +67,29 @@ export default function ReportIssuePage() {
     description: "",
     ward: "",
   });
+
+  // Auto-capture location on page load
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          toast.success("Location captured automatically!");
+        },
+        (error) => {
+          const errorMessage =
+            error.message || "Unable to get location. Please enable GPS.";
+          toast.error(errorMessage);
+          console.error(error);
+        },
+      );
+    } else {
+      toast.error("Geolocation is not supported by your browser");
+    }
+  }, []);
 
   const getLocation = () => {
     if ("geolocation" in navigator) {
@@ -642,22 +667,43 @@ export default function ReportIssuePage() {
                       ? `Location Captured: ${location.lat.toFixed(
                           5,
                         )}°, ${location.lng.toFixed(5)}°`
-                      : "Capture Current Location"}
+                      : "Recapture Location"}
                   </Button>
                   {location && (
-                    <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
-                      <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-                      <AlertDescription className="text-green-800 dark:text-green-200">
-                        Location captured successfully! Your GPS coordinates
-                        will be attached to the report for precise tracking.
-                      </AlertDescription>
-                    </Alert>
+                    <>
+                      <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
+                        <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                        <AlertDescription className="text-green-800 dark:text-green-200">
+                          Location captured automatically! Your GPS coordinates
+                          will be attached to the report for precise tracking.
+                        </AlertDescription>
+                      </Alert>
+
+                      {/* Map Preview */}
+                      <div className="rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
+                        <InteractiveMap
+                          center={[location.lng, location.lat]}
+                          zoom={15}
+                          markers={[]}
+                          height="300px"
+                          showUserLocation={true}
+                          userLocation={[location.lng, location.lat]}
+                        />
+                      </div>
+                      <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                        📍 Preview of your captured location
+                      </p>
+                    </>
                   )}
                   {!location && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      We need your location to help authorities identify and
-                      resolve the issue quickly.
-                    </p>
+                    <Alert className="bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800">
+                      <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                      <AlertDescription className="text-yellow-800 dark:text-yellow-200">
+                        Attempting to capture your location automatically. If it
+                        fails, please enable GPS and click &quot;Recapture
+                        Location&quot;.
+                      </AlertDescription>
+                    </Alert>
                   )}
                 </div>
               </div>

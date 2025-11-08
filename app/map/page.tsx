@@ -69,6 +69,27 @@ export default function MapPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
     null,
   );
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  // Get user location on mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        },
+      );
+    }
+  }, []);
 
   // Fetch issues from API
   useEffect(() => {
@@ -363,42 +384,52 @@ export default function MapPage() {
             </Card>
           </div>
 
-          {/* Map and Issues */}
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Interactive Map */}
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
-              <BorderBeam size={200} duration={8} delay={0} />
-              <CardHeader>
-                <CardTitle className="text-black dark:text-white">
-                  Interactive City Map
-                </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Click on markers to view issue details. Color-coded by status:
-                </p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <Badge className="bg-red-500 text-white">● Open</Badge>
-                  <Badge className="bg-amber-500 text-white">
-                    ● In Progress
-                  </Badge>
-                  <Badge className="bg-green-500 text-white">● Resolved</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <InteractiveMap
-                  center={[73.8278, 15.4909]}
-                  zoom={12}
-                  markers={issues.map((issue) => ({
-                    id: issue.id,
-                    position: [issue.location.lng, issue.location.lat],
-                    title: issue.title,
-                    status: issue.status,
-                  }))}
-                  onMarkerClick={(id) => setSelectedIssue(String(id))}
-                />
-              </CardContent>
-            </Card>
+          {/* Map - Full Width and Larger */}
+          <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg mb-6">
+            <BorderBeam size={200} duration={8} delay={0} />
+            <CardHeader>
+              <CardTitle className="text-black dark:text-white">
+                Interactive City Map
+              </CardTitle>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Click on markers to view issue details. Your location is shown
+                in blue 📍
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <Badge className="bg-blue-500 text-white">
+                  ● Your Location
+                </Badge>
+                <Badge className="bg-red-500 text-white">● Open</Badge>
+                <Badge className="bg-amber-500 text-white">● In Progress</Badge>
+                <Badge className="bg-green-500 text-white">● Resolved</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <InteractiveMap
+                center={
+                  userLocation
+                    ? [userLocation.lng, userLocation.lat]
+                    : [73.8278, 15.4909]
+                }
+                zoom={userLocation ? 14 : 12}
+                markers={issues.map((issue) => ({
+                  id: issue.id,
+                  position: [issue.location.lng, issue.location.lat],
+                  title: issue.title,
+                  status: issue.status,
+                }))}
+                onMarkerClick={(id) => setSelectedIssue(String(id))}
+                height="calc(100vh - 500px)"
+                showUserLocation={true}
+                userLocation={
+                  userLocation ? [userLocation.lng, userLocation.lat] : null
+                }
+              />
+            </CardContent>
+          </Card>
 
-            {/* Issues List */}
+          {/* Issues List - Below Map */}
+          <div className="grid gap-6 lg:grid-cols-1">
             <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:shadow-lg">
               <BorderBeam size={200} duration={8} delay={2} />
               <CardHeader>

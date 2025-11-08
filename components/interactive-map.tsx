@@ -13,6 +13,9 @@ interface MapProps {
     status: "open" | "in-progress" | "resolved" | "closed";
   }>;
   onMarkerClick?: (id: string | number) => void;
+  height?: string;
+  showUserLocation?: boolean;
+  userLocation?: [number, number] | null;
 }
 
 export function InteractiveMap({
@@ -20,12 +23,19 @@ export function InteractiveMap({
   zoom = 12,
   markers = [],
   onMarkerClick,
+  height = "600px",
+  showUserLocation = true,
+  userLocation = null,
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
+  const userMarkerRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentUserLocation, setCurrentUserLocation] = useState<
+    [number, number] | null
+  >(userLocation);
 
   useEffect(() => {
     // Only run on client side
@@ -78,6 +88,28 @@ export function InteractiveMap({
         // Wait for map to load before adding markers
         mapRef.current.on("load", () => {
           setIsLoading(false);
+
+          // Request user location if enabled
+          if (showUserLocation && !userLocation) {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  const userLoc: [number, number] = [
+                    position.coords.longitude,
+                    position.coords.latitude,
+                  ];
+                  setCurrentUserLocation(userLoc);
+                  // Center map on user location if no markers
+                  if (markers.length === 0) {
+                    mapRef.current?.flyTo({ center: userLoc, zoom: 14 });
+                  }
+                },
+                (error) => {
+                  console.error("Error getting user location:", error);
+                },
+              );
+            }
+          }
         });
 
         mapRef.current.on("error", (e: any) => {
@@ -104,6 +136,59 @@ export function InteractiveMap({
       }
     };
   }, [center, zoom]);
+
+  // Update user location marker
+  useEffect(() => {
+    if (mapRef.current && !isLoading && showUserLocation) {
+      const effectiveUserLocation = userLocation || currentUserLocation;
+
+      if (effectiveUserLocation) {
+        import("@maptiler/sdk").then((maptilersdk) => {
+          // Remove existing user marker
+          if (userMarkerRef.current) {
+            userMarkerRef.current.remove();
+          }
+
+          // Create user location marker element
+          const userEl = document.createElement("div");
+          userEl.className = "user-location-marker";
+          userEl.style.width = "20px";
+          userEl.style.height = "20px";
+          userEl.style.borderRadius = "50%";
+          userEl.style.backgroundColor = "#3b82f6"; // blue
+          userEl.style.border = "3px solid white";
+          userEl.style.boxShadow = "0 0 0 4px rgba(59, 130, 246, 0.3)";
+          userEl.style.animation = "pulse 2s infinite";
+
+          // Add pulse animation
+          if (!document.querySelector("#user-location-pulse-style")) {
+            const style = document.createElement("style");
+            style.id = "user-location-pulse-style";
+            style.textContent = `
+              @keyframes pulse {
+                0%, 100% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); }
+                50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.1); }
+              }
+            `;
+            document.head.appendChild(style);
+          }
+
+          // Create popup for user location
+          const userPopup = new maptilersdk.Popup({ offset: 15 }).setHTML(
+            `<div style="padding: 8px; color: black;">
+              <p style="margin: 0; font-weight: 600; font-size: 12px;">📍 Your Location</p>
+            </div>`,
+          );
+
+          // Add user marker to map
+          userMarkerRef.current = new maptilersdk.Marker({ element: userEl })
+            .setLngLat([effectiveUserLocation[0], effectiveUserLocation[1]])
+            .setPopup(userPopup)
+            .addTo(mapRef.current);
+        });
+      }
+    }
+  }, [userLocation, currentUserLocation, isLoading, showUserLocation]);
 
   // Update markers when they change
   useEffect(() => {
@@ -179,7 +264,7 @@ export function InteractiveMap({
   return (
     <div
       className="w-full rounded-lg overflow-hidden relative"
-      style={{ height: "500px", maxHeight: "500px" }}
+      style={{ height: height, minHeight: "400px" }}
     >
       <div ref={mapContainerRef} className="w-full h-full" />
 
