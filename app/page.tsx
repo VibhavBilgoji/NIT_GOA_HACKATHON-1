@@ -22,7 +22,7 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="relative flex h-auto w-full flex-col items-center justify-center overflow-hidden">
+            <div className="relative flex min-h-[400px] sm:min-h-[500px] w-full flex-col items-center justify-center overflow-hidden py-12">
               <ShuffleText
                 text="Empower Your Community with OurStreet"
                 tag="h1"
