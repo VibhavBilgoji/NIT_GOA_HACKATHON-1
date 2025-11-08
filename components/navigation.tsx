@@ -86,7 +86,7 @@ export function Navigation() {
             <Link href="/report">
               <Button
                 size="sm"
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 font-medium"
+                className="bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 font-medium"
               >
                 <PlusCircle className="mr-1.5 size-4" />
                 Report Issue
