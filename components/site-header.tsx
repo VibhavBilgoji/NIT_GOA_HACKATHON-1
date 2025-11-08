@@ -4,12 +4,12 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function SiteHeader() {
   return (
-    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-black transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-white dark:bg-black transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1" />
         <Separator
           orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-4 bg-gray-700"
+          className="mx-2 data-[orientation=vertical]:h-4 bg-gray-300 dark:bg-gray-700"
         />
 
         <div className="ml-auto flex items-center gap-2">
@@ -18,7 +18,7 @@ export function SiteHeader() {
               href="https://github.com/shadcn-ui/ui/tree/main/apps/v4/app/(examples)/dashboard"
               rel="noopener noreferrer"
               target="_blank"
-              className="dark:text-foreground"
+              className="text-black dark:text-white"
             >
               GitHub
             </a>
