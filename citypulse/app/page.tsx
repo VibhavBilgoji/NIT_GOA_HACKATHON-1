@@ -1,6 +1,14 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import { MapPin, AlertCircle, TrendingUp, Users, Shield } from "lucide-react";
+import {
+  MapPin,
+  AlertCircle,
+  TrendingUp,
+  Shield,
+  Map,
+  Users,
+} from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -15,7 +23,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-black">
       {/* Navigation Menu */}
-      <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+      <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black sticky top-0 z-50 backdrop-blur-sm bg-white/80 dark:bg-black/80">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="bg-black dark:bg-white text-white dark:text-black flex size-8 items-center justify-center rounded-lg transition-transform group-hover:scale-105">
@@ -29,7 +37,36 @@ export default function Home() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <Link href="/login" legacyBehavior passHref>
+                  <Link href="/map">
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      <Map className="mr-2 size-4" />
+                      Map
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/dashboard">
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      Dashboard
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/team">
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      <Users className="mr-2 size-4" />
+                      Team
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/login">
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
                     >
@@ -38,7 +75,7 @@ export default function Home() {
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/signup" legacyBehavior passHref>
+                  <Link href="/signup">
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
                     >
@@ -72,9 +109,10 @@ export default function Home() {
             </h1>
 
             <p className="max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400 sm:text-xl">
-              Report civic issues, track resolutions in real-time, and foster
-              transparent governance. Join thousands of citizens making a
-              difference in their communities.
+              Report civic issues with description, photo, and live location.
+              View them on an interactive city map and track their resolution
+              progress in real-time. Bridge the gap between citizens and
+              municipal authorities.
             </p>
 
             <div className="flex flex-col gap-4 sm:flex-row">
@@ -91,7 +129,7 @@ export default function Home() {
                 variant="outline"
                 className="border-gray-300 dark:border-gray-700 px-8"
               >
-                <Link href="/dashboard">View Dashboard</Link>
+                <Link href="/map">View Map</Link>
               </Button>
             </div>
           </div>
@@ -186,11 +224,14 @@ export default function Home() {
                   duplicate reports, and a lack of accountability.
                 </p>
                 <p className="text-lg leading-relaxed">
-                  CityPulse provides a smart, transparent, and community-driven
-                  platform that enables effortless issue reporting, real-time
-                  tracking, and improved collaboration between citizens and
-                  local authorities — fostering a culture of civic participation
-                  and data-driven governance.
+                  <strong className="text-black dark:text-white">
+                    CityPulse
+                  </strong>{" "}
+                  provides a smart, transparent, and community-driven platform
+                  that enables effortless issue reporting, real-time tracking,
+                  and improved collaboration between citizens and local
+                  authorities — fostering a culture of civic participation and
+                  data-driven governance.
                 </p>
               </div>
             </div>

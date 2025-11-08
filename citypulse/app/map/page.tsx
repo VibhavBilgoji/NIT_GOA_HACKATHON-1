@@ -1,0 +1,488 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import {
+  MapPin,
+  Camera,
+  MapPinned,
+  AlertCircle,
+  TrendingUp,
+  CheckCircle,
+  Clock,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ThemeToggle } from "@/components/theme-toggle";
+
+// Mock issues data
+const mockIssues = [
+  {
+    id: 1,
+    title: "Pothole on Main Street",
+    description: "Large pothole causing traffic issues",
+    category: "Road",
+    status: "open",
+    location: { lat: 15.4909, lng: 73.8278 },
+    address: "Main Street, Panjim",
+    date: "2024-01-15",
+  },
+  {
+    id: 2,
+    title: "Broken Streetlight",
+    description: "Streetlight not working since last week",
+    category: "Lighting",
+    status: "in-progress",
+    location: { lat: 15.4989, lng: 73.8345 },
+    address: "Church Square, Panjim",
+    date: "2024-01-14",
+  },
+  {
+    id: 3,
+    title: "Overflowing Garbage Bin",
+    description: "Garbage bin overflowing for 3 days",
+    category: "Sanitation",
+    status: "resolved",
+    location: { lat: 15.4850, lng: 73.8250 },
+    address: "Market Area, Panjim",
+    date: "2024-01-13",
+  },
+  {
+    id: 4,
+    title: "Water Leak",
+    description: "Continuous water leak from pipe",
+    category: "Water",
+    status: "open",
+    location: { lat: 15.4950, lng: 73.8300 },
+    address: "Residency Road, Panjim",
+    date: "2024-01-12",
+  },
+];
+
+const statusColors = {
+  open: "bg-black dark:bg-white text-white dark:text-black",
+  "in-progress": "bg-gray-700 dark:bg-gray-300 text-white dark:text-black",
+  resolved: "bg-gray-400 dark:bg-gray-600 text-white dark:text-white",
+};
+
+const statusIcons = {
+  open: AlertCircle,
+  "in-progress": Clock,
+  resolved: CheckCircle,
+};
+
+export default function MapPage() {
+  const [selectedIssue, setSelectedIssue] = useState<number | null>(null);
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-white dark:bg-black">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="bg-black dark:bg-white text-white dark:text-black flex size-8 items-center justify-center rounded-lg transition-transform group-hover:scale-105">
+              <MapPin className="size-5" />
+            </div>
+            <span className="text-xl font-bold text-black dark:text-white">
+              CityPulse
+            </span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="outline">Back to Home</Button>
+            </Link>
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-8">
+          {/* Page Header */}
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-black dark:text-white mb-2">
+                Interactive Issue Map
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                View reported civic issues on the map and track their resolution
+                progress in real-time
+              </p>
+            </div>
+            <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  size="lg"
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                >
+                  <MapPinned className="mr-2 size-5" />
+                  Report New Issue
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl">Report Civic Issue</DialogTitle>
+                  <DialogDescription>
+                    Fill in the details below to report a civic issue with
+                    description, photo, and live location
+                  </DialogDescription>
+                </DialogHeader>
+                <form className="space-y-6">
+                  <div>
+                    <Label htmlFor="issue-title">Issue Title *</Label>
+                    <Input
+                      id="issue-title"
+                      placeholder="e.g., Pothole on Main Street"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="category">Category *</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="road">Road</SelectItem>
+                        <SelectItem value="lighting">Lighting</SelectItem>
+                        <SelectItem value="sanitation">Sanitation</SelectItem>
+                        <SelectItem value="water">Water</SelectItem>
+                        <SelectItem value="drainage">Drainage</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="description">Description *</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Describe the issue in detail..."
+                      rows={4}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="photo">Upload Photo</Label>
+                    <div className="mt-2">
+                      <div className="flex items-center justify-center w-full">
+                        <label
+                          htmlFor="photo"
+                          className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+                        >
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <Camera className="w-8 h-8 mb-2 text-gray-500 dark:text-gray-400" />
+                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                              <span className="font-semibold">
+                                Click to upload
+                              </span>{" "}
+                              or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              PNG, JPG or JPEG (MAX. 5MB)
+                            </p>
+                          </div>
+                          <input
+                            id="photo"
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Live Location *</Label>
+                    <div className="mt-2 space-y-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={getLocation}
+                      >
+                        <MapPin className="mr-2 size-4" />
+                        {location
+                          ? `Location Captured: ${location.lat.toFixed(
+                              4
+                            )}, ${location.lng.toFixed(4)}`
+                          : "Capture Current Location"}
+                      </Button>
+                      {location && (
+                        <Alert>
+                          <MapPin className="h-4 w-4" />
+                          <AlertDescription>
+                            Location captured successfully! Your GPS coordinates
+                            will be attached to the report.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button
+                      type="submit"
+                      className="flex-1 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                    >
+                      Submit Report
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsReportDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Stats */}
+          <div className="grid gap-4 md:grid-cols-4 mb-8">
+            <Card className="border-gray-200 dark:border-gray-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Total Issues
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-black dark:text-white">
+                  {mockIssues.length}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200 dark:border-gray-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Open Issues
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-black dark:text-white">
+                  {mockIssues.filter((i) => i.status === "open").length}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200 dark:border-gray-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  In Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-black dark:text-white">
+                  {mockIssues.filter((i) => i.status === "in-progress").length}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200 dark:border-gray-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Resolved
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-black dark:text-white">
+                  {mockIssues.filter((i) => i.status === "resolved").length}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Map and Issues */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Map Placeholder */}
+            <Card className="border-gray-200 dark:border-gray-800">
+              <CardHeader>
+                <CardTitle className="text-black dark:text-white">
+                  Interactive City Map
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="relative aspect-square w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                    <MapPin className="mb-4 size-16 text-gray-400 dark:text-gray-600" />
+                    <h3 className="mb-2 text-xl font-semibold text-black dark:text-white">
+                      Interactive Map View
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      Color-coded markers showing issue status:
+                    </p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      <Badge className={statusColors.open}>● Open</Badge>
+                      <Badge className={statusColors["in-progress"]}>
+                        ● In Progress
+                      </Badge>
+                      <Badge className={statusColors.resolved}>
+                        ● Resolved
+                      </Badge>
+                    </div>
+                    <p className="mt-4 text-xs text-gray-500 dark:text-gray-500">
+                      Map integration with Google Maps/Mapbox will be added here
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Issues List */}
+            <Card className="border-gray-200 dark:border-gray-800">
+              <CardHeader>
+                <CardTitle className="text-black dark:text-white">
+                  Reported Issues
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                  {mockIssues.map((issue) => {
+                    const StatusIcon = statusIcons[issue.status as keyof typeof statusIcons];
+                    return (
+                      <div
+                        key={issue.id}
+                        className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                          selectedIssue === issue.id
+                            ? "border-black dark:border-white bg-gray-50 dark:bg-gray-900"
+                            : "border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600"
+                        }`}
+                        onClick={() => setSelectedIssue(issue.id)}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-start gap-3">
+                            <StatusIcon className="size-5 mt-0.5 text-black dark:text-white" />
+                            <div>
+                              <h4 className="font-semibold text-black dark:text-white">
+                                {issue.title}
+                              </h4>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                {issue.description}
+                              </p>
+                            </div>
+                          </div>
+                          <Badge className={statusColors[issue.status as keyof typeof statusColors]}>
+                            {issue.status.replace("-", " ")}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="size-3" />
+                            {issue.address}
+                          </span>
+                          <span>{issue.date}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {issue.category}
+                          </Badge>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Legend */}
+          <Card className="mt-6 border-gray-200 dark:border-gray-800">
+            <CardHeader>
+              <CardTitle className="text-black dark:text-white">
+                How It Works
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="flex gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
+                    1
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-black dark:text-white mb-1">
+                      Report Issue
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Submit civic issues with description, photo, and live GPS
+                      location
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
+                    2
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-black dark:text-white mb-1">
+                      Track Progress
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Monitor your reported issues as they move through stages:
+                      Open → In Progress → Resolved
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black font-bold">
+                    3
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-black dark:text-white mb-1">
+                      Get Updates
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Receive real-time notifications and updates on issue
+                      resolution
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  );
+}
