@@ -327,7 +327,7 @@ export default function MapPage() {
 
           {/* Stats */}
           <div className="grid gap-4 md:grid-cols-4 mb-8">
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl hover:bg-black dark:hover:bg-black cursor-pointer group">
+            <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl hover:!bg-black dark:hover:!bg-black cursor-pointer group">
               <BorderBeam duration={6} delay={0} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-white">
@@ -340,7 +340,7 @@ export default function MapPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl hover:bg-black dark:hover:bg-black cursor-pointer group">
+            <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl hover:!bg-black dark:hover:!bg-black cursor-pointer group">
               <BorderBeam duration={6} delay={1} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-white">
@@ -355,7 +355,7 @@ export default function MapPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl hover:bg-black dark:hover:bg-black cursor-pointer group">
+            <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl hover:!bg-black dark:hover:!bg-black cursor-pointer group">
               <BorderBeam duration={6} delay={2} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-white">
@@ -370,7 +370,7 @@ export default function MapPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl hover:bg-black dark:hover:bg-black cursor-pointer group">
+            <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-xl hover:!bg-black dark:hover:!bg-black cursor-pointer group">
               <BorderBeam duration={6} delay={3} />
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-white">
