@@ -69,10 +69,13 @@ export default function MapPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
     null,
   );
+  // Default location (Goa, India)
+  const defaultLocation = { lat: 15.2993, lng: 74.124 };
+
   const [userLocation, setUserLocation] = useState<{
     lat: number;
     lng: number;
-  } | null>(null);
+  } | null>(defaultLocation);
 
   // Get user location on mount
   useEffect(() => {
@@ -86,22 +89,24 @@ export default function MapPage() {
           toast.success("Your location has been detected!");
         },
         (error) => {
-          let errorMessage = "Unable to get your location. ";
+          // Use default location on error
+          setUserLocation(defaultLocation);
+          let errorMessage = "Using default location (Goa, India). ";
           switch (error.code) {
             case error.PERMISSION_DENIED:
               errorMessage +=
-                "Please enable location access in your browser settings.";
+                "Enable location access in browser settings for accurate location.";
               break;
             case error.POSITION_UNAVAILABLE:
-              errorMessage += "Location information is unavailable.";
+              errorMessage += "Your location is currently unavailable.";
               break;
             case error.TIMEOUT:
-              errorMessage += "Location request timed out. Please try again.";
+              errorMessage += "Location request timed out.";
               break;
             default:
-              errorMessage += "An unknown error occurred.";
+              errorMessage += "Unable to determine your location.";
           }
-          toast.error(errorMessage);
+          toast.warning(errorMessage, { duration: 5000 });
         },
         {
           enableHighAccuracy: true,
@@ -110,7 +115,10 @@ export default function MapPage() {
         },
       );
     } else {
-      toast.error("Geolocation is not supported by your browser.");
+      setUserLocation(defaultLocation);
+      toast.warning(
+        "Geolocation not supported. Using default location (Goa, India).",
+      );
     }
   }, []);
 
@@ -189,22 +197,24 @@ export default function MapPage() {
         },
         (error) => {
           toast.dismiss("location-loading");
-          let errorMessage = "Unable to get your location. ";
+          // Use default location on error
+          setLocation(defaultLocation);
+          let errorMessage = "Using default location. ";
           switch (error.code) {
             case error.PERMISSION_DENIED:
               errorMessage +=
-                "Please enable location access in your browser settings.";
+                "Enable location access in browser settings for accurate location.";
               break;
             case error.POSITION_UNAVAILABLE:
-              errorMessage += "Location information is unavailable.";
+              errorMessage += "Your location is currently unavailable.";
               break;
             case error.TIMEOUT:
-              errorMessage += "Location request timed out. Please try again.";
+              errorMessage += "Location request timed out.";
               break;
             default:
-              errorMessage += "An unknown error occurred.";
+              errorMessage += "Unable to determine your location.";
           }
-          toast.error(errorMessage);
+          toast.warning(errorMessage, { duration: 5000 });
         },
         {
           enableHighAccuracy: true,
@@ -213,7 +223,8 @@ export default function MapPage() {
         },
       );
     } else {
-      toast.error("Geolocation is not supported by your browser.");
+      setLocation(defaultLocation);
+      toast.warning("Geolocation not supported. Using default location.");
     }
   };
 
