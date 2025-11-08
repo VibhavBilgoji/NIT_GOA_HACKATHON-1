@@ -7,6 +7,7 @@ export interface User {
   password: string; // hashed
   role: "citizen" | "admin" | "authority";
   avatar?: string;
+  emailVerified?: boolean;
   createdAt: string;
   updatedAt: string;
 }

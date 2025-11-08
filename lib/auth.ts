@@ -5,9 +5,19 @@ import jwt from "jsonwebtoken";
 import { User } from "./types";
 
 // JWT secret (in production, use environment variable)
-const JWT_SECRET =
-  process.env.JWT_SECRET || "ourstreet-secret-key-change-in-production";
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = "7d";
+
+// Warning for missing JWT_SECRET
+if (!JWT_SECRET && process.env.NODE_ENV !== "production") {
+  console.warn(
+    "⚠️ WARNING: JWT_SECRET not set. Using insecure fallback for development. " +
+      "Generate a secure secret with: openssl rand -base64 32",
+  );
+}
+
+const FALLBACK_SECRET = "ourstreet-secret-key-change-in-production";
+const ACTUAL_JWT_SECRET = JWT_SECRET || FALLBACK_SECRET;
 
 // Generate JWT token
 export function generateToken(
@@ -15,6 +25,14 @@ export function generateToken(
   email: string,
   role: string,
 ): string {
+  // Runtime check for production
+  if (!JWT_SECRET && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "CRITICAL: JWT_SECRET environment variable is not set in production. " +
+        "Generate one with: openssl rand -base64 32",
+    );
+  }
+
   const payload = {
     userId,
     email,
@@ -22,7 +40,7 @@ export function generateToken(
     iat: Math.floor(Date.now() / 1000),
   };
 
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, ACTUAL_JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
 // Verify JWT token
@@ -30,7 +48,7 @@ export function verifyToken(
   token: string,
 ): { userId: string; email: string; role: string } | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as {
+    const decoded = jwt.verify(token, ACTUAL_JWT_SECRET) as {
       userId: string;
       email: string;
       role: string;

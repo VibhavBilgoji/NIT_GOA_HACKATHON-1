@@ -7,7 +7,7 @@ import {
   isAuthenticated,
   AuthUser,
 } from "@/lib/api-client";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -24,43 +24,120 @@ interface AuthContextType {
     confirmPassword: string,
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  refreshUser: () => void;
+  refreshUser: () => Promise<void>;
+  checkSession: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Public routes that don't require authentication
+const PUBLIC_ROUTES = ["/", "/login", "/signup", "/map", "/issues"];
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [sessionChecked, setSessionChecked] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
-  // Load user data on mount
+  // Logout function - defined early so it can be used in useEffect
+  const logout = () => {
+    authAPI.logout();
+    setUser(null);
+    router.push("/login");
+  };
+
+  // Check session validity
+  const checkSession = async (): Promise<boolean> => {
+    if (!isAuthenticated()) {
+      return false;
+    }
+
+    try {
+      const isValid = await authAPI.checkSession();
+      if (!isValid) {
+        // Session expired, clear auth data
+        setUser(null);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Session check failed:", error);
+      setUser(null);
+      return false;
+    }
+  };
+
+  // Load user data and verify session on mount
   useEffect(() => {
-    const loadUser = () => {
+    const loadUser = async () => {
       if (isAuthenticated()) {
         const userData = getUserData();
         setUser(userData);
+
+        // Verify session is still valid
+        const isValid = await checkSession();
+        if (!isValid && userData) {
+          // Session expired, redirect to login
+          const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+            pathname?.startsWith(route),
+          );
+          if (!isPublicRoute && pathname && router) {
+            router.push("/login?session_expired=true");
+          }
+        }
       }
       setIsLoading(false);
+      setSessionChecked(true);
     };
 
     loadUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Periodic session check (every 5 minutes)
+  useEffect(() => {
+    if (!sessionChecked || !user) return;
+
+    const interval = setInterval(
+      async () => {
+        const isValid = await checkSession();
+        if (!isValid && user) {
+          console.log("Session expired, redirecting to login");
+          logout();
+        }
+      },
+      5 * 60 * 1000,
+    ); // 5 minutes
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionChecked, user]);
 
   // Login function
   const login = async (email: string, password: string) => {
     try {
+      setIsLoading(true);
       const response = await authAPI.login({ email, password });
 
       if (response.success && response.user) {
         setUser(response.user);
+        setIsLoading(false);
         return { success: true };
       } else {
+        setIsLoading(false);
         return { success: false, error: response.error || "Login failed" };
       }
     } catch (error) {
       console.error("Login error:", error);
-      return { success: false, error: "An error occurred during login" };
+      setIsLoading(false);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "An error occurred during login",
+      };
     }
   };
 
@@ -72,6 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     confirmPassword: string,
   ) => {
     try {
+      setIsLoading(true);
       const response = await authAPI.signup({
         name,
         email,
@@ -81,39 +159,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.success && response.user) {
         setUser(response.user);
+        setIsLoading(false);
         return { success: true };
       } else {
+        setIsLoading(false);
         return { success: false, error: response.error || "Signup failed" };
       }
     } catch (error) {
       console.error("Signup error:", error);
-      return { success: false, error: "An error occurred during signup" };
+      setIsLoading(false);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "An error occurred during signup",
+      };
     }
   };
 
-  // Logout function
-  const logout = () => {
-    authAPI.logout();
-    setUser(null);
-    router.push("/login");
-  };
-
   // Refresh user data
-  const refreshUser = () => {
+  const refreshUser = async () => {
     if (isAuthenticated()) {
       const userData = getUserData();
       setUser(userData);
+
+      // Also verify session
+      await checkSession();
     }
   };
 
   const value: AuthContextType = {
     user,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && isAuthenticated(),
     login,
     signup,
     logout,
     refreshUser,
+    checkSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
