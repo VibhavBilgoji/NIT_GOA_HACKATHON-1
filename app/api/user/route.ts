@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userData = userDb.findById(user.userId);
+    const userData = await userDb.findById(user.userId);
     if (!userData) {
       return NextResponse.json(
         {
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's issues
-    const userIssues = issueDb.findByUserId(user.userId);
+    const userIssues = await issueDb.findByUserId(user.userId);
 
     // Calculate user stats
     const stats = {
@@ -96,7 +96,7 @@ export async function PUT(request: NextRequest) {
     if (name) updates.name = name.trim();
     if (avatar !== undefined) updates.avatar = avatar;
 
-    const updatedUser = userDb.update(user.userId, updates);
+    const updatedUser = await userDb.update(user.userId, updates);
 
     if (!updatedUser) {
       return NextResponse.json(
@@ -143,13 +143,13 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete all user's issues
-    const userIssues = issueDb.findByUserId(user.userId);
-    userIssues.forEach((issue) => {
-      issueDb.delete(issue.id);
-    });
+    const userIssues = await issueDb.findByUserId(user.userId);
+    for (const issue of userIssues) {
+      await issueDb.delete(issue.id);
+    }
 
     // Delete user
-    const deleted = userDb.delete(user.userId);
+    const deleted = await userDb.delete(user.userId);
 
     if (!deleted) {
       return NextResponse.json(

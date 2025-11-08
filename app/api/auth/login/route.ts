@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email
-    const user = userDb.findByEmail(email.toLowerCase());
+    const user = await userDb.findByEmail(email.toLowerCase());
     if (!user) {
       return NextResponse.json(
         {

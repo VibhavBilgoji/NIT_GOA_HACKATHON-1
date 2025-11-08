@@ -31,29 +31,33 @@ export async function GET(request: NextRequest) {
       offset: parseInt(searchParams.get("offset") || "0"),
     };
 
-    let issues = issueDb.getAll();
+    let issues = await issueDb.getAll();
 
     // Apply filters
     if (filters.status) {
-      issues = issues.filter((issue) => issue.status === filters.status);
+      issues = issues.filter((issue: Issue) => issue.status === filters.status);
     }
 
     if (filters.category) {
-      issues = issues.filter((issue) => issue.category === filters.category);
+      issues = issues.filter(
+        (issue: Issue) => issue.category === filters.category,
+      );
     }
 
     if (filters.priority) {
-      issues = issues.filter((issue) => issue.priority === filters.priority);
+      issues = issues.filter(
+        (issue: Issue) => issue.priority === filters.priority,
+      );
     }
 
     if (filters.userId) {
-      issues = issues.filter((issue) => issue.userId === filters.userId);
+      issues = issues.filter((issue: Issue) => issue.userId === filters.userId);
     }
 
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       issues = issues.filter(
-        (issue) =>
+        (issue: Issue) =>
           issue.title.toLowerCase().includes(searchLower) ||
           issue.description.toLowerCase().includes(searchLower) ||
           issue.location.toLowerCase().includes(searchLower),
@@ -61,7 +65,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Sort issues
-    issues.sort((a, b) => {
+    issues.sort((a: Issue, b: Issue) => {
       const sortBy = filters.sortBy || "createdAt";
       let aVal: string | number = a[sortBy as keyof Issue] as string | number;
       let bVal: string | number = b[sortBy as keyof Issue] as string | number;
@@ -207,7 +211,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new issue
-    const newIssue = issueDb.create({
+    const newIssue = await issueDb.create({
       title: title.trim(),
       description: description.trim(),
       category,

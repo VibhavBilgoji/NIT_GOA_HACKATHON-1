@@ -84,12 +84,22 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await hashPassword(password);
 
     // Create new user
-    const newUser = userDb.create({
+    const newUser = await userDb.create({
       name: name.trim(),
       email: email.toLowerCase(),
       password: hashedPassword,
       role: "citizen",
     });
+
+    if (!newUser) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to create user. Please try again.",
+        } as AuthResponse,
+        { status: 500 },
+      );
+    }
 
     // Generate token
     const token = generateToken(newUser.id, newUser.email, newUser.role);

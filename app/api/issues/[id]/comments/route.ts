@@ -12,7 +12,7 @@ export async function GET(
     const { id } = await params;
 
     // Check if issue exists
-    const issue = issueDb.findById(id);
+    const issue = await issueDb.findById(id);
     if (!issue) {
       return NextResponse.json(
         {
@@ -23,7 +23,7 @@ export async function GET(
       );
     }
 
-    const comments = commentDb.findByIssueId(id);
+    const comments = await commentDb.findByIssueId(id);
 
     return NextResponse.json(
       {
@@ -67,7 +67,7 @@ export async function POST(
     const { id } = await params;
 
     // Check if issue exists
-    const issue = issueDb.findById(id);
+    const issue = await issueDb.findById(id);
     if (!issue) {
       return NextResponse.json(
         {
@@ -113,7 +113,7 @@ export async function POST(
     }
 
     // Get user details
-    const userData = userDb.findById(user.userId);
+    const userData = await userDb.findById(user.userId);
     if (!userData) {
       return NextResponse.json(
         {
@@ -125,7 +125,7 @@ export async function POST(
     }
 
     // Create comment
-    const newComment = commentDb.create({
+    const newComment = await commentDb.create({
       issueId: id,
       userId: user.userId,
       userName: userData.name,
@@ -182,7 +182,7 @@ export async function DELETE(
       );
     }
 
-    const comment = commentDb.findById(commentId);
+    const comment = await commentDb.findById(commentId);
     if (!comment) {
       return NextResponse.json(
         {
@@ -194,7 +194,7 @@ export async function DELETE(
     }
 
     // Check if user owns this comment or is admin
-    const requestUser = userDb.findById(user.userId);
+    const requestUser = await userDb.findById(user.userId);
     if (comment.userId !== user.userId && requestUser?.role !== "admin") {
       return NextResponse.json(
         {
@@ -205,7 +205,7 @@ export async function DELETE(
       );
     }
 
-    const deleted = commentDb.delete(commentId);
+    const deleted = await commentDb.delete(commentId);
     if (!deleted) {
       return NextResponse.json(
         {

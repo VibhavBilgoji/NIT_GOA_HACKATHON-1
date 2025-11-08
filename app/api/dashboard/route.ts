@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const allIssues = issueDb.getAll();
+    const allIssues = await issueDb.getAll();
 
     // Calculate basic stats
     const totalIssues = allIssues.length;

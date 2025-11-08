@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const issue = issueDb.findById(id);
+    const issue = await issueDb.findById(id);
 
     if (!issue) {
       return NextResponse.json(
@@ -60,7 +60,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const issue = issueDb.findById(id);
+    const issue = await issueDb.findById(id);
 
     if (!issue) {
       return NextResponse.json(
@@ -73,7 +73,7 @@ export async function PUT(
     }
 
     // Check if user owns this issue or is admin
-    const requestUser = userDb.findById(user.userId);
+    const requestUser = await userDb.findById(user.userId);
     if (issue.userId !== user.userId && requestUser?.role !== "admin") {
       return NextResponse.json(
         {
@@ -141,7 +141,7 @@ export async function PUT(
     if (priority) updates.priority = priority;
     if (assignedTo) updates.assignedTo = assignedTo;
 
-    const updatedIssue = issueDb.update(id, updates);
+    const updatedIssue = await issueDb.update(id, updates);
 
     return NextResponse.json(
       {
@@ -181,7 +181,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const issue = issueDb.findById(id);
+    const issue = await issueDb.findById(id);
 
     if (!issue) {
       return NextResponse.json(
@@ -194,7 +194,7 @@ export async function DELETE(
     }
 
     // Check if user owns this issue or is admin
-    const requestUser = userDb.findById(user.userId);
+    const requestUser = await userDb.findById(user.userId);
     if (issue.userId !== user.userId && requestUser?.role !== "admin") {
       return NextResponse.json(
         {
@@ -206,7 +206,7 @@ export async function DELETE(
     }
 
     // Delete the issue
-    const deleted = issueDb.delete(id);
+    const deleted = await issueDb.delete(id);
 
     if (!deleted) {
       return NextResponse.json(

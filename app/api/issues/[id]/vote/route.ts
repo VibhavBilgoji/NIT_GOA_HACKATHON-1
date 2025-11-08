@@ -23,7 +23,7 @@ export async function POST(
     const { id } = await params;
 
     // Check if issue exists
-    const issue = issueDb.findById(id);
+    const issue = await issueDb.findById(id);
     if (!issue) {
       return NextResponse.json(
         {
@@ -35,14 +35,14 @@ export async function POST(
     }
 
     // Check if user already voted
-    const existingVote = voteDb.findByUserAndIssue(user.userId, id);
+    const existingVote = await voteDb.findByUserAndIssue(user.userId, id);
 
     if (existingVote) {
       // User already voted - remove vote (downvote/unvote)
-      voteDb.delete(existingVote.id);
-      issueDb.decrementVotes(id);
+      await voteDb.delete(existingVote.id);
+      await issueDb.decrementVotes(id);
 
-      const updatedIssue = issueDb.findById(id);
+      const updatedIssue = await issueDb.findById(id);
 
       return NextResponse.json(
         {
@@ -57,13 +57,13 @@ export async function POST(
       );
     } else {
       // User hasn't voted - add vote (upvote)
-      voteDb.create({
-        userId: user.userId,
+      await voteDb.create({
         issueId: id,
+        userId: user.userId,
       });
-      issueDb.incrementVotes(id);
+      await issueDb.incrementVotes(id);
 
-      const updatedIssue = issueDb.findById(id);
+      const updatedIssue = await issueDb.findById(id);
 
       return NextResponse.json(
         {
@@ -111,7 +111,7 @@ export async function GET(
     const { id } = await params;
 
     // Check if issue exists
-    const issue = issueDb.findById(id);
+    const issue = await issueDb.findById(id);
     if (!issue) {
       return NextResponse.json(
         {
@@ -123,7 +123,7 @@ export async function GET(
     }
 
     // Check if user has voted
-    const existingVote = voteDb.findByUserAndIssue(user.userId, id);
+    const existingVote = await voteDb.findByUserAndIssue(user.userId, id);
 
     return NextResponse.json(
       {
