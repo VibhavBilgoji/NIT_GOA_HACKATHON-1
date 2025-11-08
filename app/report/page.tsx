@@ -9,6 +9,8 @@ import {
   Upload,
   CheckCircle,
   X,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +44,16 @@ export default function ReportIssuePage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAICategorizing, setIsAICategorizing] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState<{
+    category: IssueCategory;
+    priority: string;
+    confidence: number;
+    reasoning: string;
+    suggestedTitle?: string;
+    tags?: string[];
+  } | null>(null);
+
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
     null,
   );
@@ -169,6 +181,75 @@ export default function ReportIssuePage() {
       other: "other",
     };
     return categoryMap[uiCategory] || "other";
+  };
+
+  // AI Categorization Handler
+  const handleAICategorization = async () => {
+    if (!formData.title || !formData.description) {
+      toast.error("Please enter title and description first");
+      return;
+    }
+
+    if (formData.title.length < 5) {
+      toast.error("Title must be at least 5 characters for AI analysis");
+      return;
+    }
+
+    if (formData.description.length < 10) {
+      toast.error("Description must be at least 10 characters for AI analysis");
+      return;
+    }
+
+    setIsAICategorizing(true);
+    try {
+      const response = await fetch("/api/ai/categorize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          location: formData.ward,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "AI categorization failed");
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setAiSuggestion(result.data);
+
+        toast.success(
+          `AI suggests: ${result.data.category} (${Math.round(result.data.confidence * 100)}% confidence)`,
+        );
+      }
+    } catch (error) {
+      console.error("AI categorization error:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "AI categorization unavailable. Please select manually.",
+      );
+    } finally {
+      setIsAICategorizing(false);
+    }
+  };
+
+  // Apply AI suggestion
+  const applyAISuggestion = () => {
+    if (aiSuggestion) {
+      setFormData({
+        ...formData,
+        category: aiSuggestion.category,
+        title: aiSuggestion.suggestedTitle || formData.title,
+      });
+      toast.success("AI suggestion applied!");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -307,9 +388,98 @@ export default function ReportIssuePage() {
                 />
               </div>
 
-              {/* Category */}
-              <div className="space-y-2">
-                <Label htmlFor="category">Category *</Label>
+              {/* AI Toggle and Categorization */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Label>Category *</Label>
+                    {aiSuggestion && (
+                      <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                        <Sparkles className="h-3 w-3" />
+                        AI Suggestion Available
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAICategorization}
+                      disabled={
+                        isAICategorizing ||
+                        !formData.title ||
+                        !formData.description
+                      }
+                      className="text-xs"
+                    >
+                      {isAICategorizing ? (
+                        <>
+                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                          Analyzing...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-1 h-3 w-3" />
+                          AI Suggest
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* AI Suggestion Card */}
+                {aiSuggestion && (
+                  <Alert className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+                    <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <AlertDescription className="text-blue-800 dark:text-blue-200">
+                      <div className="space-y-2">
+                        <p className="font-semibold text-sm">
+                          AI Recommendation:{" "}
+                          {aiSuggestion.category
+                            .replace("_", " ")
+                            .toUpperCase()}
+                          <span className="ml-2 text-xs">
+                            (Priority: {aiSuggestion.priority}, Confidence:{" "}
+                            {Math.round(aiSuggestion.confidence * 100)}%)
+                          </span>
+                        </p>
+                        <p className="text-xs">{aiSuggestion.reasoning}</p>
+                        {aiSuggestion.suggestedTitle &&
+                          aiSuggestion.suggestedTitle !== formData.title && (
+                            <p className="text-xs">
+                              <strong>Better title:</strong>{" "}
+                              {aiSuggestion.suggestedTitle}
+                            </p>
+                          )}
+                        {aiSuggestion.tags && aiSuggestion.tags.length > 0 && (
+                          <div className="flex gap-1 flex-wrap mt-1">
+                            {aiSuggestion.tags.slice(0, 3).map((tag, idx) => (
+                              <span
+                                key={idx}
+                                className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900 rounded"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {formData.category !== aiSuggestion.category && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="default"
+                            className="text-xs mt-2"
+                            onClick={applyAISuggestion}
+                          >
+                            Apply Suggestion
+                          </Button>
+                        )}
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <Select
                   value={formData.category}
                   onValueChange={(value) =>
@@ -317,7 +487,7 @@ export default function ReportIssuePage() {
                   }
                 >
                   <SelectTrigger className="bg-white dark:bg-black">
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Select category or use AI to suggest" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pothole">🕳️ Pothole</SelectItem>
@@ -332,6 +502,10 @@ export default function ReportIssuePage() {
                     <SelectItem value="other">📋 Other</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Select manually or click &quot;AI Suggest&quot; for automatic
+                  categorization
+                </p>
               </div>
 
               {/* Ward/District */}
@@ -526,7 +700,20 @@ export default function ReportIssuePage() {
         </Card>
 
         {/* Info Cards */}
-        <div className="grid md:grid-cols-3 gap-4 mt-8">
+        <div className="grid md:grid-cols-4 gap-4 mt-8">
+          <Card className="border-gray-200 dark:border-gray-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-1">
+                <Sparkles className="h-4 w-4 text-purple-500" />
+                AI Powered
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Use AI to automatically categorize and prioritize your reports.
+              </p>
+            </CardContent>
+          </Card>
           <Card className="border-gray-200 dark:border-gray-800">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm">Quick Response</CardTitle>
