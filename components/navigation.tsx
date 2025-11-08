@@ -10,6 +10,7 @@ import {
   LogOut,
   User,
   PlusCircle,
+  Home,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -27,6 +28,7 @@ export function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
 
   const centerNavItems = [
+    { href: "/", label: "Home", icon: Home },
     { href: "/map", label: "Map", icon: Map },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/team", label: "Team", icon: Users },

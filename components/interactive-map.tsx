@@ -123,14 +123,14 @@ export function InteractiveMap({
           el.style.cursor = "pointer";
           el.style.border = "3px solid white";
           el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
-          el.style.transition = "transform 0.2s ease";
+          el.style.transition = "box-shadow 0.2s ease";
 
-          // Hover effect
+          // Hover effect - use box-shadow instead of scale to prevent movement
           el.addEventListener("mouseenter", () => {
-            el.style.transform = "scale(1.1)";
+            el.style.boxShadow = "0 4px 16px rgba(0,0,0,0.5)";
           });
           el.addEventListener("mouseleave", () => {
-            el.style.transform = "scale(1)";
+            el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
           });
 
           // Color based on status
