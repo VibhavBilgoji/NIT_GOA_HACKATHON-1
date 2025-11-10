@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Github, Linkedin, Mail, Users, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NeonGradientCard } from "@/components/magicui/neon-gradient-card";
+import GSAPTextAnimate from "@/components/gsap-text-animate";
 
 const teamMembers = [
   {
@@ -50,7 +51,7 @@ export default function TeamPage() {
               </span>
             </div>
             <h1 className="text-5xl font-bold text-black dark:text-white mb-4">
-              Meet Our Team
+              <GSAPTextAnimate>Meet Our Team</GSAPTextAnimate>
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               We&apos;re a passionate team of developers working to bridge the
@@ -83,12 +84,12 @@ export default function TeamPage() {
 
                     {/* Name with Hover Animation */}
                     <h3 className="text-2xl font-bold text-black dark:text-white mb-2 transform transition-all duration-300 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600">
-                      {member.name}
+                      <GSAPTextAnimate>{member.name}</GSAPTextAnimate>
                     </h3>
 
                     {/* Role with Color Transition */}
                     <p className="text-base font-semibold text-blue-600 dark:text-blue-400 mb-3 transform transition-all duration-300 group-hover:text-purple-600 dark:group-hover:text-purple-400">
-                      {member.role}
+                      <GSAPTextAnimate duration={1}>{member.role}</GSAPTextAnimate>
                     </p>
 
                     {/* Bio with Fade Effect */}
@@ -134,7 +135,7 @@ export default function TeamPage() {
           <NeonGradientCard className="overflow-hidden transition-all duration-300 ease-in-out hover:scale-[1.02] cursor-pointer max-w-4xl mx-auto">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-                About OurStreet
+                <GSAPTextAnimate>About OurStreet</GSAPTextAnimate>
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
                 OurStreet is our submission for the NIT Goa Hackathon, focusing
@@ -165,7 +166,7 @@ export default function TeamPage() {
           {/* Tech Stack */}
           <div className="mt-16">
             <h2 className="text-3xl font-bold text-black dark:text-white text-center mb-8">
-              Built With
+              <GSAPTextAnimate>Built With</GSAPTextAnimate>
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
               {[
@@ -194,7 +195,7 @@ export default function TeamPage() {
           <div className="mt-16 text-center">
             <div className="p-8 border border-gray-200 dark:border-gray-800 rounded-lg bg-gray-50 dark:bg-gray-950 max-w-2xl mx-auto transform transition-all duration-300 hover:shadow-lg hover:scale-105">
               <h2 className="text-2xl font-bold text-black dark:text-white mb-4">
-                Want to Contribute?
+                <GSAPTextAnimate>Want to Contribute?</GSAPTextAnimate>
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 OurStreet is an open-source project. We welcome contributions
